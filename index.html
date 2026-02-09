@@ -1,0 +1,2662 @@
+<!-- =====================================================================
+     KKSO-KBGA DATA - Final Version
+     Created by: Ravi Malhotra
+     
+     ============ QUICK GUIDE FOR RAVI ============
+     
+     🔧 TO MAKE CHANGES, SEARCH FOR: "Ravi you can change"
+     
+     📊 GOOGLE SHEET STRUCTURE (master sheet):
+     - Rows 1-50: View configuration
+     - Rows 51-81: User credentials (A=ID, B=Password, C=Level)
+     - Rows 82-150: Entry configuration
+     
+     🔐 USER LEVELS: "admin", "supervisor", "staff"
+     - Admin uses columns AB, AC
+     - Supervisor uses columns AD, AE
+     - Staff uses columns AF, AG
+     
+     ===================================================================== -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <!-- Ravi you can change the browser tab title here -->
+  <title>KKSO-KBGA DATA</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --text: #0f172a;
+      --muted: #64748b;
+      --card: rgba(255, 255, 255, 0.92);
+      --card-border: rgba(255, 255, 255, 0.6);
+      --shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
+      --ring: rgba(99, 102, 241, 0.4);
+    }
+
+    @keyframes gradientShift {
+      0%, 100% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0) rotate(0deg); opacity: 0.6; }
+      50% { transform: translateY(-20px) rotate(180deg); opacity: 1; }
+    }
+
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+    }
+
+    @keyframes blink {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.4; }
+    }
+
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      20%, 60% { transform: translateX(-5px); }
+      40%, 80% { transform: translateX(5px); }
+    }
+
+    @keyframes slideUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes slideDown {
+      from { opacity: 0; transform: translateY(-20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    @keyframes rainbowText {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    @keyframes glowPulse {
+      0%, 100% { box-shadow: 0 0 20px rgba(139, 92, 246, 0.3), 0 0 40px rgba(236, 72, 153, 0.2); }
+      50% { box-shadow: 0 0 30px rgba(139, 92, 246, 0.5), 0 0 60px rgba(236, 72, 153, 0.3); }
+    }
+
+    @keyframes shimmer {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    @keyframes starScroll {
+      0% { transform: translateX(-100%); }
+      100% { transform: translateX(100%); }
+    }
+
+    body {
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      background: linear-gradient(-45deg, #667eea, #764ba2, #f093fb, #f5576c, #4facfe, #00f2fe);
+      background-size: 400% 400%;
+      animation: gradientShift 15s ease infinite;
+      min-height: 100vh;
+      color: var(--text);
+      overflow-x: hidden;
+    }
+
+    .particles {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      overflow: hidden;
+      z-index: 0;
+    }
+
+    .particle {
+      position: absolute;
+      width: 10px;
+      height: 10px;
+      background: rgba(255, 255, 255, 0.6);
+      border-radius: 50%;
+      animation: float 6s ease-in-out infinite;
+    }
+
+    .particle:nth-child(1) { left: 10%; top: 20%; animation-delay: 0s; width: 8px; height: 8px; }
+    .particle:nth-child(2) { left: 20%; top: 80%; animation-delay: 1s; width: 12px; height: 12px; }
+    .particle:nth-child(3) { left: 60%; top: 40%; animation-delay: 2s; width: 6px; height: 6px; }
+    .particle:nth-child(4) { left: 80%; top: 60%; animation-delay: 3s; width: 14px; height: 14px; }
+    .particle:nth-child(5) { left: 30%; top: 30%; animation-delay: 4s; width: 10px; height: 10px; }
+    .particle:nth-child(6) { left: 70%; top: 70%; animation-delay: 5s; width: 8px; height: 8px; }
+    .particle:nth-child(7) { left: 50%; top: 10%; animation-delay: 2.5s; width: 11px; height: 11px; }
+    .particle:nth-child(8) { left: 90%; top: 30%; animation-delay: 3.5s; width: 7px; height: 7px; }
+
+    .page {
+      position: relative;
+      z-index: 1;
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 16px;
+      animation: fadeIn 0.8s ease;
+    }
+
+    /* Login Page */
+    .login-container {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    .login-card {
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(20px);
+      border-radius: 24px;
+      padding: 40px 36px;
+      width: 100%;
+      max-width: 400px;
+      box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15);
+      border: 1px solid rgba(255, 255, 255, 0.5);
+      animation: slideUp 0.6s ease;
+      transition: transform 0.3s ease;
+    }
+
+    .login-card:hover {
+      transform: translateY(-5px);
+    }
+
+    .login-logo {
+      width: 80px;
+      height: 80px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      border-radius: 20px;
+      margin: 0 auto 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 36px;
+      color: white;
+      animation: pulse 2s ease infinite;
+      box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+    }
+
+    .login-title {
+      text-align: center;
+      font-size: 26px;
+      font-weight: 800;
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 8px;
+    }
+
+    .login-subtitle {
+      text-align: center;
+      color: var(--muted);
+      font-size: 14px;
+      margin-bottom: 32px;
+    }
+
+    .input-group {
+      margin-bottom: 20px;
+    }
+
+    .input-group label {
+      display: block;
+      font-size: 13px;
+      font-weight: 600;
+      color: #475569;
+      margin-bottom: 8px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .input-group input {
+      width: 100%;
+      padding: 14px 16px;
+      border: 2px solid #e2e8f0;
+      border-radius: 12px;
+      font-size: 15px;
+      transition: all 0.3s ease;
+      background: #f8fafc;
+    }
+
+    .input-group input:focus {
+      outline: none;
+      border-color: #667eea;
+      background: white;
+      box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.15);
+    }
+
+    .login-btn {
+      width: 100%;
+      padding: 16px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border: none;
+      border-radius: 12px;
+      font-size: 16px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 8px 20px rgba(102, 126, 234, 0.35);
+      margin-top: 10px;
+    }
+
+    .login-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 12px 28px rgba(102, 126, 234, 0.45);
+    }
+
+    .login-btn:active {
+      transform: translateY(0);
+    }
+
+    .login-error {
+      background: #fef2f2;
+      color: #dc2626;
+      padding: 12px 16px;
+      border-radius: 10px;
+      font-size: 14px;
+      margin-top: 16px;
+      text-align: center;
+      animation: shake 0.5s ease;
+      border: 1px solid #fecaca;
+    }
+
+    /* App Container */
+    .app-container {
+      display: none;
+    }
+
+    /* Header */
+    .header-strip {
+      background: rgba(255, 255, 255, 0.9);
+      backdrop-filter: blur(10px);
+      border-radius: 16px;
+      padding: 8px 12px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 80px;
+      box-shadow: var(--shadow);
+      border: 1px solid var(--card-border);
+      margin-bottom: 12px;
+    }
+
+    .header-logo {
+      height: 100%;
+      background-repeat: no-repeat;
+      background-size: contain;
+      background-position: center;
+    }
+
+    /* Ravi you can change the header logos here - replace the Google Drive URLs */
+    .logo-1 { width: 15%; background-image: url("https://lh3.googleusercontent.com/d/1oYWlcTQA9fugWbxnbyw9CUaRabmjUzlI"); }
+    .logo-2 { width: 60%; background-image: url("https://lh3.googleusercontent.com/d/1Lq0ri1xMDU4PERzu3QAfuZ3XfkHMnF0b"); }
+    .logo-3 { width: 20%; background-image: url("https://lh3.googleusercontent.com/d/1z57jNNPGjl3jZvXcCoTDcK7cWTeNIt87"); }
+
+    /* Title Card */
+    .title-card {
+      position: relative;
+      background: linear-gradient(135deg, #1e1b4b 0%, #312e81 50%, #1e1b4b 100%);
+      border-radius: 20px;
+      padding: 18px 24px;
+      margin-bottom: 14px;
+      box-shadow: var(--shadow);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      overflow: hidden;
+      animation: glowPulse 3s ease-in-out infinite;
+    }
+
+    .title-card::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 60%);
+      animation: shimmer 8s linear infinite;
+      pointer-events: none;
+    }
+
+    .title-card::after {
+      content: '✦ ✧ ★ ✦ ✧ ★ ✦ ✧';
+      position: absolute;
+      bottom: 8px;
+      left: 0;
+      width: 200%;
+      font-size: 10px;
+      color: rgba(255, 255, 255, 0.15);
+      animation: starScroll 15s linear infinite;
+      pointer-events: none;
+    }
+
+    .title-content {
+      position: relative;
+      z-index: 2;
+      text-align: center;
+    }
+
+    .title-content h1 {
+      font-size: 24px;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      margin-bottom: 6px;
+      background: linear-gradient(90deg, #fbbf24, #f97316, #ef4444, #ec4899, #8b5cf6, #06b6d4, #10b981, #fbbf24);
+      background-size: 200% auto;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      animation: rainbowText 4s linear infinite;
+      text-shadow: none;
+    }
+
+    .title-content h2 {
+      font-size: 13px;
+      font-weight: 600;
+      margin-bottom: 4px;
+      background: linear-gradient(90deg, #06b6d4, #10b981, #84cc16, #fbbf24, #f97316, #06b6d4);
+      background-size: 200% auto;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      animation: rainbowText 5s linear infinite;
+    }
+
+    .title-content h3 {
+      font-size: 10px;
+      font-weight: 500;
+      background: linear-gradient(90deg, #f472b6, #fb7185, #f97316, #fbbf24, #f472b6);
+      background-size: 200% auto;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      animation: rainbowText 6s linear infinite;
+    }
+
+    /* User Bar */
+    .user-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 6px;
+      margin-bottom: 8px;
+      padding: 4px 6px;
+      background: linear-gradient(90deg, #6366f1, #8b5cf6, #a855f7, #d946ef, #ec4899);
+      background-size: 300% 100%;
+      animation: gradientShift 6s ease infinite;
+      border-radius: 10px;
+      box-shadow: 0 2px 12px rgba(99, 102, 241, 0.4);
+      border: 1px solid rgba(255,255,255,0.25);
+      z-index: 100;
+      position: relative;
+    }
+
+    .clock-widget {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 10px;
+      background: rgba(255,255,255,0.95);
+      border-radius: 16px;
+      box-shadow: 0 1px 6px rgba(0,0,0,0.1);
+    }
+
+    .clock-dot {
+      width: 6px;
+      height: 6px;
+      background: #22c55e;
+      border-radius: 50%;
+      animation: blink 1s ease infinite;
+      box-shadow: 0 0 6px rgba(34, 197, 94, 0.5);
+    }
+
+    .clock-time {
+      font-weight: 800;
+      color: #6366f1;
+      font-size: 12px;
+    }
+
+    .clock-day {
+      color: #10b981;
+      font-weight: 700;
+      font-size: 10px;
+    }
+
+    .clock-date {
+      color: #64748b;
+      font-size: 9px;
+      font-weight: 600;
+    }
+
+    .user-info {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      z-index: 50;
+    }
+
+    .user-avatar {
+      width: 28px;
+      height: 28px;
+      background: linear-gradient(135deg, #fbbf24, #f97316);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-weight: 800;
+      font-size: 12px;
+      text-transform: uppercase;
+      box-shadow: 0 2px 8px rgba(251, 191, 36, 0.4);
+      border: 2px solid rgba(255,255,255,0.8);
+    }
+
+    .user-details {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+    }
+
+    .user-name {
+      font-weight: 700;
+      font-size: 11px;
+      color: white;
+      text-shadow: 0 1px 2px rgba(0,0,0,0.2);
+    }
+
+    .user-level {
+      font-size: 8px;
+      color: #1e293b;
+      text-transform: uppercase;
+      font-weight: 700;
+      letter-spacing: 0.3px;
+      background: linear-gradient(90deg, #fde047, #facc15);
+      padding: 1px 6px;
+      border-radius: 6px;
+      display: inline-block;
+      box-shadow: 0 1px 4px rgba(250, 204, 21, 0.4);
+    }
+
+    .user-actions {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .logout-btn {
+      background: rgba(255,255,255,0.95);
+      color: #dc2626;
+      border: none;
+      padding: 4px 10px;
+      border-radius: 12px;
+      font-size: 9px;
+      font-weight: 800;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      box-shadow: 0 1px 6px rgba(0,0,0,0.1);
+      z-index: 100;
+      position: relative;
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+    }
+
+    .logout-btn:hover {
+      background: #fee2e2;
+      box-shadow: 0 2px 10px rgba(220, 38, 38, 0.2);
+    }
+
+    .logout-btn:active {
+      transform: scale(0.95);
+    }
+
+    /* Change Password Button */
+    .change-pwd-btn {
+      width: 28px;
+      height: 28px;
+      background: rgba(255,255,255,0.95);
+      color: #3b82f6;
+      border: none;
+      border-radius: 50%;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      box-shadow: 0 1px 6px rgba(0,0,0,0.1);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .change-pwd-btn:hover {
+      transform: rotate(15deg);
+      background: #dbeafe;
+      box-shadow: 0 2px 10px rgba(59, 130, 246, 0.2);
+    }
+
+      /* Password Modal */
+      .modal-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.6);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 1000;
+        opacity: 0;
+        visibility: hidden;
+        transition: all 0.3s ease;
+      }
+
+      .modal-overlay.active {
+        opacity: 1;
+        visibility: visible;
+      }
+
+      .modal-box {
+        background: white;
+        border-radius: 20px;
+        padding: 30px;
+        width: 90%;
+        max-width: 400px;
+        box-shadow: 0 25px 50px rgba(0, 0, 0, 0.25);
+        transform: scale(0.8) translateY(20px);
+        transition: all 0.3s ease;
+      }
+
+      .modal-overlay.active .modal-box {
+        transform: scale(1) translateY(0);
+      }
+
+      .modal-title {
+        font-size: 22px;
+        font-weight: 700;
+        color: #1e293b;
+        margin-bottom: 20px;
+        text-align: center;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+      }
+
+      .modal-title::before {
+        content: "🔐";
+      }
+
+      .modal-input-group {
+        margin-bottom: 16px;
+      }
+
+      .modal-input-group label {
+        display: block;
+        font-size: 13px;
+        font-weight: 600;
+        color: #475569;
+        margin-bottom: 6px;
+      }
+
+      .modal-input-group input {
+        width: 100%;
+        padding: 14px 16px;
+        border: 2px solid #e2e8f0;
+        border-radius: 12px;
+        font-size: 15px;
+        transition: all 0.2s ease;
+        box-sizing: border-box;
+      }
+
+      .modal-input-group input:focus {
+        outline: none;
+        border-color: #3b82f6;
+        box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.15);
+      }
+
+      .modal-buttons {
+        display: flex;
+        gap: 12px;
+        margin-top: 24px;
+      }
+
+      .modal-btn {
+        flex: 1;
+        padding: 14px 20px;
+        border: none;
+        border-radius: 12px;
+        font-size: 15px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s ease;
+      }
+
+      .modal-btn.cancel {
+        background: #f1f5f9;
+        color: #475569;
+      }
+
+      .modal-btn.cancel:hover {
+        background: #e2e8f0;
+      }
+
+      .modal-btn.submit {
+        background: linear-gradient(135deg, #22c55e, #16a34a);
+        color: white;
+      }
+
+      .modal-btn.submit:hover {
+        background: linear-gradient(135deg, #16a34a, #15803d);
+        box-shadow: 0 4px 15px rgba(34, 197, 94, 0.4);
+      }
+
+      .modal-btn.submit:disabled {
+        background: #94a3b8;
+        cursor: not-allowed;
+        box-shadow: none;
+      }
+
+      .modal-message {
+        text-align: center;
+        padding: 10px;
+        border-radius: 8px;
+        font-size: 13px;
+        font-weight: 500;
+        margin-top: 12px;
+      }
+
+      .modal-message.success {
+        background: #dcfce7;
+        color: #166534;
+      }
+
+      .modal-message.error {
+        background: #fee2e2;
+        color: #991b1b;
+      }
+
+    /* Mode Toggle */
+    .mode-toggle {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+
+    .mode-btn {
+      flex: 1;
+      padding: 14px 20px;
+      border: 2px solid transparent;
+      border-radius: 14px;
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      background: rgba(255, 255, 255, 0.9);
+      color: #475569;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .mode-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
+    }
+
+    .mode-btn.active {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border-color: transparent;
+      box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+    }
+
+    /* Panel */
+    .panel {
+      background: var(--card);
+      backdrop-filter: blur(20px);
+      border-radius: 20px;
+      padding: 20px;
+      box-shadow: var(--shadow);
+      border: 1px solid var(--card-border);
+      animation: slideUp 0.5s ease;
+      margin-bottom: 16px;
+    }
+
+    .panel-title {
+      font-size: 18px;
+      font-weight: 700;
+      color: #1e293b;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    /* Form Elements */
+    .form-group {
+      margin-bottom: 14px;
+    }
+
+    .form-group label {
+      display: block;
+      font-size: 12px;
+      font-weight: 700;
+      color: #64748b;
+      margin-bottom: 8px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .select-wrapper {
+      position: relative;
+    }
+
+    .select-wrapper::after {
+      content: "▼";
+      position: absolute;
+      right: 16px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #64748b;
+      font-size: 12px;
+      pointer-events: none;
+    }
+
+    select {
+      width: 100%;
+      padding: 14px 45px 14px 16px;
+      border: 2px solid #e2e8f0;
+      border-radius: 12px;
+      font-size: 14px;
+      font-weight: 500;
+      color: #1e293b;
+      background: white;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      appearance: none;
+      -webkit-appearance: none;
+    }
+
+    select:hover {
+      border-color: #cbd5e1;
+    }
+
+    select:focus {
+      outline: none;
+      border-color: #667eea;
+      box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.15);
+    }
+
+    .select-g1 { background: linear-gradient(135deg, #e0f2fe, #fef3c7) !important; }
+    .select-g2 { background: linear-gradient(135deg, #fce7f3, #cffafe) !important; }
+    .select-g3 { background: linear-gradient(135deg, #e9d5ff, #d1fae5) !important; }
+    .select-g4 { background: linear-gradient(135deg, #f3e8ff, #e0f2fe) !important; }
+    .select-g5 { background: linear-gradient(135deg, #fee2e2, #dbeafe) !important; }
+
+    /* Text Input */
+    .text-input {
+      width: 100%;
+      padding: 18px 20px;
+      border: 2px solid #e2e8f0;
+      border-radius: 12px;
+      font-size: 16px;
+      font-weight: 500;
+      color: #1e293b;
+      background: white;
+      transition: all 0.3s ease;
+    }
+
+    .text-input:hover {
+      border-color: #cbd5e1;
+    }
+
+    .text-input:focus {
+      outline: none;
+      border-color: #667eea;
+      box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.15);
+    }
+
+    /* Button Group */
+    .btn-group {
+      display: flex;
+      gap: 12px;
+      margin-top: 20px;
+    }
+
+    .submit-btn {
+      flex: 1;
+      padding: 16px 24px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border: none;
+      border-radius: 12px;
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 8px 20px rgba(102, 126, 234, 0.35);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .submit-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 12px 28px rgba(102, 126, 234, 0.45);
+    }
+
+    .clear-btn {
+      padding: 16px 24px;
+      background: linear-gradient(135deg, #64748b, #475569);
+      color: white;
+      border: none;
+      border-radius: 12px;
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 8px 20px rgba(71, 85, 105, 0.25);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .clear-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 12px 28px rgba(71, 85, 105, 0.35);
+    }
+
+    /* Output */
+    .output-container {
+      animation: slideUp 0.5s ease;
+    }
+
+    .output-title {
+      font-size: 20px;
+      font-weight: 800;
+      color: #1e293b;
+      text-align: center;
+      margin-bottom: 18px;
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .output-scroll {
+      overflow-x: auto;
+      background: #ffffff;
+      border-radius: 10px;
+      padding: 0;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+      border: 1px solid #e2e8f0;
+      max-width: 100%;
+    }
+
+    .output-grid {
+      display: grid;
+      gap: 0;
+      min-width: max-content;
+    }
+
+    .output-grid > div {
+      background: white;
+      padding: 8px 10px;
+      border: 1px solid #e2e8f0;
+      border-radius: 0;
+      min-width: 100px;
+      text-align: center;
+      word-break: break-word;
+      font-size: 11px;
+      margin: 0;
+    }
+
+    .output-grid > div:hover {
+      background: #f1f5f9;
+    }
+
+    .output-header {
+      position: sticky;
+      top: 0;
+      z-index: 2;
+      background: linear-gradient(135deg, #667eea, #764ba2) !important;
+      color: white !important;
+      font-weight: 700;
+      text-transform: uppercase;
+      font-size: 9px;
+      letter-spacing: 0.5px;
+      border: 1px solid #5b6fd6 !important;
+      padding: 6px 8px !important;
+    }
+
+    .output-cell {
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+      font-size: 11px;
+      color: #374151;
+    }
+
+    .output-cell img {
+      max-width: 100px;
+      max-height: 80px;
+      border-radius: 6px;
+      cursor: zoom-in;
+      transition: transform 0.3s ease;
+    }
+
+    .output-cell img:hover {
+      transform: scale(1.1);
+    }
+
+    .file-link {
+      color: #667eea;
+      font-weight: 600;
+      text-decoration: none;
+      padding: 4px 10px;
+      background: linear-gradient(135deg, #eef2ff, #e0e7ff);
+      border-radius: 6px;
+      display: inline-block;
+      font-size: 11px;
+      transition: all 0.2s ease;
+    }
+
+    .file-link:hover {
+      background: linear-gradient(135deg, #e0e7ff, #c7d2fe);
+      text-decoration: none;
+    }
+
+    /* Status Messages */
+    .status-success {
+      background: #dcfce7;
+      color: #15803d;
+      padding: 14px 20px;
+      border-radius: 12px;
+      text-align: center;
+      font-weight: 600;
+      margin-top: 16px;
+      border: 1px solid #bbf7d0;
+    }
+
+    .status-error {
+      background: #fef2f2;
+      color: #dc2626;
+      padding: 14px 20px;
+      border-radius: 12px;
+      text-align: center;
+      font-weight: 600;
+      margin-top: 16px;
+      border: 1px solid #fecaca;
+    }
+
+    /* Hidden */
+    .hidden {
+      display: none !important;
+    }
+
+    /* Mobile Responsive */
+    @media (max-width: 640px) {
+      .user-bar {
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-between;
+        padding: 3px 5px;
+        gap: 3px;
+        border-radius: 8px;
+      }
+
+      .clock-widget {
+        padding: 3px 6px;
+        gap: 3px;
+        border-radius: 12px;
+      }
+
+      .clock-dot { width: 5px; height: 5px; }
+      .clock-time { font-size: 10px; }
+      .clock-day { font-size: 9px; }
+      .clock-date { font-size: 8px; }
+
+      .user-info {
+        gap: 3px;
+      }
+
+      .user-avatar {
+        width: 22px;
+        height: 22px;
+        font-size: 10px;
+        border-width: 1px;
+      }
+
+      .user-details {
+        display: flex;
+      }
+
+      .user-name {
+        max-width: 45px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        font-size: 9px;
+      }
+
+      .user-level {
+        font-size: 6px;
+        padding: 1px 4px;
+        border-radius: 4px;
+      }
+
+      .user-actions {
+        gap: 3px;
+      }
+
+      .logout-btn {
+        padding: 3px 8px;
+        font-size: 7px;
+        border-radius: 10px;
+      }
+
+      .change-pwd-btn {
+        width: 22px;
+        height: 22px;
+        font-size: 10px;
+      }
+
+      .title-card {
+        padding: 12px 15px;
+      }
+
+      .title-content h1 { font-size: 16px; letter-spacing: 1px; }
+      .title-content h2 { font-size: 10px; }
+      .title-content h3 { font-size: 8px; }
+
+      .mode-toggle {
+        flex-direction: row;
+      }
+
+      .mode-btn {
+        padding: 10px 14px;
+        font-size: 12px;
+      }
+
+      .panel {
+        padding: 14px;
+      }
+
+      select {
+        padding: 10px 38px 10px 12px;
+        font-size: 12px;
+      }
+
+      .text-input {
+        padding: 12px 14px;
+        font-size: 14px;
+      }
+
+      .btn-group {
+        flex-direction: row;
+      }
+
+      .submit-btn, .clear-btn {
+        padding: 12px 14px;
+        font-size: 12px;
+      }
+
+      .output-grid > div {
+        min-width: 80px;
+        padding: 6px 8px;
+        font-size: 10px;
+      }
+
+      .output-header {
+        font-size: 8px;
+        padding: 5px 6px !important;
+      }
+
+      .output-cell img {
+        max-width: 60px;
+        max-height: 50px;
+      }
+
+      .file-link {
+        font-size: 9px;
+        padding: 2px 6px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Floating Particles -->
+  <div class="particles">
+    <div class="particle"></div>
+    <div class="particle"></div>
+    <div class="particle"></div>
+    <div class="particle"></div>
+    <div class="particle"></div>
+    <div class="particle"></div>
+    <div class="particle"></div>
+    <div class="particle"></div>
+  </div>
+
+  <!-- Login Page -->
+  <div id="loginPage" class="login-container">
+    <div class="login-card">
+      <div class="login-logo">🔐</div>
+      <!-- Ravi you can change the login page title here -->
+      <h1 class="login-title">KKSO-KBGA DATA</h1>
+      <!-- Ravi you can change the login subtitle here -->
+      <p class="login-subtitle">Enter your credentials to continue</p>
+      <form id="loginForm">
+        <div class="input-group">
+          <label>User ID</label>
+          <input type="text" id="userId" placeholder="Enter your User ID" required>
+        </div>
+        <div class="input-group">
+          <label>Password</label>
+          <input type="password" id="password" placeholder="Enter your Password" required>
+        </div>
+        <button type="submit" class="login-btn">Login</button>
+        <div id="loginError" class="login-error hidden"></div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Change Password Modal -->
+  <div id="passwordModal" class="modal-overlay">
+    <div class="modal-box">
+      <div class="modal-title">Change Password</div>
+      <div class="modal-input-group">
+        <label>Current Password</label>
+        <input type="password" id="currentPassword" placeholder="Enter current password">
+      </div>
+      <div class="modal-input-group">
+        <label>New Password</label>
+        <input type="password" id="newPassword" placeholder="Enter new password">
+      </div>
+      <div class="modal-input-group">
+        <label>Confirm New Password</label>
+        <input type="password" id="confirmPassword" placeholder="Confirm new password">
+      </div>
+      <div id="passwordMessage" class="modal-message" style="display: none;"></div>
+      <div class="modal-buttons">
+        <button class="modal-btn cancel" onclick="closePasswordModal()">Cancel</button>
+        <button class="modal-btn submit" id="changePwdSubmit" onclick="handleChangePassword()">Change</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main App -->
+  <div id="appContainer" class="app-container">
+    <div class="page">
+      <!-- Header -->
+      <div class="header-strip">
+        <div class="header-logo logo-1"></div>
+        <div class="header-logo logo-2"></div>
+        <div class="header-logo logo-3"></div>
+      </div>
+
+      <!-- User Bar -->
+      <div class="user-bar">
+        <div class="clock-widget">
+          <div class="clock-dot"></div>
+          <span class="clock-day">--</span>
+          <span class="clock-date">--</span>
+          <span class="clock-time">--:--</span>
+        </div>
+        <div class="user-info">
+          <div class="user-avatar" id="userAvatar">U</div>
+          <div class="user-details">
+            <span class="user-name" id="userName">User</span>
+            <span class="user-level" id="userLevel">Staff</span>
+          </div>
+          <div class="user-actions">
+            <button class="change-pwd-btn" onclick="openPasswordModal()" title="Change Password">🔑</button>
+            <button class="logout-btn" id="logoutBtn" onclick="handleLogout()">Logout</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Title Card -->
+      <div class="title-card">
+        <!-- Ravi you can change the main title, subtitle and copyright here -->
+        <div class="title-content">
+          <h1>KKSO-KBGA DATA</h1>
+          <h2 id="levelTitle">A Cloud Based Data System For Admin Level</h2>
+          <h3>© Created by Ravi Malhotra</h3>
+        </div>
+      </div>
+
+      <!-- Mode Toggle -->
+      <div class="mode-toggle">
+        <!-- Ravi you can change the mode button text here -->
+        <button class="mode-btn active" id="viewModeBtn" onclick="setMode('view')">📋 View Data</button>
+        <button class="mode-btn" id="entryModeBtn" onclick="setMode('entry')">✏️ Entry Data</button>
+      </div>
+
+      <!-- View Mode Panel -->
+      <div id="viewPanel" class="panel">
+        <div class="panel-title">📊 Data Viewer</div>
+        
+        <!-- Subject -->
+        <div class="form-group">
+          <label>Subject</label>
+          <div class="select-wrapper">
+            <select id="viewSubject" class="select-g1">
+              <option value="">-- Select Subject --</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Sub-Subject -->
+        <div class="form-group" id="viewSubSubjectGroup">
+          <label>Sub-Subject</label>
+          <div class="select-wrapper">
+            <select id="viewSubSubject" class="select-g2" disabled>
+              <option value="">-- Select Sub-Subject --</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Dynamic Dropdowns -->
+        <div id="viewDropdowns"></div>
+      </div>
+
+      <!-- View Output -->
+      <div id="viewOutput" class="output-container hidden"></div>
+
+      <!-- Entry Mode Panel -->
+      <div id="entryPanel" class="panel hidden">
+        <div class="panel-title">✏️ Data Entry Form</div>
+        
+        <!-- Subject -->
+        <div class="form-group">
+          <label>Subject</label>
+          <div class="select-wrapper">
+            <select id="entrySubject" class="select-g1">
+              <option value="">-- Select Subject --</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Sub-Subject -->
+        <div class="form-group" id="entrySubSubjectGroup">
+          <label>Sub-Subject</label>
+          <div class="select-wrapper">
+            <select id="entrySubSubject" class="select-g2" disabled>
+              <option value="">-- Select Sub-Subject --</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Dynamic Inputs -->
+        <div id="entryInputs"></div>
+
+        <!-- Buttons -->
+        <div class="btn-group">
+          <button class="submit-btn" onclick="handleEntrySubmit()">📤 Submit Entry</button>
+          <button class="clear-btn" onclick="handleEntryClear()">🗑️ Clear</button>
+        </div>
+
+        <!-- Status -->
+        <div id="entryStatus"></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // ===================== CONFIGURATION =====================
+    // ⚠️ Ravi you can change ALL settings here ⚠️
+    
+    let CONFIG = {
+      // ═══════════════════════════════════════════════════════════════
+      // Ravi you can change the Google Sheet ID here
+      // Find your Sheet ID in the URL: https://docs.google.com/spreadsheets/d/[SHEET_ID]/edit
+      // ═══════════════════════════════════════════════════════════════
+      SHEET_ID: "136Fq_Pchc_kPJwEoBUgfRKzDqnYUs730w3vMhnSO9HI",
+      
+      // ═══════════════════════════════════════════════════════════════
+      // Ravi you can change the Google API Key here
+      // Get a new API key from: https://console.cloud.google.com
+      // ═══════════════════════════════════════════════════════════════
+      API_KEY: "AIzaSyAjBceUqA-G1ueMCsqevOiPEhb2Nk-pOhI",
+      
+      // ═══════════════════════════════════════════════════════════════
+      // Ravi you can change the Sheet Tab Name here
+      // This is the name of the sheet tab at the bottom of your spreadsheet
+      // ═══════════════════════════════════════════════════════════════
+      SHEET_NAME: "master",
+      
+      // ═══════════════════════════════════════════════════════════════
+      // Ravi you can change the Apps Script URL here
+      // This URL is used for data entry and password change
+      // ═══════════════════════════════════════════════════════════════
+      APPS_SCRIPT_URL: "https://script.google.com/macros/s/AKfycbzluFhsV2Ib6I-BK5OdFacx7hjK8nTZSRLlisBedPCr1-nGD5L6MDp85iJhv075odfa/exec",
+      
+      // ═══════════════════════════════════════════════════════════════
+      // Ravi you can change the ROW RANGES here
+      // If you need more subjects or users, increase the end row numbers
+      // ═══════════════════════════════════════════════════════════════
+      VIEW_CONFIG_START_ROW: 1,      // View subjects start from row 1
+      VIEW_CONFIG_END_ROW: 50,       // View subjects end at row 50 (change to 100, 200, etc.)
+      ENTRY_CONFIG_START_ROW: 82,    // Entry subjects start from row 82
+      ENTRY_CONFIG_END_ROW: 150,     // Entry subjects end at row 150 (change to 200, 300, etc.)
+      USER_START_ROW: 51,            // User credentials start from row 51
+      USER_END_ROW: 81,              // User credentials end at row 81 (change to 150, 200, etc.)
+      
+      // ═══════════════════════════════════════════════════════════════
+      // Ravi you can change the COLUMN RANGES here
+      // If you need more input/output columns, change these
+      // ═══════════════════════════════════════════════════════════════
+      CONFIG_END_COL: "AG",          // Last config column (AG = column 33)
+      DATA_FETCH_END_COL: "Y",       // Last data column to fetch (Y = column 25)
+      
+      // ═══════════════════════════════════════════════════════════════
+      // Ravi you can change the credential check interval here
+      // 3600000 = 1 hour, 7200000 = 2 hours, 86400000 = 24 hours
+      // ═══════════════════════════════════════════════════════════════
+      CREDENTIAL_CHECK_INTERVAL: 3600000,
+      
+      // ═══════════════════════════════════════════════════════════════
+      // Ravi you can change the COLUMN INDICES here (0-based)
+      // A=0, B=1, C=2, ... Z=25, AA=26, AB=27, AC=28, AD=29, AE=30, AF=31, AG=32
+      // ═══════════════════════════════════════════════════════════════
+      COL: {
+        SUBJECT: 0,           // A - Subject column
+        SUB_SUBJECT: 1,       // B - Sub-Subject column
+        INPUT_START: 2,       // C - Input titles start (C-J = 8 inputs)
+        OUTPUT_START: 10,     // K - Output titles start (K-Y = 15 outputs)
+        INPUT_COUNT: 25,      // Z - Number of inputs column
+        OUTPUT_COUNT: 26,     // AA - Number of outputs/dropdowns column
+        
+        // User Level Columns (don't change unless you restructure the sheet)
+        ADMIN_SHEET: 27,      // AB - Admin target sheet name
+        ADMIN_HAS_SUB: 28,    // AC - Admin has sub-subject (true/false)
+        SUPERVISOR_SHEET: 29, // AD - Supervisor target sheet name
+        SUPERVISOR_HAS_SUB: 30, // AE - Supervisor has sub-subject (true/false)
+        STAFF_SHEET: 31,      // AF - Staff target sheet name
+        STAFF_HAS_SUB: 32,    // AG - Staff has sub-subject (true/false)
+        
+        USER_LEVEL: 2         // C - User level column in credentials (C51:C81)
+      }
+    };
+    // ═══════════════════════════════════════════════════════════════
+    // END OF CONFIGURATION - Edit above this line only
+    // ═══════════════════════════════════════════════════════════════
+
+    // ===================== STATE =====================
+    let currentUser = null;
+    let currentPassword = null;
+    let currentUserLevel = null; // "admin", "supervisor", "staff"
+    let currentMode = 'view';
+    let appInitialized = false;
+    let credentialCheckInterval = null;
+
+    const state = {
+      // Config data
+      viewConfig: [],      // Rows 1-50
+      entryConfig: [],     // Rows 82-100
+      
+      // View mode state
+      viewDataValues: [],
+      viewDataFormulas: [],
+      viewSubjectRowIdxs: [],
+      viewInputTitles: [],
+      viewOutputTitles: [],
+      viewInputValues: {},
+      viewSelectedSubject: "",
+      viewSelectedSubSubject: "",
+      viewDataSource: { id: "", key: "", name: "" },
+      viewSubSubjectEnabled: true,
+      viewBaseInputCol: 2,
+      
+      // Entry mode state
+      entryDataValues: [],
+      entrySubjectRowIdxs: [],
+      entryInputTitles: [],
+      entryInputValues: {},
+      entrySelectedSubject: "",
+      entrySelectedSubSubject: "",
+      entryDataSource: { id: "", key: "", name: "" },
+      entrySubSubjectEnabled: true,
+      entryDropdownCount: 0,
+      entryBaseInputCol: 2
+    };
+
+    // ===================== DOM ELEMENTS =====================
+    const loginPage = document.getElementById('loginPage');
+    const appContainer = document.getElementById('appContainer');
+    const loginForm = document.getElementById('loginForm');
+    const loginError = document.getElementById('loginError');
+    const userIdInput = document.getElementById('userId');
+    const passwordInput = document.getElementById('password');
+    const userAvatar = document.getElementById('userAvatar');
+    const userName = document.getElementById('userName');
+    const userLevel = document.getElementById('userLevel');
+    const logoutBtn = document.getElementById('logoutBtn');
+
+    const viewModeBtn = document.getElementById('viewModeBtn');
+    const entryModeBtn = document.getElementById('entryModeBtn');
+    const viewPanel = document.getElementById('viewPanel');
+    const entryPanel = document.getElementById('entryPanel');
+    const viewOutput = document.getElementById('viewOutput');
+
+    const viewSubject = document.getElementById('viewSubject');
+    const viewSubSubject = document.getElementById('viewSubSubject');
+    const viewSubSubjectGroup = document.getElementById('viewSubSubjectGroup');
+    const viewDropdowns = document.getElementById('viewDropdowns');
+
+    const entrySubject = document.getElementById('entrySubject');
+    const entrySubSubject = document.getElementById('entrySubSubject');
+    const entrySubSubjectGroup = document.getElementById('entrySubSubjectGroup');
+    const entryInputs = document.getElementById('entryInputs');
+    const entryStatus = document.getElementById('entryStatus');
+
+    // ===================== UTILITY FUNCTIONS =====================
+    async function fetchSheet(sheetName, range, options = {}) {
+      const params = new URLSearchParams({ key: CONFIG.API_KEY });
+      if (options.valueRenderOption) params.set("valueRenderOption", options.valueRenderOption);
+      const url = `https://sheets.googleapis.com/v4/spreadsheets/${CONFIG.SHEET_ID}/values/${encodeURIComponent(sheetName)}!${encodeURIComponent(range)}?${params.toString()}`;
+      try {
+        const res = await fetch(url);
+        if (!res.ok) {
+          const errorText = await res.text().catch(() => "Unknown error");
+          console.error("API Error:", res.status, errorText);
+          throw new Error(`API Error ${res.status}`);
+        }
+        const data = await res.json();
+        return data.values || [];
+      } catch (error) {
+        console.error("Fetch Error:", error.message);
+        throw error;
+      }
+    }
+
+    function isHttpUrl(s) {
+      return typeof s === "string" && /^https?:\/\//i.test(s);
+    }
+
+    function driveToDirect(u) {
+      if (typeof u !== "string") return null;
+      let m = u.match(/drive\.google\.com\/file\/d\/([^/]+)/i);
+      if (m) return `https://drive.google.com/uc?export=view&id=${m[1]}`;
+      m = u.match(/drive\.google\.com\/open\?id=([^&]+)/i);
+      if (m) return `https://drive.google.com/uc?export=view&id=${m[1]}`;
+      m = u.match(/drive\.google\.com\/uc\?(?:export=\w+&)?id=([^&]+)/i);
+      if (m) return `https://drive.google.com/uc?export=view&id=${m[1]}`;
+      return u;
+    }
+
+    function extractImageUrl(valOrFormula) {
+      if (typeof valOrFormula !== "string") return null;
+      const s = valOrFormula.trim();
+      const fm = s.match(/^=*\s*IMAGE\s*\(\s*"([^"]+)"/i);
+      if (fm) return driveToDirect(fm[1]);
+      if (isHttpUrl(s)) return driveToDirect(s);
+      return null;
+    }
+
+    function getSheetAndSubColumns() {
+      // Based on user level, return the correct sheet column and has-sub-subject column
+      if (currentUserLevel === 'admin') {
+        return { sheetCol: CONFIG.COL.ADMIN_SHEET, hasSubCol: CONFIG.COL.ADMIN_HAS_SUB };
+      } else if (currentUserLevel === 'supervisor') {
+        return { sheetCol: CONFIG.COL.SUPERVISOR_SHEET, hasSubCol: CONFIG.COL.SUPERVISOR_HAS_SUB };
+      } else {
+        return { sheetCol: CONFIG.COL.STAFF_SHEET, hasSubCol: CONFIG.COL.STAFF_HAS_SUB };
+      }
+    }
+
+    // ===================== CLOCK =====================
+    function updateClock() {
+      const now = new Date();
+      const day = now.toLocaleDateString(undefined, { weekday: 'short' });
+      const date = now.toLocaleDateString(undefined, { day: 'numeric', month: 'short' });
+      const time = now.toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+      
+      const dayEl = document.querySelector('.clock-day');
+      const dateEl = document.querySelector('.clock-date');
+      const timeEl = document.querySelector('.clock-time');
+      
+      if (dayEl) dayEl.textContent = day;
+      if (dateEl) dateEl.textContent = date;
+      if (timeEl) timeEl.textContent = time;
+    }
+    setInterval(updateClock, 1000);
+    updateClock();
+
+    // ===================== LOGIN =====================
+    loginForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      loginError.classList.add('hidden');
+      
+      const userId = userIdInput.value.trim();
+      const password = passwordInput.value.trim();
+      
+      if (!userId || !password) {
+        showLoginError("Please enter both User ID and Password");
+        return;
+      }
+      
+      try {
+        // Build dynamic range for user credentials
+        const userRange = `A${CONFIG.USER_START_ROW}:C${CONFIG.USER_END_ROW}`;
+        const credentials = await fetchSheet(CONFIG.SHEET_NAME, userRange);
+        let isValid = false;
+        let userLevelValue = 'staff';
+        
+        for (const row of credentials) {
+          if (row[0] && row[1]) {
+            if (String(row[0]).trim() === userId && String(row[1]).trim() === password) {
+              isValid = true;
+              userLevelValue = String(row[2] || 'staff').trim().toLowerCase();
+              break;
+            }
+          }
+        }
+        
+        if (isValid) {
+          currentUser = userId;
+          currentPassword = password;
+          currentUserLevel = userLevelValue;
+          
+          localStorage.setItem('kkso_user', userId);
+          localStorage.setItem('kkso_password', password);
+          localStorage.setItem('kkso_level', userLevelValue);
+          
+          showApp();
+          startCredentialCheck();
+        } else {
+          // Ravi you can change the error message here
+          showLoginError("You are not registered");
+        }
+      } catch (error) {
+        console.error("Login error:", error);
+        showLoginError("Connection error: " + error.message);
+      }
+    });
+
+    function showLoginError(msg) {
+      loginError.textContent = msg;
+      loginError.classList.remove('hidden');
+    }
+
+    function showApp() {
+      loginPage.style.display = 'none';
+      appContainer.style.display = 'block';
+      
+      userAvatar.textContent = currentUser.charAt(0).toUpperCase();
+      userName.textContent = currentUser;
+      userLevel.textContent = currentUserLevel.charAt(0).toUpperCase() + currentUserLevel.slice(1);
+      
+      // Update title based on user level
+      const levelTitle = document.getElementById('levelTitle');
+      if (levelTitle) {
+        const levelName = currentUserLevel.charAt(0).toUpperCase() + currentUserLevel.slice(1);
+        levelTitle.textContent = `A Cloud Based Data System For ${levelName} Level`;
+      }
+      
+      if (!appInitialized) {
+        initApp();
+      }
+    }
+
+    function handleLogout() {
+      currentUser = null;
+      currentPassword = null;
+      currentUserLevel = null;
+      appInitialized = false;
+      
+      localStorage.removeItem('kkso_user');
+      localStorage.removeItem('kkso_password');
+      localStorage.removeItem('kkso_level');
+      
+      if (credentialCheckInterval) {
+        clearInterval(credentialCheckInterval);
+        credentialCheckInterval = null;
+      }
+      
+      // Clear selects
+      viewSubject.innerHTML = '<option value="">-- Select Subject --</option>';
+      viewSubSubject.innerHTML = '<option value="">-- Select Sub-Subject --</option>';
+      entrySubject.innerHTML = '<option value="">-- Select Subject --</option>';
+      entrySubSubject.innerHTML = '<option value="">-- Select Sub-Subject --</option>';
+      viewDropdowns.innerHTML = '';
+      entryInputs.innerHTML = '';
+      viewOutput.innerHTML = '';
+      viewOutput.classList.add('hidden');
+      entryStatus.innerHTML = '';
+      
+      // Reset state
+      state.viewSelectedSubject = '';
+      state.viewSelectedSubSubject = '';
+      state.viewInputValues = {};
+      state.entrySelectedSubject = '';
+      state.entrySelectedSubSubject = '';
+      state.entryInputValues = {};
+      
+      appContainer.style.display = 'none';
+      loginPage.style.display = 'flex';
+      userIdInput.value = '';
+      passwordInput.value = '';
+      loginError.classList.add('hidden');
+    }
+
+    function startCredentialCheck() {
+      if (credentialCheckInterval) clearInterval(credentialCheckInterval);
+      
+      async function checkCredentials() {
+        if (!currentUser || !currentPassword) return;
+        
+        try {
+          const userRange = `A${CONFIG.USER_START_ROW}:C${CONFIG.USER_END_ROW}`;
+          const credentials = await fetchSheet(CONFIG.SHEET_NAME, userRange);
+          let isValid = false;
+          
+          for (const row of credentials) {
+            if (row[0] && row[1]) {
+              if (String(row[0]).trim() === currentUser && String(row[1]).trim() === currentPassword) {
+                isValid = true;
+                break;
+              }
+            }
+          }
+          
+          if (!isValid) {
+            alert("Your credentials have been changed. You will be logged out.");
+            handleLogout();
+          }
+        } catch (error) {
+          // Silently ignore errors
+        }
+      }
+      
+      // Ravi you can change the credential check interval here
+      // 3600000 = 1 hour, 7200000 = 2 hours
+      credentialCheckInterval = setInterval(checkCredentials, CONFIG.CREDENTIAL_CHECK_INTERVAL);
+    }
+
+    // ===================== MODE TOGGLE =====================
+    function setMode(mode) {
+      currentMode = mode;
+      
+      if (mode === 'view') {
+        viewModeBtn.classList.add('active');
+        entryModeBtn.classList.remove('active');
+        viewPanel.classList.remove('hidden');
+        entryPanel.classList.add('hidden');
+      } else {
+        viewModeBtn.classList.remove('active');
+        entryModeBtn.classList.add('active');
+        viewPanel.classList.add('hidden');
+        entryPanel.classList.remove('hidden');
+        viewOutput.classList.add('hidden');
+      }
+    }
+
+    // ===================== INIT APP =====================
+    async function initApp() {
+      if (appInitialized) return;
+      appInitialized = true;
+      
+      try {
+        // Build dynamic ranges from config
+        const viewRange = `A${CONFIG.VIEW_CONFIG_START_ROW}:${CONFIG.CONFIG_END_COL}${CONFIG.VIEW_CONFIG_END_ROW}`;
+        const entryRange = `A${CONFIG.ENTRY_CONFIG_START_ROW}:${CONFIG.CONFIG_END_COL}${CONFIG.ENTRY_CONFIG_END_ROW}`;
+        
+        // Fetch view config
+        state.viewConfig = await fetchSheet(CONFIG.SHEET_NAME, viewRange, { valueRenderOption: "FORMATTED_VALUE" });
+        
+        // Fetch entry config
+        state.entryConfig = await fetchSheet(CONFIG.SHEET_NAME, entryRange, { valueRenderOption: "FORMATTED_VALUE" });
+        
+        // Get sheet column based on user level
+        const { sheetCol } = getSheetAndSubColumns();
+        
+        // Populate view subjects - only show subjects where user's sheet column has a value
+        const viewSubjects = state.viewConfig
+          .filter(r => {
+            if (!r || !r[0]) return false;
+            const subject = String(r[0]).trim();
+            if (!subject || subject.toLowerCase() === "subject") return false;
+            // Check if the sheet column for this user level has a value
+            const sheetName = String(r[sheetCol] || "").trim();
+            return sheetName !== "";
+          })
+          .map(r => String(r[0]).trim());
+        const uniqueViewSubjects = [...new Set(viewSubjects)];
+        
+        viewSubject.innerHTML = '<option value="">-- Select Subject --</option>';
+        uniqueViewSubjects.forEach(val => {
+          const opt = document.createElement('option');
+          opt.value = val;
+          opt.textContent = val;
+          viewSubject.appendChild(opt);
+        });
+        
+        // Populate entry subjects - only show subjects where user's sheet column has a value
+        const entrySubjects = state.entryConfig
+          .filter(r => {
+            if (!r || !r[0]) return false;
+            const subject = String(r[0]).trim();
+            if (!subject || subject.toLowerCase() === "subject") return false;
+            // Check if the sheet column for this user level has a value
+            const sheetName = String(r[sheetCol] || "").trim();
+            return sheetName !== "";
+          })
+          .map(r => String(r[0]).trim());
+        const uniqueEntrySubjects = [...new Set(entrySubjects)];
+        
+        entrySubject.innerHTML = '<option value="">-- Select Subject --</option>';
+        uniqueEntrySubjects.forEach(val => {
+          const opt = document.createElement('option');
+          opt.value = val;
+          opt.textContent = val;
+          entrySubject.appendChild(opt);
+        });
+        
+      } catch (error) {
+        console.error("Init error:", error);
+        alert("Failed to load app: " + error.message + "\n\nPlease check:\n1. Sheet ID is correct\n2. Sheet name 'master' exists\n3. Sheet is publicly shared");
+      }
+    }
+
+    // ===================== VIEW MODE =====================
+    viewSubject.addEventListener('change', handleViewSubjectChange);
+    viewSubSubject.addEventListener('change', handleViewSubSubjectChange);
+
+    async function handleViewSubjectChange() {
+      const subject = viewSubject.value.trim();
+      state.viewSelectedSubject = subject;
+      state.viewSelectedSubSubject = "";
+      state.viewInputValues = {};
+      viewDropdowns.innerHTML = "";
+      viewOutput.innerHTML = "";
+      viewOutput.classList.add('hidden');
+      
+      viewSubSubject.innerHTML = '<option value="">-- Select Sub-Subject --</option>';
+      viewSubSubject.disabled = true;
+      
+      if (!subject) {
+        viewSubSubjectGroup.classList.remove('hidden');
+        return;
+      }
+      
+      const { sheetCol, hasSubCol } = getSheetAndSubColumns();
+      
+      // Find rows for this subject
+      const subjectRows = state.viewConfig.filter(row => {
+        if (!row) return false;
+        const colA = String(row[0] ?? "").trim();
+        const colBLower = String(row[1] ?? "").trim().toLowerCase();
+        if (!colA) return false;
+        if (colBLower === "sub-subject") return false;
+        return colA === subject;
+      });
+      
+      if (!subjectRows.length) {
+        viewSubSubjectGroup.classList.add('hidden');
+        viewOutput.innerHTML = '<div class="status-error">No configuration found for this Subject.</div>';
+        viewOutput.classList.remove('hidden');
+        return;
+      }
+      
+      // Check if sub-subject is enabled based on user level column
+      const firstRow = subjectRows[0];
+      const firstRowIndex = state.viewConfig.indexOf(firstRow);
+      const hasSubFlag = String(firstRow[hasSubCol] ?? "").trim().toLowerCase();
+      const useSubSubject = hasSubFlag === "true";
+      
+      if (!useSubSubject) {
+        // No sub-subject
+        viewSubSubjectGroup.classList.add('hidden');
+        state.viewSubSubjectEnabled = false;
+        applyViewConfigRow(firstRowIndex);
+        return;
+      }
+      
+      // Has sub-subject
+      viewSubSubjectGroup.classList.remove('hidden');
+      state.viewSubSubjectEnabled = true;
+      
+      const subSet = new Set();
+      subjectRows.forEach(row => {
+        const colB = String(row[1] ?? "").trim();
+        if (colB && colB.toLowerCase() !== "sub-subject") subSet.add(colB);
+      });
+      
+      if (subSet.size === 0) {
+        viewOutput.innerHTML = '<div class="status-error">No sub-subjects found for this subject.</div>';
+        viewOutput.classList.remove('hidden');
+        return;
+      }
+      
+      viewSubSubject.disabled = false;
+      Array.from(subSet).forEach(ss => {
+        const opt = document.createElement('option');
+        opt.value = ss;
+        opt.textContent = ss;
+        viewSubSubject.appendChild(opt);
+      });
+    }
+
+    async function handleViewSubSubjectChange() {
+      const subject = state.viewSelectedSubject;
+      const subSubject = viewSubSubject.value.trim();
+      
+      state.viewSelectedSubSubject = subSubject;
+      state.viewInputValues = {};
+      viewDropdowns.innerHTML = "";
+      viewOutput.innerHTML = "";
+      viewOutput.classList.add('hidden');
+      
+      if (!subject || !subSubject) return;
+      
+      // Find the config row for this subject + sub-subject
+      const rowIndex = state.viewConfig.findIndex(r =>
+        r &&
+        String(r[0] || "").trim() === subject &&
+        String(r[1] || "").trim() === subSubject
+      );
+      
+      if (rowIndex === -1) {
+        viewOutput.innerHTML = '<div class="status-error">Configuration not found.</div>';
+        viewOutput.classList.remove('hidden');
+        return;
+      }
+      
+      applyViewConfigRow(rowIndex);
+    }
+
+    async function applyViewConfigRow(rowIndex) {
+      if (rowIndex < 0 || rowIndex >= state.viewConfig.length) {
+        viewOutput.innerHTML = '<div class="status-error">Configuration not found.</div>';
+        viewOutput.classList.remove('hidden');
+        return;
+      }
+      
+      const cfgRow = state.viewConfig[rowIndex] || [];
+      const { sheetCol, hasSubCol } = getSheetAndSubColumns();
+      
+      const hasSubFlag = String(cfgRow[hasSubCol] ?? "").trim().toLowerCase();
+      const subDisabled = hasSubFlag !== "true";
+      
+      state.viewBaseInputCol = subDisabled ? 1 : 2;
+      state.viewSubSubjectEnabled = !subDisabled;
+      
+      // Input count from column Z (index 25)
+      const rawInputCount = parseInt(cfgRow[CONFIG.COL.INPUT_COUNT], 10);
+      const inputCount = Math.max(0, Math.min(isNaN(rawInputCount) ? 0 : rawInputCount, 8));
+      
+      // Output count from column AA (index 26)
+      const rawOutputCount = parseInt(cfgRow[CONFIG.COL.OUTPUT_COUNT], 10);
+      const outputCount = Math.max(0, Math.min(isNaN(rawOutputCount) ? 0 : rawOutputCount, 15));
+      
+      // Build input titles (from C or B onwards)
+      const titles = [];
+      for (let i = 0; i < inputCount; i++) {
+        const colIndex = (subDisabled ? 1 : 2) + i;
+        titles.push(String(cfgRow[colIndex] || ""));
+      }
+      state.viewInputTitles = titles;
+      
+      // Build output titles (K to Y = indices 10 to 24)
+      state.viewOutputTitles = (cfgRow.slice(CONFIG.COL.OUTPUT_START, CONFIG.COL.OUTPUT_START + outputCount) || [])
+        .map(v => String(v || ""));
+      
+      // Get data sheet name based on user level
+      const dataSheetName = String(cfgRow[sheetCol] || "").trim();
+      if (!dataSheetName) {
+        viewOutput.innerHTML = '<div class="status-error">No data sheet configured for your access level.</div>';
+        viewOutput.classList.remove('hidden');
+        return;
+      }
+      
+      state.viewDataSource = { id: CONFIG.SHEET_ID, key: CONFIG.API_KEY, name: dataSheetName };
+      
+      try {
+        viewOutput.innerHTML = '<div style="text-align:center;padding:20px;">Loading data...</div>';
+        viewOutput.classList.remove('hidden');
+        
+        const dataRange = `A:${CONFIG.DATA_FETCH_END_COL}`;
+        const [values, formulas] = await Promise.all([
+          fetchSheet(dataSheetName, dataRange, { valueRenderOption: "FORMATTED_VALUE" }),
+          fetchSheet(dataSheetName, dataRange, { valueRenderOption: "FORMULA" })
+        ]);
+        
+        state.viewDataValues = values || [];
+        state.viewDataFormulas = formulas || [];
+        
+        const subject = state.viewSelectedSubject;
+        const subSubject = state.viewSelectedSubSubject;
+        
+        state.viewSubjectRowIdxs = [];
+        for (let i = 0; i < state.viewDataValues.length; i++) {
+          const r = state.viewDataValues[i] || [];
+          const colA = String(r[0] ?? "").trim();
+          const colB = String(r[1] ?? "").trim();
+          
+          // Always match subject from Column A
+          if (!subject || colA !== subject) continue;
+          
+          // If sub-subject is enabled, also match Column B
+          if (state.viewSubSubjectEnabled) {
+            if (!subSubject || colB !== subSubject) continue;
+          }
+          
+          state.viewSubjectRowIdxs.push(i);
+        }
+        
+        viewOutput.innerHTML = "";
+        
+        if (state.viewSubjectRowIdxs.length === 0) {
+          viewOutput.innerHTML = '<div class="status-error">No data found for selected options.</div>';
+          viewOutput.classList.remove('hidden');
+          return;
+        }
+        
+        buildViewDropdowns();
+        checkAndShowViewOutput();
+        
+      } catch (error) {
+        console.error(error);
+        viewOutput.innerHTML = '<div class="status-error">Failed to load data. Check your connection.</div>';
+        viewOutput.classList.remove('hidden');
+      }
+    }
+
+    function buildViewDropdowns() {
+      viewDropdowns.innerHTML = "";
+      if (!state.viewInputTitles.length) return;
+      
+      state.viewInputTitles.forEach((label, idx) => {
+        const group = document.createElement('div');
+        group.className = 'form-group';
+        
+        const labelEl = document.createElement('label');
+        labelEl.textContent = label;
+        
+        const wrapper = document.createElement('div');
+        wrapper.className = 'select-wrapper';
+        
+        const selectEl = document.createElement('select');
+        selectEl.className = `select-g${(idx % 5) + 1}`;
+        selectEl.innerHTML = `<option value="">-- Select ${label} --</option>`;
+        selectEl.dataset.label = label;
+        
+        selectEl.addEventListener('change', (e) => {
+          state.viewInputValues[label] = e.target.value;
+          buildViewDropdowns();
+          checkAndShowViewOutput();
+        });
+        
+        const options = getViewDropdownOptions(idx);
+        options.forEach((val) => {
+          const opt = document.createElement('option');
+          opt.value = val;
+          opt.textContent = val;
+          if (state.viewInputValues[label] === val) opt.selected = true;
+          selectEl.appendChild(opt);
+        });
+        
+        wrapper.appendChild(selectEl);
+        group.appendChild(labelEl);
+        group.appendChild(wrapper);
+        viewDropdowns.appendChild(group);
+      });
+    }
+
+    function getViewDropdownOptions(currentIdx) {
+      const baseCol = state.viewBaseInputCol || 2;
+      let idxs = state.viewSubjectRowIdxs.slice();
+      
+      for (let i = 0; i < currentIdx; i++) {
+        const key = state.viewInputTitles[i];
+        const val = state.viewInputValues[key];
+        if (val) {
+          const col = baseCol + i;
+          idxs = idxs.filter((ri) => {
+            const r = state.viewDataValues[ri] || [];
+            return String(r[col] ?? "") === String(val);
+          });
+        }
+      }
+      
+      const targetCol = baseCol + currentIdx;
+      const set = new Set();
+      idxs.forEach((ri) => {
+        const r = state.viewDataValues[ri] || [];
+        const v = r[targetCol];
+        if (v !== undefined && v !== null && v !== "") set.add(String(v));
+      });
+      
+      return Array.from(set);
+    }
+
+    function checkAndShowViewOutput() {
+      if (state.viewInputTitles.length > 0 && !state.viewInputTitles.every(k => state.viewInputValues[k])) {
+        viewOutput.innerHTML = "";
+        viewOutput.classList.add('hidden');
+        return;
+      }
+      
+      const baseCol = state.viewBaseInputCol || 2;
+      let idxs = state.viewSubjectRowIdxs.slice();
+      
+      state.viewInputTitles.forEach((k, i) => {
+        const target = state.viewInputValues[k];
+        const col = baseCol + i;
+        idxs = idxs.filter((ri) => {
+          const r = state.viewDataValues[ri] || [];
+          return String(r[col] ?? "") === String(target);
+        });
+      });
+      
+      const outputs = idxs.map((ri) => {
+        const rowValues = state.viewDataValues[ri] || [];
+        const rowFormulas = state.viewDataFormulas[ri] || [];
+        const start = CONFIG.COL.OUTPUT_START; // K = 10
+        const end = start + state.viewOutputTitles.length;
+        const cells = [];
+        for (let c = start; c < end; c++) {
+          cells.push({
+            value: rowValues[c] ?? "",
+            formula: rowFormulas[c] ?? ""
+          });
+        }
+        return cells;
+      });
+      
+      renderViewOutput(outputs);
+    }
+
+    function renderViewOutput(dataCells) {
+      viewOutput.innerHTML = "";
+      viewOutput.classList.add('hidden');
+      
+      if (!dataCells || dataCells.length === 0) return;
+      
+      const heading = document.createElement('div');
+      heading.className = 'output-title';
+      heading.textContent = '📊 Your Result';
+      viewOutput.appendChild(heading);
+      
+      const scrollContainer = document.createElement('div');
+      scrollContainer.className = 'output-scroll';
+      
+      const colCount = state.viewOutputTitles.length;
+      const gridStyle = `grid-template-columns: repeat(${colCount}, minmax(80px, 100px));`;
+      
+      // Header row
+      const headerRow = document.createElement('div');
+      headerRow.className = 'output-grid';
+      headerRow.style.cssText = gridStyle;
+      state.viewOutputTitles.forEach((title) => {
+        const cell = document.createElement('div');
+        cell.className = 'output-header';
+        cell.textContent = title;
+        headerRow.appendChild(cell);
+      });
+      scrollContainer.appendChild(headerRow);
+      
+      // Data rows
+      dataCells.forEach((row) => {
+        const rowEl = document.createElement('div');
+        rowEl.className = 'output-grid';
+        rowEl.style.cssText = gridStyle;
+        
+        row.forEach((cellObj) => {
+          const cell = document.createElement('div');
+          cell.className = 'output-cell';
+          
+          const maybeFormula = typeof cellObj.formula === "string" ? cellObj.formula : "";
+          const maybeValue = typeof cellObj.value === "string" ? cellObj.value : (cellObj.value ?? "").toString();
+          
+          const imgUrl = extractImageUrl(maybeFormula) || extractImageUrl(maybeValue);
+          
+          if (imgUrl) {
+            const img = document.createElement('img');
+            img.src = imgUrl;
+            img.alt = "Image";
+            img.loading = "lazy";
+            img.addEventListener('click', () => window.open(imgUrl, '_blank'));
+            cell.appendChild(img);
+          } else if (isHttpUrl(maybeValue)) {
+            const link = document.createElement('a');
+            link.href = driveToDirect(maybeValue);
+            link.target = "_blank";
+            link.textContent = "Open Link";
+            link.className = "file-link";
+            cell.appendChild(link);
+          } else {
+            cell.textContent = maybeValue ?? "";
+          }
+          
+          rowEl.appendChild(cell);
+        });
+        
+        scrollContainer.appendChild(rowEl);
+      });
+      
+      viewOutput.appendChild(scrollContainer);
+      viewOutput.classList.remove('hidden');
+    }
+
+    // ===================== ENTRY MODE =====================
+    entrySubject.addEventListener('change', handleEntrySubjectChange);
+    entrySubSubject.addEventListener('change', handleEntrySubSubjectChange);
+
+    async function handleEntrySubjectChange() {
+      const subject = entrySubject.value.trim();
+      state.entrySelectedSubject = subject;
+      state.entrySelectedSubSubject = "";
+      state.entryInputValues = {};
+      entryInputs.innerHTML = "";
+      entryStatus.innerHTML = "";
+      
+      entrySubSubject.innerHTML = '<option value="">-- Select Sub-Subject --</option>';
+      entrySubSubject.disabled = true;
+      
+      if (!subject) {
+        entrySubSubjectGroup.classList.remove('hidden');
+        return;
+      }
+      
+      const { sheetCol, hasSubCol } = getSheetAndSubColumns();
+      
+      // Find rows for this subject
+      const subjectRows = state.entryConfig.filter(row => {
+        if (!row) return false;
+        const colA = String(row[0] ?? "").trim();
+        const colBLower = String(row[1] ?? "").trim().toLowerCase();
+        if (!colA) return false;
+        if (colBLower === "sub-subject") return false;
+        return colA === subject;
+      });
+      
+      if (!subjectRows.length) {
+        entrySubSubjectGroup.classList.add('hidden');
+        entryStatus.innerHTML = '<div class="status-error">No configuration found for this Subject.</div>';
+        return;
+      }
+      
+      // Check if sub-subject is enabled
+      const firstRow = subjectRows[0];
+      const firstRowIndex = state.entryConfig.indexOf(firstRow);
+      const hasSubFlag = String(firstRow[hasSubCol] ?? "").trim().toLowerCase();
+      const useSubSubject = hasSubFlag === "true";
+      
+      if (!useSubSubject) {
+        entrySubSubjectGroup.classList.add('hidden');
+        state.entrySubSubjectEnabled = false;
+        applyEntryConfigRow(firstRowIndex);
+        return;
+      }
+      
+      // Has sub-subject
+      entrySubSubjectGroup.classList.remove('hidden');
+      state.entrySubSubjectEnabled = true;
+      
+      const subSet = new Set();
+      subjectRows.forEach(row => {
+        const colB = String(row[1] ?? "").trim();
+        if (colB && colB.toLowerCase() !== "sub-subject") subSet.add(colB);
+      });
+      
+      if (subSet.size === 0) {
+        entryStatus.innerHTML = '<div class="status-error">No sub-subjects found for this subject.</div>';
+        return;
+      }
+      
+      entrySubSubject.disabled = false;
+      Array.from(subSet).forEach(ss => {
+        const opt = document.createElement('option');
+        opt.value = ss;
+        opt.textContent = ss;
+        entrySubSubject.appendChild(opt);
+      });
+    }
+
+    async function handleEntrySubSubjectChange() {
+      const subject = state.entrySelectedSubject;
+      const subSubject = entrySubSubject.value.trim();
+      
+      state.entrySelectedSubSubject = subSubject;
+      state.entryInputValues = {};
+      entryInputs.innerHTML = "";
+      entryStatus.innerHTML = "";
+      
+      if (!subject || !subSubject) return;
+      
+      const rowIndex = state.entryConfig.findIndex(r =>
+        r &&
+        String(r[0] || "").trim() === subject &&
+        String(r[1] || "").trim() === subSubject
+      );
+      
+      if (rowIndex === -1) {
+        entryStatus.innerHTML = '<div class="status-error">Configuration not found.</div>';
+        return;
+      }
+      
+      applyEntryConfigRow(rowIndex);
+    }
+
+    async function applyEntryConfigRow(rowIndex) {
+      if (rowIndex < 0 || rowIndex >= state.entryConfig.length) {
+        entryStatus.innerHTML = '<div class="status-error">Configuration not found.</div>';
+        return;
+      }
+      
+      const cfgRow = state.entryConfig[rowIndex] || [];
+      const { sheetCol, hasSubCol } = getSheetAndSubColumns();
+      
+      const hasSubFlag = String(cfgRow[hasSubCol] ?? "").trim().toLowerCase();
+      const subDisabled = hasSubFlag !== "true";
+      
+      state.entryBaseInputCol = subDisabled ? 1 : 2;
+      state.entrySubSubjectEnabled = !subDisabled;
+      
+      // Input count from column Z (index 25)
+      const rawInputCount = parseInt(cfgRow[CONFIG.COL.INPUT_COUNT], 10);
+      const inputCount = Math.max(0, Math.min(isNaN(rawInputCount) ? 0 : rawInputCount, 8));
+      
+      // Dropdown count from column AA (index 26)
+      const rawDropdownCount = parseInt(cfgRow[CONFIG.COL.OUTPUT_COUNT], 10);
+      state.entryDropdownCount = Math.max(0, Math.min(isNaN(rawDropdownCount) ? 0 : rawDropdownCount, inputCount));
+      
+      // Build input titles
+      const titles = [];
+      for (let i = 0; i < inputCount; i++) {
+        const colIndex = (subDisabled ? 1 : 2) + i;
+        titles.push(String(cfgRow[colIndex] || ""));
+      }
+      state.entryInputTitles = titles;
+      
+      // Get data sheet for dropdowns
+      const dataSheetName = String(cfgRow[sheetCol] || "").trim();
+      if (!dataSheetName) {
+        entryStatus.innerHTML = '<div class="status-error">No data sheet configured for your access level.</div>';
+        return;
+      }
+      
+      state.entryDataSource = { id: CONFIG.SHEET_ID, key: CONFIG.API_KEY, name: dataSheetName };
+      
+      try {
+        // Fetch data for cascading dropdowns
+        const values = await fetchSheet(dataSheetName, "A:J", { valueRenderOption: "FORMATTED_VALUE" });
+        state.entryDataValues = values || [];
+        
+        const subject = state.entrySelectedSubject;
+        const subSubject = state.entrySelectedSubSubject;
+        
+        state.entrySubjectRowIdxs = [];
+        for (let i = 0; i < state.entryDataValues.length; i++) {
+          const r = state.entryDataValues[i] || [];
+          const colA = String(r[0] ?? "").trim();
+          const colB = String(r[1] ?? "").trim();
+          
+          // Always match subject from Column A
+          if (!subject || colA !== subject) continue;
+          
+          // If sub-subject is enabled, also match Column B
+          if (state.entrySubSubjectEnabled) {
+            if (!subSubject || colB !== subSubject) continue;
+          }
+          
+          state.entrySubjectRowIdxs.push(i);
+        }
+        
+        buildEntryInputs();
+        
+      } catch (error) {
+        console.error(error);
+        entryStatus.innerHTML = '<div class="status-error">Failed to load data. Check your connection.</div>';
+      }
+    }
+
+    function buildEntryInputs() {
+      entryInputs.innerHTML = "";
+      if (!state.entryInputTitles.length) return;
+      
+      state.entryInputTitles.forEach((label, idx) => {
+        const group = document.createElement('div');
+        group.className = 'form-group';
+        
+        const labelEl = document.createElement('label');
+        labelEl.textContent = label;
+        group.appendChild(labelEl);
+        
+        if (idx < state.entryDropdownCount) {
+          // Dropdown
+          const wrapper = document.createElement('div');
+          wrapper.className = 'select-wrapper';
+          
+          const selectEl = document.createElement('select');
+          selectEl.className = `select-g${(idx % 5) + 1}`;
+          selectEl.id = `entryInput_${idx}`;
+          selectEl.innerHTML = `<option value="">-- Select ${label} --</option>`;
+          selectEl.dataset.label = label;
+          selectEl.dataset.type = 'dropdown';
+          
+          selectEl.addEventListener('change', (e) => {
+            state.entryInputValues[label] = e.target.value;
+            buildEntryInputs();
+          });
+          
+          const options = getEntryDropdownOptions(idx);
+          options.forEach((val) => {
+            const opt = document.createElement('option');
+            opt.value = val;
+            opt.textContent = val;
+            if (state.entryInputValues[label] === val) opt.selected = true;
+            selectEl.appendChild(opt);
+          });
+          
+          wrapper.appendChild(selectEl);
+          group.appendChild(wrapper);
+        } else {
+          // Text input
+          const input = document.createElement('input');
+          input.type = 'text';
+          input.className = 'text-input';
+          input.id = `entryInput_${idx}`;
+          input.placeholder = `Enter ${label}`;
+          input.dataset.label = label;
+          input.dataset.type = 'text';
+          input.value = state.entryInputValues[label] || '';
+          
+          input.addEventListener('input', (e) => {
+            state.entryInputValues[label] = e.target.value;
+          });
+          
+          group.appendChild(input);
+        }
+        
+        entryInputs.appendChild(group);
+      });
+    }
+
+    function getEntryDropdownOptions(currentIdx) {
+      const baseCol = state.entryBaseInputCol || 2;
+      let idxs = state.entrySubjectRowIdxs.slice();
+      
+      for (let i = 0; i < currentIdx; i++) {
+        const key = state.entryInputTitles[i];
+        const val = state.entryInputValues[key];
+        if (val) {
+          const col = baseCol + i;
+          idxs = idxs.filter((ri) => {
+            const r = state.entryDataValues[ri] || [];
+            return String(r[col] ?? "") === String(val);
+          });
+        }
+      }
+      
+      const targetCol = baseCol + currentIdx;
+      const set = new Set();
+      idxs.forEach((ri) => {
+        const r = state.entryDataValues[ri] || [];
+        const v = r[targetCol];
+        if (v !== undefined && v !== null && v !== "") set.add(String(v));
+      });
+      
+      return Array.from(set);
+    }
+
+    async function handleEntrySubmit() {
+      entryStatus.innerHTML = "";
+      
+      if (!state.entrySelectedSubject) {
+        entryStatus.innerHTML = '<div class="status-error">Please select a Subject.</div>';
+        return;
+      }
+      
+      if (state.entrySubSubjectEnabled && !state.entrySelectedSubSubject) {
+        entryStatus.innerHTML = '<div class="status-error">Please select a Sub-Subject.</div>';
+        return;
+      }
+      
+      // Check all inputs are filled
+      for (const title of state.entryInputTitles) {
+        if (!state.entryInputValues[title]) {
+          entryStatus.innerHTML = `<div class="status-error">Please fill in "${title}".</div>`;
+          return;
+        }
+      }
+      
+      // Build data array
+      // Start with Subject
+      const dataToSubmit = [state.entrySelectedSubject];
+      
+      // Add Sub-Subject if enabled
+      if (state.entrySubSubjectEnabled) {
+        dataToSubmit.push(state.entrySelectedSubSubject);
+      }
+      
+      // Add all input values
+      state.entryInputTitles.forEach(title => {
+        dataToSubmit.push(state.entryInputValues[title] || "");
+      });
+      
+      // Pad to 15 values for columns K:Y (15 columns)
+      while (dataToSubmit.length < 15) {
+        dataToSubmit.push("");
+      }
+      
+      // Add submitter name (column Z)
+      dataToSubmit.push(currentUser);
+      
+      // Add date/time (column AA)
+      const now = new Date();
+      const dateTime = now.toLocaleDateString('en-GB') + ", " + 
+        now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true }).toLowerCase();
+      dataToSubmit.push(dateTime);
+      
+      // Add user level (column AB)
+      dataToSubmit.push(currentUserLevel);
+      
+      try {
+        entryStatus.innerHTML = '<div style="text-align:center;padding:10px;">Submitting...</div>';
+        
+        const response = await fetch(CONFIG.APPS_SCRIPT_URL, {
+          method: 'POST',
+          mode: 'no-cors',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            spreadsheetId: CONFIG.SHEET_ID,
+            sheetName: state.entryDataSource.name,
+            data: dataToSubmit,
+            startColumn: 'K'
+          })
+        });
+        
+        // Ravi you can change the success message here
+        entryStatus.innerHTML = '<div class="status-success">✅ Data submitted successfully</div>';
+        
+        // Clear text inputs only
+        document.querySelectorAll('#entryInputs input[data-type="text"]').forEach(input => {
+          input.value = '';
+          const label = input.dataset.label;
+          if (label) state.entryInputValues[label] = '';
+        });
+        
+      } catch (error) {
+        console.error(error);
+        entryStatus.innerHTML = '<div class="status-error">Failed to submit. Please try again.</div>';
+      }
+    }
+
+    function handleEntryClear() {
+      // Clear only text inputs
+      document.querySelectorAll('#entryInputs input[data-type="text"]').forEach(input => {
+        input.value = '';
+        const label = input.dataset.label;
+        if (label) state.entryInputValues[label] = '';
+      });
+      entryStatus.innerHTML = "";
+    }
+
+    // ===================== CHECK SESSION =====================
+    function checkSession() {
+      const savedUser = localStorage.getItem('kkso_user');
+      const savedPassword = localStorage.getItem('kkso_password');
+      const savedLevel = localStorage.getItem('kkso_level');
+      
+      if (savedUser && savedPassword && savedLevel) {
+        currentUser = savedUser;
+        currentPassword = savedPassword;
+        currentUserLevel = savedLevel;
+        showApp();
+        startCredentialCheck();
+      }
+    }
+
+    // ===================== CHANGE PASSWORD =====================
+    function openPasswordModal() {
+      document.getElementById('passwordModal').classList.add('active');
+      document.getElementById('currentPassword').value = '';
+      document.getElementById('newPassword').value = '';
+      document.getElementById('confirmPassword').value = '';
+      document.getElementById('passwordMessage').style.display = 'none';
+    }
+
+    function closePasswordModal() {
+      document.getElementById('passwordModal').classList.remove('active');
+    }
+
+    async function handleChangePassword() {
+      const currentPwd = document.getElementById('currentPassword').value.trim();
+      const newPwd = document.getElementById('newPassword').value.trim();
+      const confirmPwd = document.getElementById('confirmPassword').value.trim();
+      const messageEl = document.getElementById('passwordMessage');
+      const submitBtn = document.getElementById('changePwdSubmit');
+
+      // Validation
+      if (!currentPwd || !newPwd || !confirmPwd) {
+        messageEl.textContent = 'Please fill in all fields';
+        messageEl.className = 'modal-message error';
+        messageEl.style.display = 'block';
+        return;
+      }
+
+      if (currentPwd !== currentPassword) {
+        messageEl.textContent = 'Current password is incorrect';
+        messageEl.className = 'modal-message error';
+        messageEl.style.display = 'block';
+        return;
+      }
+
+      if (newPwd !== confirmPwd) {
+        messageEl.textContent = 'New passwords do not match';
+        messageEl.className = 'modal-message error';
+        messageEl.style.display = 'block';
+        return;
+      }
+
+      if (newPwd.length < 4) {
+        messageEl.textContent = 'Password must be at least 4 characters';
+        messageEl.className = 'modal-message error';
+        messageEl.style.display = 'block';
+        return;
+      }
+
+      if (newPwd === currentPwd) {
+        messageEl.textContent = 'New password must be different from current';
+        messageEl.className = 'modal-message error';
+        messageEl.style.display = 'block';
+        return;
+      }
+
+      // Find user row in A51:B81
+      try {
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'Changing...';
+
+        // First, find the row number for this user
+        const userRange = `A${CONFIG.USER_START_ROW}:B${CONFIG.USER_END_ROW}`;
+        const credentials = await fetchSheet(CONFIG.SHEET_NAME, userRange);
+        let userRowIndex = -1;
+
+        for (let i = 0; i < credentials.length; i++) {
+          if (credentials[i][0] && String(credentials[i][0]).trim() === currentUser) {
+            userRowIndex = i;
+            break;
+          }
+        }
+
+        if (userRowIndex === -1) {
+          messageEl.textContent = 'User not found in database';
+          messageEl.className = 'modal-message error';
+          messageEl.style.display = 'block';
+          submitBtn.disabled = false;
+          submitBtn.textContent = 'Change';
+          return;
+        }
+
+        // Calculate actual row number based on config
+        const actualRow = CONFIG.USER_START_ROW + userRowIndex;
+
+        // Send password update request to Apps Script
+        const response = await fetch(CONFIG.APPS_SCRIPT_URL, {
+          method: 'POST',
+          mode: 'no-cors',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            action: 'changePassword',
+            spreadsheetId: CONFIG.SHEET_ID,
+            sheetName: CONFIG.SHEET_NAME,
+            row: actualRow,
+            column: 'B',
+            newPassword: newPwd
+          })
+        });
+
+        // Clear local password (will re-login with new password)
+        currentPassword = newPwd;
+        localStorage.setItem('kkso_password', newPwd);
+
+        // Ravi you can change the password success message here
+        messageEl.textContent = '✅ Password changed! Logging out...';
+        messageEl.className = 'modal-message success';
+        messageEl.style.display = 'block';
+
+        // Ravi you can change the logout delay here (2000 = 2 seconds)
+        // Auto logout after 2 seconds so user can login with new password
+        setTimeout(() => {
+          closePasswordModal();
+          handleLogout();
+        }, 2000);
+
+      } catch (error) {
+        console.error('Password change error:', error);
+        messageEl.textContent = 'Failed to change password. Please try again.';
+        messageEl.className = 'modal-message error';
+        messageEl.style.display = 'block';
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Change';
+      }
+    }
+
+    // Initialize
+    checkSession();
+  </script>
+</body>
+</html>
