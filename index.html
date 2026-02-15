@@ -1,2744 +1,1039 @@
-<!-- =====================================================================
-     KKSO-KBGA DATA - Final Version
-     Created by: Ravi Malhotra
-     
-     ============ QUICK GUIDE FOR RAVI ============
-     
-     🔧 TO MAKE CHANGES, SEARCH FOR: "Ravi you can change"
-     
-     📊 GOOGLE SHEET STRUCTURE (master sheet):
-     - Rows 1-50: View configuration
-     - Rows 51-81: User credentials (A=ID, B=Password, C=Level)
-     - Rows 82-150: Entry configuration
-     
-     🔐 USER LEVELS: "admin", "supervisor", "staff"
-     - Admin uses columns AB, AC
-     - Supervisor uses columns AD, AE
-     - Staff uses columns AF, AG
-     
-     ===================================================================== -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <!-- Ravi you can change the browser tab title here -->
-  <title>KKSO-KBGA DATA</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap" rel="stylesheet">
-  <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-
-    :root {
-      --text: #0f172a;
-      --muted: #64748b;
-      --card: rgba(255, 255, 255, 0.92);
-      --card-border: rgba(255, 255, 255, 0.6);
-      --shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
-      --ring: rgba(99, 102, 241, 0.4);
-    }
-
-    @keyframes gradientShift {
-      0%, 100% { background-position: 0% 50%; }
-      50% { background-position: 100% 50%; }
-    }
-
-    @keyframes float {
-      0%, 100% { transform: translateY(0) rotate(0deg); opacity: 0.6; }
-      50% { transform: translateY(-20px) rotate(180deg); opacity: 1; }
-    }
-
-    @keyframes pulse {
-      0%, 100% { transform: scale(1); }
-      50% { transform: scale(1.05); }
-    }
-
-    @keyframes blink {
-      0%, 100% { opacity: 1; }
-      50% { opacity: 0.4; }
-    }
-
-    @keyframes shake {
-      0%, 100% { transform: translateX(0); }
-      20%, 60% { transform: translateX(-5px); }
-      40%, 80% { transform: translateX(5px); }
-    }
-
-    @keyframes slideUp {
-      from { opacity: 0; transform: translateY(20px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-
-    @keyframes slideDown {
-      from { opacity: 0; transform: translateY(-20px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-
-    @keyframes fadeIn {
-      from { opacity: 0; }
-      to { opacity: 1; }
-    }
-
-    @keyframes rainbowText {
-      0% { background-position: 0% 50%; }
-      50% { background-position: 100% 50%; }
-      100% { background-position: 0% 50%; }
-    }
-
-    @keyframes glowPulse {
-      0%, 100% { box-shadow: 0 0 20px rgba(139, 92, 246, 0.3), 0 0 40px rgba(236, 72, 153, 0.2); }
-      50% { box-shadow: 0 0 30px rgba(139, 92, 246, 0.5), 0 0 60px rgba(236, 72, 153, 0.3); }
-    }
-
-    @keyframes shimmer {
-      0% { transform: rotate(0deg); }
-      100% { transform: rotate(360deg); }
-    }
-
-    @keyframes starScroll {
-      0% { transform: translateX(-100%); }
-      100% { transform: translateX(100%); }
-    }
-
-    body {
-      font-family: 'Inter', system-ui, -apple-system, sans-serif;
-      background: linear-gradient(-45deg, #667eea, #764ba2, #f093fb, #f5576c, #4facfe, #00f2fe);
-      background-size: 400% 400%;
-      animation: gradientShift 15s ease infinite;
-      min-height: 100vh;
-      color: var(--text);
-      overflow-x: hidden;
-    }
-
-    .particles {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      pointer-events: none;
-      overflow: hidden;
-      z-index: 0;
-    }
-
-    .particle {
-      position: absolute;
-      width: 10px;
-      height: 10px;
-      background: rgba(255, 255, 255, 0.6);
-      border-radius: 50%;
-      animation: float 6s ease-in-out infinite;
-    }
-
-    .particle:nth-child(1) { left: 10%; top: 20%; animation-delay: 0s; width: 8px; height: 8px; }
-    .particle:nth-child(2) { left: 20%; top: 80%; animation-delay: 1s; width: 12px; height: 12px; }
-    .particle:nth-child(3) { left: 60%; top: 40%; animation-delay: 2s; width: 6px; height: 6px; }
-    .particle:nth-child(4) { left: 80%; top: 60%; animation-delay: 3s; width: 14px; height: 14px; }
-    .particle:nth-child(5) { left: 30%; top: 30%; animation-delay: 4s; width: 10px; height: 10px; }
-    .particle:nth-child(6) { left: 70%; top: 70%; animation-delay: 5s; width: 8px; height: 8px; }
-    .particle:nth-child(7) { left: 50%; top: 10%; animation-delay: 2.5s; width: 11px; height: 11px; }
-    .particle:nth-child(8) { left: 90%; top: 30%; animation-delay: 3.5s; width: 7px; height: 7px; }
-
-    .page {
-      position: relative;
-      z-index: 1;
-      max-width: 900px;
-      margin: 0 auto;
-      padding: 8px;
-      animation: fadeIn 0.8s ease;
-    }
-
-    /* Login Page */
-    .login-container {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      min-height: 100vh;
-      padding: 20px;
-    }
-
-    .login-card {
-      background: rgba(255, 255, 255, 0.95);
-      backdrop-filter: blur(20px);
-      border-radius: 24px;
-      padding: 40px 36px;
-      width: 100%;
-      max-width: 400px;
-      box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15);
-      border: 1px solid rgba(255, 255, 255, 0.5);
-      animation: slideUp 0.6s ease;
-      transition: transform 0.3s ease;
-    }
-
-    .login-card:hover {
-      transform: translateY(-5px);
-    }
-
-    .login-logo {
-      width: 80px;
-      height: 80px;
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      border-radius: 20px;
-      margin: 0 auto 24px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 36px;
-      color: white;
-      animation: pulse 2s ease infinite;
-      box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
-    }
-
-    .login-title {
-      text-align: center;
-      font-size: 26px;
-      font-weight: 800;
-      background: linear-gradient(135deg, #667eea, #764ba2);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-      margin-bottom: 8px;
-    }
-
-    .login-subtitle {
-      text-align: center;
-      color: var(--muted);
-      font-size: 14px;
-      margin-bottom: 32px;
-    }
-
-    .input-group {
-      margin-bottom: 20px;
-    }
-
-    .input-group label {
-      display: block;
-      font-size: 13px;
-      font-weight: 600;
-      color: #475569;
-      margin-bottom: 8px;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-    }
-
-    .input-group input {
-      width: 100%;
-      padding: 14px 16px;
-      border: 2px solid #e2e8f0;
-      border-radius: 12px;
-      font-size: 15px;
-      transition: all 0.3s ease;
-      background: #f8fafc;
-    }
-
-    .input-group input:focus {
-      outline: none;
-      border-color: #667eea;
-      background: white;
-      box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.15);
-    }
-
-    .login-btn {
-      width: 100%;
-      padding: 16px;
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      color: white;
-      border: none;
-      border-radius: 12px;
-      font-size: 16px;
-      font-weight: 700;
-      cursor: pointer;
-      transition: all 0.3s ease;
-      box-shadow: 0 8px 20px rgba(102, 126, 234, 0.35);
-      margin-top: 10px;
-    }
-
-    .login-btn:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 12px 28px rgba(102, 126, 234, 0.45);
-    }
-
-    .login-btn:active {
-      transform: translateY(0);
-    }
-
-    .login-error {
-      background: #fef2f2;
-      color: #dc2626;
-      padding: 12px 16px;
-      border-radius: 10px;
-      font-size: 14px;
-      margin-top: 16px;
-      text-align: center;
-      animation: shake 0.5s ease;
-      border: 1px solid #fecaca;
-    }
-
-    /* App Container */
-    .app-container {
-      display: none;
-    }
-
-    /* Header */
-    .header-strip {
-      background: rgba(255, 255, 255, 0.9);
-      backdrop-filter: blur(10px);
-      border-radius: 12px;
-      padding: 4px 8px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      height: 55px;
-      box-shadow: var(--shadow);
-      border: 1px solid var(--card-border);
-      margin-bottom: 6px;
-    }
-
-    .header-logo {
-      height: 100%;
-      background-repeat: no-repeat;
-      background-size: contain;
-      background-position: center;
-    }
-
-    /* Ravi you can change the header logos here - replace the Google Drive URLs */
-    .logo-1 { width: 15%; background-image: url("https://lh3.googleusercontent.com/d/1oYWlcTQA9fugWbxnbyw9CUaRabmjUzlI"); }
-    .logo-2 { width: 60%; background-image: url("https://lh3.googleusercontent.com/d/1Lq0ri1xMDU4PERzu3QAfuZ3XfkHMnF0b"); }
-    .logo-3 { width: 20%; background-image: url("https://lh3.googleusercontent.com/d/1z57jNNPGjl3jZvXcCoTDcK7cWTeNIt87"); }
-
-    /* Title Card */
-    .title-card {
-      position: relative;
-      background: linear-gradient(135deg, #1e1b4b 0%, #312e81 50%, #1e1b4b 100%);
-      border-radius: 14px;
-      padding: 10px 14px;
-      margin-bottom: 8px;
-      box-shadow: var(--shadow);
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      overflow: hidden;
-      animation: glowPulse 3s ease-in-out infinite;
-    }
-
-    .title-card::before {
-      content: '';
-      position: absolute;
-      top: -50%;
-      left: -50%;
-      width: 200%;
-      height: 200%;
-      background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 60%);
-      animation: shimmer 8s linear infinite;
-      pointer-events: none;
-    }
-
-    .title-card::after {
-      content: '✦ ✧ ★ ✦ ✧ ★ ✦ ✧';
-      position: absolute;
-      bottom: 8px;
-      left: 0;
-      width: 200%;
-      font-size: 10px;
-      color: rgba(255, 255, 255, 0.15);
-      animation: starScroll 15s linear infinite;
-      pointer-events: none;
-    }
-
-    .title-content {
-      position: relative;
-      z-index: 2;
-      text-align: center;
-    }
-
-    .title-content h1 {
-      font-size: 18px;
-      font-weight: 900;
-      text-transform: uppercase;
-      letter-spacing: 1px;
-      margin-bottom: 3px;
-      background: linear-gradient(90deg, #fbbf24, #f97316, #ef4444, #ec4899, #8b5cf6, #06b6d4, #10b981, #fbbf24);
-      background-size: 200% auto;
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-      animation: rainbowText 4s linear infinite;
-      text-shadow: none;
-    }
-
-    .title-content h2 {
-      font-size: 10px;
-      font-weight: 600;
-      margin-bottom: 2px;
-      background: linear-gradient(90deg, #06b6d4, #10b981, #84cc16, #fbbf24, #f97316, #06b6d4);
-      background-size: 200% auto;
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-      animation: rainbowText 5s linear infinite;
-    }
-
-    .title-content h3 {
-      font-size: 8px;
-      font-weight: 500;
-      background: linear-gradient(90deg, #f472b6, #fb7185, #f97316, #fbbf24, #f472b6);
-      background-size: 200% auto;
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-      animation: rainbowText 6s linear infinite;
-    }
-
-    /* User Bar */
-    .user-bar {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 6px;
-      margin-bottom: 8px;
-      padding: 4px 6px;
-      background: linear-gradient(90deg, #6366f1, #8b5cf6, #a855f7, #d946ef, #ec4899);
-      background-size: 300% 100%;
-      animation: gradientShift 6s ease infinite;
-      border-radius: 10px;
-      box-shadow: 0 2px 12px rgba(99, 102, 241, 0.4);
-      border: 1px solid rgba(255,255,255,0.25);
-      z-index: 100;
-      position: relative;
-    }
-
-    .clock-widget {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      padding: 4px 10px;
-      background: rgba(255,255,255,0.95);
-      border-radius: 16px;
-      box-shadow: 0 1px 6px rgba(0,0,0,0.1);
-    }
-
-    .clock-dot {
-      width: 6px;
-      height: 6px;
-      background: #22c55e;
-      border-radius: 50%;
-      animation: blink 1s ease infinite;
-      box-shadow: 0 0 6px rgba(34, 197, 94, 0.5);
-    }
-
-    .clock-time {
-      font-weight: 800;
-      color: #6366f1;
-      font-size: 12px;
-    }
-
-    .clock-day {
-      color: #10b981;
-      font-weight: 700;
-      font-size: 10px;
-    }
-
-    .clock-date {
-      color: #64748b;
-      font-size: 9px;
-      font-weight: 600;
-    }
-
-    .user-info {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      z-index: 50;
-    }
-
-    .user-avatar {
-      width: 28px;
-      height: 28px;
-      background: linear-gradient(135deg, #fbbf24, #f97316);
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: white;
-      font-weight: 800;
-      font-size: 12px;
-      text-transform: uppercase;
-      box-shadow: 0 2px 8px rgba(251, 191, 36, 0.4);
-      border: 2px solid rgba(255,255,255,0.8);
-    }
-
-    .user-details {
-      display: flex;
-      flex-direction: column;
-      gap: 0;
-    }
-
-    .user-name {
-      font-weight: 700;
-      font-size: 11px;
-      color: white;
-      text-shadow: 0 1px 2px rgba(0,0,0,0.2);
-    }
-
-    .user-level {
-      font-size: 8px;
-      color: #1e293b;
-      text-transform: uppercase;
-      font-weight: 700;
-      letter-spacing: 0.3px;
-      background: linear-gradient(90deg, #fde047, #facc15);
-      padding: 1px 6px;
-      border-radius: 6px;
-      display: inline-block;
-      box-shadow: 0 1px 4px rgba(250, 204, 21, 0.4);
-    }
-
-    .user-actions {
-      display: flex;
-      align-items: center;
-      gap: 4px;
-    }
-
-    .logout-btn {
-      background: rgba(255,255,255,0.95);
-      color: #dc2626;
-      border: none;
-      padding: 4px 10px;
-      border-radius: 12px;
-      font-size: 9px;
-      font-weight: 800;
-      cursor: pointer;
-      transition: all 0.2s ease;
-      box-shadow: 0 1px 6px rgba(0,0,0,0.1);
-      z-index: 100;
-      position: relative;
-      text-transform: uppercase;
-      letter-spacing: 0.3px;
-    }
-
-    .logout-btn:hover {
-      background: #fee2e2;
-      box-shadow: 0 2px 10px rgba(220, 38, 38, 0.2);
-    }
-
-    .logout-btn:active {
-      transform: scale(0.95);
-    }
-
-    /* Change Password Button */
-    .change-pwd-btn {
-      width: 28px;
-      height: 28px;
-      background: rgba(255,255,255,0.95);
-      color: #3b82f6;
-      border: none;
-      border-radius: 50%;
-      font-size: 13px;
-      font-weight: 600;
-      cursor: pointer;
-      transition: all 0.2s ease;
-      box-shadow: 0 1px 6px rgba(0,0,0,0.1);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .change-pwd-btn:hover {
-      transform: rotate(15deg);
-      background: #dbeafe;
-      box-shadow: 0 2px 10px rgba(59, 130, 246, 0.2);
-    }
-
-    /* Refresh Button */
-    .refresh-btn {
-      width: 28px;
-      height: 28px;
-      background: rgba(255,255,255,0.95);
-      color: #10b981;
-      border: none;
-      border-radius: 50%;
-      font-size: 13px;
-      font-weight: 600;
-      cursor: pointer;
-      transition: all 0.3s ease;
-      box-shadow: 0 1px 6px rgba(0,0,0,0.1);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .refresh-btn:hover {
-      transform: rotate(180deg);
-      background: #d1fae5;
-      box-shadow: 0 2px 10px rgba(16, 185, 129, 0.2);
-    }
-
-      /* Password Modal */
-      .modal-overlay {
-        position: fixed;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background: rgba(0, 0, 0, 0.6);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        z-index: 1000;
-        opacity: 0;
-        visibility: hidden;
-        transition: all 0.3s ease;
-      }
-
-      .modal-overlay.active {
-        opacity: 1;
-        visibility: visible;
-      }
-
-      .modal-box {
-        background: white;
-        border-radius: 20px;
-        padding: 30px;
-        width: 90%;
-        max-width: 400px;
-        box-shadow: 0 25px 50px rgba(0, 0, 0, 0.25);
-        transform: scale(0.8) translateY(20px);
-        transition: all 0.3s ease;
-      }
-
-      .modal-overlay.active .modal-box {
-        transform: scale(1) translateY(0);
-      }
-
-      .modal-title {
-        font-size: 22px;
-        font-weight: 700;
-        color: #1e293b;
-        margin-bottom: 20px;
-        text-align: center;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 10px;
-      }
-
-      .modal-title::before {
-        content: "🔐";
-      }
-
-      .modal-input-group {
-        margin-bottom: 16px;
-      }
-
-      .modal-input-group label {
-        display: block;
-        font-size: 13px;
-        font-weight: 600;
-        color: #475569;
-        margin-bottom: 6px;
-      }
-
-      .modal-input-group input {
-        width: 100%;
-        padding: 14px 16px;
-        border: 2px solid #e2e8f0;
-        border-radius: 12px;
-        font-size: 15px;
-        transition: all 0.2s ease;
-        box-sizing: border-box;
-      }
-
-      .modal-input-group input:focus {
-        outline: none;
-        border-color: #3b82f6;
-        box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.15);
-      }
-
-      .modal-buttons {
-        display: flex;
-        gap: 12px;
-        margin-top: 24px;
-      }
-
-      .modal-btn {
-        flex: 1;
-        padding: 14px 20px;
-        border: none;
-        border-radius: 12px;
-        font-size: 15px;
-        font-weight: 600;
-        cursor: pointer;
-        transition: all 0.2s ease;
-      }
-
-      .modal-btn.cancel {
-        background: #f1f5f9;
-        color: #475569;
-      }
-
-      .modal-btn.cancel:hover {
-        background: #e2e8f0;
-      }
-
-      .modal-btn.submit {
-        background: linear-gradient(135deg, #22c55e, #16a34a);
-        color: white;
-      }
-
-      .modal-btn.submit:hover {
-        background: linear-gradient(135deg, #16a34a, #15803d);
-        box-shadow: 0 4px 15px rgba(34, 197, 94, 0.4);
-      }
-
-      .modal-btn.submit:disabled {
-        background: #94a3b8;
-        cursor: not-allowed;
-        box-shadow: none;
-      }
-
-      .modal-message {
-        text-align: center;
-        padding: 10px;
-        border-radius: 8px;
-        font-size: 13px;
-        font-weight: 500;
-        margin-top: 12px;
-      }
-
-      .modal-message.success {
-        background: #dcfce7;
-        color: #166534;
-      }
-
-      .modal-message.error {
-        background: #fee2e2;
-        color: #991b1b;
-      }
-
-    /* Mode Toggle */
-    .mode-toggle {
-      display: flex;
-      gap: 6px;
-      margin-bottom: 10px;
-    }
-
-    .mode-btn {
-      flex: 1;
-      padding: 8px 12px;
-      border: 1.5px solid transparent;
-      border-radius: 10px;
-      font-size: 12px;
-      font-weight: 700;
-      cursor: pointer;
-      transition: all 0.2s ease;
-      background: rgba(255, 255, 255, 0.9);
-      color: #475569;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 5px;
-    }
-
-    .mode-btn:hover {
-      transform: translateY(-1px);
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-    }
-
-    .mode-btn.active {
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      color: white;
-      border-color: transparent;
-      box-shadow: 0 4px 15px rgba(102, 126, 234, 0.35);
-    }
-
-    /* Panel */
-    .panel {
-      background: var(--card);
-      backdrop-filter: blur(20px);
-      border-radius: 14px;
-      padding: 12px;
-      box-shadow: var(--shadow);
-      border: 1px solid var(--card-border);
-      animation: slideUp 0.5s ease;
-      margin-bottom: 10px;
-    }
-
-    .panel-title {
-      font-size: 14px;
-      font-weight: 700;
-      color: #1e293b;
-      margin-bottom: 10px;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-
-    /* Form Elements */
-    .form-group {
-      margin-bottom: 8px;
-    }
-
-    .form-group label {
-      display: block;
-      font-size: 13px;
-      font-weight: 700;
-      color: #64748b;
-      margin-bottom: 6px;
-      text-transform: uppercase;
-      letter-spacing: 0.3px;
-    }
-
-    .select-wrapper {
-      position: relative;
-    }
-
-    .select-wrapper::after {
-      content: "▼";
-      position: absolute;
-      right: 12px;
-      top: 50%;
-      transform: translateY(-50%);
-      color: #64748b;
-      font-size: 12px;
-      pointer-events: none;
-    }
-
-    select {
-      width: 100%;
-      padding: 12px 36px 12px 14px;
-      border: 1.5px solid #e2e8f0;
-      border-radius: 8px;
-      font-size: 15px;
-      font-weight: 500;
-      color: #1e293b;
-      background: white;
-      cursor: pointer;
-      transition: all 0.2s ease;
-      appearance: none;
-      -webkit-appearance: none;
-    }
-
-    select:hover {
-      border-color: #cbd5e1;
-    }
-
-    select:focus {
-      outline: none;
-      border-color: #667eea;
-      box-shadow: 0 0 0 2px rgba(102, 126, 234, 0.15);
-    }
-
-    .select-g1 { background: linear-gradient(135deg, #e0f2fe, #fef3c7) !important; }
-    .select-g2 { background: linear-gradient(135deg, #fce7f3, #cffafe) !important; }
-    .select-g3 { background: linear-gradient(135deg, #e9d5ff, #d1fae5) !important; }
-    .select-g4 { background: linear-gradient(135deg, #f3e8ff, #e0f2fe) !important; }
-    .select-g5 { background: linear-gradient(135deg, #fee2e2, #dbeafe) !important; }
-
-    /* Text Input */
-    .text-input {
-      width: 100%;
-      padding: 14px 16px;
-      border: 1.5px solid #e2e8f0;
-      border-radius: 8px;
-      font-size: 16px;
-      font-weight: 500;
-      color: #1e293b;
-      background: white;
-      transition: all 0.2s ease;
-    }
-
-    .text-input:hover {
-      border-color: #cbd5e1;
-    }
-
-    .text-input:focus {
-      outline: none;
-      border-color: #667eea;
-      box-shadow: 0 0 0 2px rgba(102, 126, 234, 0.15);
-    }
-
-    /* Button Group */
-    .btn-group {
-      display: flex;
-      gap: 8px;
-      margin-top: 12px;
-    }
-
-    .submit-btn {
-      flex: 1;
-      padding: 10px 16px;
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      color: white;
-      border: none;
-      border-radius: 8px;
-      font-size: 12px;
-      font-weight: 700;
-      cursor: pointer;
-      transition: all 0.2s ease;
-      box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 6px;
-    }
-
-    .submit-btn:hover {
-      transform: translateY(-1px);
-      box-shadow: 0 6px 16px rgba(102, 126, 234, 0.4);
-    }
-
-    .clear-btn {
-      padding: 10px 16px;
-      background: linear-gradient(135deg, #64748b, #475569);
-      color: white;
-      border: none;
-      border-radius: 8px;
-      font-size: 12px;
-      font-weight: 700;
-      cursor: pointer;
-      transition: all 0.2s ease;
-      box-shadow: 0 4px 12px rgba(71, 85, 105, 0.2);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 6px;
-    }
-
-    .clear-btn:hover {
-      transform: translateY(-1px);
-      box-shadow: 0 6px 16px rgba(71, 85, 105, 0.3);
-    }
-
-    /* Output - Ravi you can change output styles here */
-    .output-container {
-      animation: slideUp 0.5s ease;
-    }
-
-    .output-title {
-      font-weight: 700;
-      color: #1e293b;
-      margin: 10px 0 14px 0;
-      text-align: center;
-      font-size: 18px;
-    }
-
-    .output-scroll {
-      overflow-x: auto;
-      border-radius: 14px;
-      background: linear-gradient(180deg, #fafafa, #ffffff);
-      border: 1px solid var(--card-border);
-      padding: 14px;
-      display: block;
-      min-width: 100%;
-      box-shadow: var(--shadow);
-    }
-
-    .output-grid {
-      display: grid;
-      gap: 2px;
-    }
-
-    .output-grid div {
-      background: white;
-      padding: 10px;
-      border: 1px solid #e2e8f0;
-      border-radius: 10px;
-      min-width: 150px;
-      text-align: center;
-      word-break: break-word;
-      box-shadow: 0 2px 8px rgba(2,8,23,0.06);
-    }
-
-    .output-header {
-      position: sticky;
-      top: 0;
-      z-index: 2;
-      background: linear-gradient(180deg, #f8fafc, #eef2ff) !important;
-      font-weight: 700;
-      color: #ea580c;
-      border-color: #e2e8f0;
-      text-transform: uppercase;
-      letter-spacing: 0.4px;
-    }
-
-    .output-grid a.file-link {
-      color: #2563eb;
-      text-decoration: none;
-      font-weight: 600;
-      display: inline-block;
-    }
-
-    .output-grid a.file-link:hover {
-      text-decoration: underline;
-    }
-
-    .output-grid img {
-      border-radius: 10px;
-      background: #f8fafc;
-      max-width: 150px;
-      max-height: 120px;
-      object-fit: contain;
-      cursor: zoom-in;
-      transition: transform 0.15s ease, box-shadow 0.15s ease;
-      box-shadow: 0 0 0 1px #e5e7eb inset;
-    }
-
-    .output-grid img:hover {
-      transform: scale(1.02);
-      box-shadow: 0 10px 24px rgba(2,8,23,0.12);
-    }
-
-    .file-link {
-      color: #2563eb;
-      text-decoration: none;
-      font-weight: 600;
-    }
-
-    .file-link:hover {
-      text-decoration: underline;
-    }
-
-    /* Status Messages */
-    .status-success {
-      background: #dcfce7;
-      color: #15803d;
-      padding: 8px 12px;
-      border-radius: 8px;
-      text-align: center;
-      font-weight: 600;
-      font-size: 11px;
-      margin-top: 10px;
-      border: 1px solid #bbf7d0;
-    }
-
-    .status-error {
-      background: #fef2f2;
-      color: #dc2626;
-      padding: 8px 12px;
-      border-radius: 8px;
-      text-align: center;
-      font-weight: 600;
-      font-size: 11px;
-      margin-top: 10px;
-      border: 1px solid #fecaca;
-    }
-
-    /* Hidden */
-    .hidden {
-      display: none !important;
-    }
-
-    /* Mobile Responsive */
-    @media (max-width: 640px) {
-      .user-bar {
-        flex-direction: row;
-        align-items: center;
-        justify-content: space-between;
-        padding: 3px 5px;
-        gap: 3px;
-        border-radius: 8px;
-      }
-
-      .clock-widget {
-        padding: 3px 6px;
-        gap: 3px;
-        border-radius: 12px;
-      }
-
-      .clock-dot { width: 5px; height: 5px; }
-      .clock-time { font-size: 10px; }
-      .clock-day { font-size: 9px; }
-      .clock-date { font-size: 8px; }
-
-      .user-info {
-        gap: 3px;
-      }
-
-      .user-avatar {
-        width: 22px;
-        height: 22px;
-        font-size: 10px;
-        border-width: 1px;
-      }
-
-      .user-details {
-        display: flex;
-      }
-
-      .user-name {
-        max-width: 45px;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-        font-size: 9px;
-      }
-
-      .user-level {
-        font-size: 6px;
-        padding: 1px 4px;
-        border-radius: 4px;
-      }
-
-      .user-actions {
-        gap: 3px;
-      }
-
-      .logout-btn {
-        padding: 3px 8px;
-        font-size: 7px;
-        border-radius: 10px;
-      }
-
-      .change-pwd-btn {
-        width: 22px;
-        height: 22px;
-        font-size: 10px;
-      }
-
-      .refresh-btn {
-        width: 22px;
-        height: 22px;
-        font-size: 10px;
-      }
-
-      .title-card {
-        padding: 12px 15px;
-      }
-
-      .title-content h1 { font-size: 14px; letter-spacing: 0.5px; }
-      .title-content h2 { font-size: 8px; }
-      .title-content h3 { font-size: 7px; }
-
-      .mode-toggle {
-        flex-direction: row;
-        gap: 4px;
-      }
-
-      .mode-btn {
-        padding: 6px 10px;
-        font-size: 10px;
-        border-radius: 8px;
-      }
-
-      .panel {
-        padding: 10px;
-        border-radius: 10px;
-      }
-
-      .panel-title {
-        font-size: 12px;
-        margin-bottom: 8px;
-      }
-
-      .form-group {
-        margin-bottom: 6px;
-      }
-
-      .form-group label {
-        font-size: 11px;
-        margin-bottom: 4px;
-      }
-
-      select {
-        padding: 10px 30px 10px 12px;
-        font-size: 14px;
-        border-radius: 6px;
-      }
-
-      .select-wrapper::after {
-        font-size: 10px;
-        right: 10px;
-      }
-
-      .text-input {
-        padding: 12px 14px;
-        font-size: 15px;
-        border-radius: 6px;
-      }
-
-      .btn-group {
-        flex-direction: row;
-        gap: 6px;
-        margin-top: 10px;
-      }
-
-      .submit-btn, .clear-btn {
-        padding: 8px 12px;
-        font-size: 10px;
-        border-radius: 6px;
-      }
-
-      .output-title {
-        font-size: 16px;
-        margin-bottom: 10px;
-      }
-
-      .output-scroll {
-        padding: 10px;
-        border-radius: 10px;
-      }
-
-      .output-grid div {
-        padding: 8px;
-        min-width: 120px;
-        border-radius: 8px;
-      }
-
-      .output-grid img {
-        max-width: 100px;
-        max-height: 80px;
-      }
-
-      .status-success, .status-error {
-        padding: 6px 10px;
-        font-size: 10px;
-        margin-top: 8px;
-      }
-    }
-  </style>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<!-- Ravi you can change the browser tab title here -->
+<title>KKSO-KBGA DATA</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+:root{--text:#0f172a;--muted:#475569;--card:rgba(255,255,255,0.92);--card-border:#e2e8f0;--shadow:0 10px 30px rgba(2,8,23,0.08);--ring:rgba(79,70,229,0.35);--g1:linear-gradient(135deg,#e0f2fe,#fef3c7);--g2:linear-gradient(135deg,#fce7f3,#cffafe);--g3:linear-gradient(135deg,#e9d5ff,#d1fae5);--g4:linear-gradient(135deg,#f3e8ff,#e0f2fe);--g5:linear-gradient(135deg,#fee2e2,#dbeafe);--g6:linear-gradient(135deg,#ffedd5,#ede9fe)}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Inter',system-ui,sans-serif;color:var(--text);min-height:100vh;background:linear-gradient(135deg,#667eea 0%,#764ba2 25%,#f093fb 50%,#5ee7df 75%,#667eea 100%);background-size:400% 400%;animation:gradientShift 12s ease infinite}
+@keyframes gradientShift{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0.3}}
+@keyframes rainbowText{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-8px)}75%{transform:translateX(8px)}}
+@keyframes driveGradient{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
+@keyframes slideUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+.page{max-width:1200px;margin:0 auto;padding:8px 8px 30px;display:none}
+
+/* ===== LOGIN ===== */
+.login-page{display:flex;align-items:center;justify-content:center;min-height:100vh;padding:20px}
+.login-card{background:rgba(255,255,255,0.95);backdrop-filter:blur(20px);border-radius:24px;padding:40px 32px;width:100%;max-width:400px;box-shadow:0 25px 60px rgba(0,0,0,0.3);border:1px solid rgba(255,255,255,0.3);text-align:center}
+.login-card h1{font-size:28px;font-weight:900;background:linear-gradient(135deg,#667eea,#764ba2,#f093fb);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.login-card h3{font-size:14px;color:var(--muted);margin:6px 0 24px}
+.login-input{width:100%;padding:14px 18px;border:2px solid #e2e8f0;border-radius:14px;font-size:15px;outline:none;margin-bottom:14px;transition:all 0.3s}
+.login-input:focus{border-color:#667eea;box-shadow:0 0 0 4px rgba(102,126,234,0.2)}
+.login-btn{width:100%;padding:14px;background:linear-gradient(135deg,#667eea,#764ba2);color:white;border:none;border-radius:14px;font-size:16px;font-weight:700;cursor:pointer;transition:all 0.3s}
+.login-btn:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(102,126,234,0.4)}
+.login-error{color:#dc2626;font-size:13px;margin-top:10px;display:none;animation:shake 0.4s}
+
+/* ===== HEADER ===== */
+.header-strip{padding:4px 8px;width:100%;height:55px;display:flex;align-items:center;justify-content:space-between;background:rgba(255,255,255,0.9);border:1px solid var(--card-border);border-radius:12px;box-shadow:var(--shadow);overflow:hidden;margin-bottom:6px}
+.h11,.h12,.h13{height:100%;background-repeat:no-repeat;background-size:contain;background-position:center}
+.h11{width:15%;background-image:url("https://lh3.googleusercontent.com/d/1oYWlcTQA9fugWbxnbyw9CUaRabmjUzlI")}
+.h12{width:65%;background-image:url("https://lh3.googleusercontent.com/d/1Lq0ri1xMDU4PERzu3QAfuZ3XfkHMnF0b")}
+.h13{width:20%;background-image:url("https://lh3.googleusercontent.com/d/1z57jNNPGjl3jZvXcCoTDcK7cWTeNIt87")}
+
+/* ===== USER BAR ===== */
+.user-bar{display:flex;align-items:center;justify-content:space-between;padding:4px 6px;border-radius:10px;margin-bottom:6px;background:linear-gradient(135deg,#1e1b4b,#312e81,#4c1d95,#6d28d9,#7c3aed);background-size:300% 300%;animation:gradientShift 5s ease infinite;box-shadow:0 4px 15px rgba(0,0,0,0.2);z-index:100;position:relative}
+.clock-widget{display:flex;align-items:center;gap:6px;background:rgba(255,255,255,0.95);padding:4px 10px;border-radius:8px;font-size:11px;white-space:nowrap}
+.clock-widget .dot{width:6px;height:6px;background:#22c55e;border-radius:50%;animation:blink 1.5s infinite}
+.clock-widget .time{font-weight:800;color:#1e293b;font-size:13px}
+.clock-widget .day{color:#7c3aed;font-weight:700;font-size:11px}
+.clock-widget .date{color:var(--muted);font-size:11px}
+.user-info{display:flex;align-items:center;gap:6px;z-index:100}
+.user-avatar{width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,#f59e0b,#ef4444);display:flex;align-items:center;justify-content:center;color:white;font-weight:800;font-size:12px;border:2px solid white}
+.user-details{display:flex;flex-direction:column}
+.user-name{color:white;font-weight:700;font-size:11px;max-width:80px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.user-level{font-size:8px;padding:1px 6px;border-radius:10px;font-weight:700;color:white;background:linear-gradient(135deg,#f59e0b,#f97316);display:inline-block}
+.logout-btn{padding:6px 12px;background:white;color:#dc2626;border:none;border-radius:8px;font-size:10px;font-weight:700;cursor:pointer;text-transform:uppercase;z-index:100;position:relative}
+.logout-btn:hover{background:#fee2e2}
+.pwd-btn{width:26px;height:26px;border-radius:50%;background:linear-gradient(135deg,#3b82f6,#1d4ed8);border:none;color:white;font-size:12px;cursor:pointer;z-index:100;position:relative}
+.refresh-btn{width:26px;height:26px;border-radius:50%;background:linear-gradient(135deg,#10b981,#059669);border:none;color:white;font-size:12px;cursor:pointer;z-index:100}
+
+/* ===== TITLE CARD ===== */
+.title-card{position:relative;width:100%;margin-bottom:8px;border-radius:14px;background:linear-gradient(135deg,#1a0533,#2d1b69,#1a0533);padding:10px 14px;box-shadow:0 8px 25px rgba(0,0,0,0.3);overflow:hidden;text-align:center}
+.title-card::before{content:'';position:absolute;inset:0;background:radial-gradient(circle at 30% 50%,rgba(255,255,255,0.08),transparent 60%);pointer-events:none}
+.title-card h1{font-size:18px;font-weight:900;background:linear-gradient(90deg,#fbbf24,#ef4444,#ec4899,#06b6d4,#22c55e,#fbbf24);background-size:300% 300%;-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;animation:rainbowText 4s ease infinite;text-shadow:none;margin-bottom:2px}
+.title-card h2{font-size:10px;font-weight:600;background:linear-gradient(90deg,#06b6d4,#22c55e,#84cc16,#fbbf24,#f97316,#06b6d4);background-size:300% 300%;-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;animation:rainbowText 5s ease infinite;margin-bottom:2px}
+.title-card h3{font-size:8px;font-weight:600;background:linear-gradient(90deg,#ec4899,#ef4444,#f97316,#fbbf24,#ec4899);background-size:300% 300%;-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;animation:rainbowText 6s ease infinite}
+
+/* ===== MODE TOGGLE ===== */
+.mode-toggle{display:flex;gap:6px;margin-bottom:8px}
+.mode-btn{flex:1;padding:8px 10px;border:2px solid rgba(255,255,255,0.3);border-radius:10px;background:rgba(255,255,255,0.15);color:white;font-size:12px;font-weight:700;cursor:pointer;transition:all 0.3s;text-align:center}
+.mode-btn.active{background:linear-gradient(135deg,#667eea,#764ba2);border-color:rgba(255,255,255,0.5);box-shadow:0 4px 15px rgba(102,126,234,0.4)}
+.mode-btn:hover{transform:translateY(-1px)}
+
+/* ===== PANEL ===== */
+.panel{background:var(--card);border:1px solid var(--card-border);border-radius:14px;box-shadow:var(--shadow);padding:12px;margin-bottom:8px;animation:slideUp 0.3s ease}
+.panel-title{font-size:14px;font-weight:700;text-align:center;margin-bottom:10px;color:var(--text)}
+.form-group{margin-bottom:8px}
+.form-group label{display:block;margin-bottom:4px;font-weight:700;color:var(--muted);font-size:13px;text-transform:uppercase;letter-spacing:0.5px}
+.select-wrapper{position:relative}
+.select-wrapper::after{content:"▾";position:absolute;right:12px;top:50%;transform:translateY(-50%);color:#334155;pointer-events:none;font-size:12px}
+select{width:100%;padding:12px 36px 12px 14px;border-radius:10px;border:1.5px solid rgba(0,0,0,0.08);font-size:15px;color:var(--text);background:#fff;appearance:none;-webkit-appearance:none;outline:none;transition:all 0.2s;box-shadow:0 2px 8px rgba(0,0,0,0.04)}
+select:focus{box-shadow:0 0 0 3px var(--ring)}
+select:hover{box-shadow:0 4px 12px rgba(0,0,0,0.08)}
+.colorful-select.g1{background:var(--g1)}.colorful-select.g2{background:var(--g2)}.colorful-select.g3{background:var(--g3)}.colorful-select.g4{background:var(--g4)}.colorful-select.g5{background:var(--g5)}.colorful-select.g6{background:var(--g6)}
+input[type="text"]{width:100%;padding:14px 16px;border-radius:10px;border:1.5px solid rgba(0,0,0,0.08);font-size:16px;outline:none;transition:all 0.2s;box-shadow:0 2px 8px rgba(0,0,0,0.04)}
+input[type="text"]:focus{box-shadow:0 0 0 3px var(--ring)}
+.btn-group{display:flex;gap:8px;margin-top:12px}
+.submit-btn{flex:1;padding:10px;background:linear-gradient(135deg,#667eea,#764ba2);color:white;border:none;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer;transition:all 0.3s}
+.submit-btn:hover{transform:translateY(-1px);box-shadow:0 6px 20px rgba(102,126,234,0.4)}
+.clear-btn{padding:10px 16px;background:linear-gradient(135deg,#64748b,#475569);color:white;border:none;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer;transition:all 0.3s}
+.clear-btn:hover{transform:translateY(-1px)}
+.status-msg{text-align:center;padding:8px;border-radius:8px;font-size:12px;font-weight:600;margin-top:8px}
+
+/* ===== OUTPUT ===== */
+.output-title{font-weight:700;color:#1e293b;margin:10px 0 14px 0;text-align:center;font-size:18px}
+.output-scroll{overflow-x:auto;border-radius:14px;background:linear-gradient(180deg,#fafafa,#ffffff);border:1px solid var(--card-border);padding:14px;display:block;min-width:100%;box-shadow:var(--shadow)}
+.output-grid{display:grid;gap:2px}
+.output-grid div{background:white;padding:10px;border:1px solid #e2e8f0;border-radius:10px;min-width:150px;text-align:center;word-break:break-word;box-shadow:0 2px 8px rgba(2,8,23,0.06);font-size:14px}
+.output-header{position:sticky;top:0;z-index:2;background:linear-gradient(180deg,#f8fafc,#eef2ff)!important;font-weight:700;color:#ea580c;border-color:#e2e8f0;text-transform:uppercase;letter-spacing:0.4px;font-size:13px}
+.output-grid img{border-radius:8px;max-width:80px;max-height:65px;object-fit:contain;cursor:zoom-in;transition:transform 0.2s}
+.output-grid img:hover{transform:scale(1.05)}
+.output-grid a.file-link{display:inline-flex;align-items:center;gap:6px;padding:6px 14px;background:linear-gradient(135deg,#4285f4 0%,#0d47a1 50%,#4285f4 100%);background-size:200% 200%;animation:driveGradient 3s ease infinite;color:white;border-radius:20px;font-weight:700;font-size:11px;text-decoration:none;text-transform:uppercase;letter-spacing:0.5px;border:2px solid rgba(255,255,255,0.3);box-shadow:0 3px 10px rgba(66,133,244,0.4);transition:all 0.3s}
+.output-grid a.file-link::before{content:"🖼";font-size:14px}
+.output-grid a.file-link:hover{transform:translateY(-2px) scale(1.05);box-shadow:0 6px 20px rgba(66,133,244,0.5)}
+
+/* ===== MY DATA ===== */
+.mydata-toggle{display:flex;gap:6px;margin-bottom:10px}
+.mydata-btn{flex:1;padding:8px;border:2px solid var(--card-border);border-radius:10px;background:white;font-size:12px;font-weight:700;cursor:pointer;text-align:center;transition:all 0.3s}
+.mydata-btn.active{background:linear-gradient(135deg,#667eea,#764ba2);color:white;border-color:transparent}
+.stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:10px}
+.stat-card{background:linear-gradient(135deg,#667eea,#764ba2);color:white;border-radius:12px;padding:10px 8px;text-align:center;box-shadow:0 4px 15px rgba(0,0,0,0.15)}
+.stat-card .stat-icon{font-size:18px}
+.stat-card .stat-num{font-size:22px;font-weight:900}
+.stat-card .stat-label{font-size:9px;opacity:0.9;text-transform:uppercase}
+.personal-card{background:linear-gradient(135deg,#f0f9ff,#e0f2fe);border:1px solid #bae6fd;border-radius:12px;padding:12px;margin-bottom:10px}
+.personal-card h3{font-size:14px;margin-bottom:8px;color:#0369a1}
+.personal-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:6px}
+.personal-item{background:white;padding:8px;border-radius:8px;border:1px solid #e0f2fe}
+.personal-item .p-label{font-size:9px;color:var(--muted);text-transform:uppercase;font-weight:700}
+.personal-item .p-value{font-size:13px;font-weight:600;color:var(--text)}
+
+/* ===== INBOX ===== */
+.inbox-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:10px}
+.inbox-stat{background:linear-gradient(135deg,#f0f9ff,#dbeafe);border:1px solid #93c5fd;border-radius:10px;padding:8px;text-align:center}
+.inbox-stat .is-num{font-size:20px;font-weight:900;color:#1d4ed8}
+.inbox-stat .is-label{font-size:8px;color:var(--muted);text-transform:uppercase}
+.inbox-filters{display:flex;gap:4px;margin-bottom:10px;flex-wrap:wrap}
+.inbox-filter-btn{padding:6px 12px;border:1px solid var(--card-border);border-radius:8px;background:white;font-size:11px;font-weight:600;cursor:pointer;transition:all 0.2s}
+.inbox-filter-btn.active{background:linear-gradient(135deg,#3b82f6,#1d4ed8);color:white;border-color:transparent}
+.inbox-card{background:white;border:1px solid var(--card-border);border-radius:12px;padding:12px;margin-bottom:8px;box-shadow:0 2px 8px rgba(0,0,0,0.04);transition:all 0.2s}
+.inbox-card:hover{box-shadow:0 4px 16px rgba(0,0,0,0.08)}
+.inbox-card-header{display:flex;align-items:center;gap:6px;margin-bottom:6px;flex-wrap:wrap}
+.inbox-badge{padding:2px 8px;border-radius:6px;font-size:9px;font-weight:700;text-transform:uppercase}
+.badge-high{background:#fee2e2;color:#dc2626}
+.badge-medium{background:#fef3c7;color:#d97706}
+.badge-low{background:#dcfce7;color:#16a34a}
+.badge-task{background:#dbeafe;color:#2563eb}
+.badge-pdf{background:#fce7f3;color:#db2777}
+.badge-message{background:#e0e7ff;color:#4f46e5}
+.badge-notice{background:#fef9c3;color:#ca8a04}
+.badge-unread{background:#ef4444;color:white}
+.badge-read{background:#e2e8f0;color:#64748b}
+.badge-done{background:#22c55e;color:white}
+.inbox-card-title{font-size:14px;font-weight:700;margin-bottom:4px}
+.inbox-card-msg{font-size:12px;color:var(--muted);margin-bottom:8px;line-height:1.4}
+.inbox-card-footer{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:6px}
+.inbox-card-meta{font-size:10px;color:var(--muted)}
+.inbox-card-actions{display:flex;gap:4px}
+.inbox-action-btn{padding:4px 10px;border-radius:6px;font-size:10px;font-weight:600;cursor:pointer;border:1px solid var(--card-border);background:white;transition:all 0.2s}
+.inbox-action-btn:hover{transform:translateY(-1px)}
+.inbox-action-btn.mark-read{color:#2563eb;border-color:#93c5fd}
+.inbox-action-btn.mark-done{color:#16a34a;border-color:#86efac}
+.inbox-file-btn{display:inline-flex;align-items:center;gap:4px;padding:4px 12px;background:linear-gradient(135deg,#4285f4,#0d47a1);color:white;border:none;border-radius:6px;font-size:10px;font-weight:700;cursor:pointer;text-decoration:none;transition:all 0.2s}
+.inbox-file-btn:hover{transform:translateY(-1px)}
+.inbox-file-btn.no-access{background:#94a3b8;cursor:not-allowed}
+.unread-badge{background:#ef4444;color:white;border-radius:50%;width:18px;height:18px;display:inline-flex;align-items:center;justify-content:center;font-size:10px;font-weight:700}
+
+/* ===== HISTORY TABLE ===== */
+.history-table{width:100%;border-collapse:separate;border-spacing:0 4px;font-size:12px}
+.history-table thead{position:sticky;top:0;z-index:2}
+.history-table th{background:linear-gradient(180deg,#f8fafc,#eef2ff);color:#ea580c;font-weight:700;text-transform:uppercase;letter-spacing:0.4px;padding:10px 8px;font-size:11px;border:1px solid #e2e8f0;white-space:nowrap}
+.history-table td{background:white;padding:8px;text-align:center;border:1px solid #f1f5f9;word-break:break-word;font-size:13px}
+.history-table tr:hover td{background:#f8fafc}
+.history-scroll{overflow-x:auto;border-radius:12px;border:1px solid var(--card-border);background:white;max-height:400px;overflow-y:auto}
+
+/* ===== PASSWORD MODAL ===== */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);backdrop-filter:blur(4px);z-index:1000;align-items:center;justify-content:center;padding:20px}
+.modal-card{background:white;border-radius:20px;padding:30px;width:100%;max-width:380px;box-shadow:0 25px 60px rgba(0,0,0,0.3)}
+.modal-card h2{font-size:20px;font-weight:800;text-align:center;margin-bottom:20px}
+.modal-close{position:absolute;top:12px;right:16px;background:none;border:none;font-size:24px;cursor:pointer;color:#64748b}
+
+/* ===== THEME: ADMIN ===== */
+body.theme-admin{background:linear-gradient(135deg,#667eea 0%,#764ba2 25%,#f093fb 50%,#5ee7df 75%,#667eea 100%);background-size:400% 400%;animation:gradientShift 12s ease infinite}
+.theme-admin .user-bar{background:linear-gradient(135deg,#1e1b4b,#312e81,#4c1d95,#6d28d9,#7c3aed);background-size:300% 300%;animation:gradientShift 5s ease infinite}
+.theme-admin .mode-btn.active{background:linear-gradient(135deg,#667eea,#764ba2)}
+.theme-admin .submit-btn{background:linear-gradient(135deg,#667eea,#764ba2)}
+.theme-admin .stat-card{background:linear-gradient(135deg,#667eea,#764ba2)}
+.theme-admin .title-card{background:linear-gradient(135deg,#1a0533,#2d1b69,#1a0533)}
+.theme-admin .user-avatar{background:linear-gradient(135deg,#a78bfa,#7c3aed);border-color:#c4b5fd}
+.theme-admin .user-level{background:linear-gradient(135deg,#a78bfa,#7c3aed)}
+
+/* ===== THEME: SUPERVISOR ===== */
+body.theme-supervisor{background:linear-gradient(135deg,#1e3a8a 0%,#1e40af 25%,#3b82f6 50%,#06b6d4 75%,#1e3a8a 100%);background-size:400% 400%;animation:gradientShift 12s ease infinite}
+.theme-supervisor .user-bar{background:linear-gradient(135deg,#0c1445,#1e3a8a,#1e40af,#2563eb);background-size:300% 300%;animation:gradientShift 5s ease infinite}
+.theme-supervisor .mode-btn.active{background:linear-gradient(135deg,#2563eb,#1d4ed8)}
+.theme-supervisor .submit-btn{background:linear-gradient(135deg,#2563eb,#1d4ed8)}
+.theme-supervisor .stat-card{background:linear-gradient(135deg,#2563eb,#1d4ed8)}
+.theme-supervisor .title-card{background:linear-gradient(135deg,#0c1445,#1e3a8a,#0c1445)}
+.theme-supervisor .user-avatar{background:linear-gradient(135deg,#60a5fa,#2563eb);border-color:#93c5fd}
+.theme-supervisor .user-level{background:linear-gradient(135deg,#60a5fa,#2563eb)}
+.theme-supervisor .clock-widget .day{color:#2563eb}
+
+/* ===== THEME: STAFF ===== */
+body.theme-staff{background:linear-gradient(135deg,#064e3b 0%,#065f46 25%,#10b981 50%,#34d399 75%,#064e3b 100%);background-size:400% 400%;animation:gradientShift 12s ease infinite}
+.theme-staff .user-bar{background:linear-gradient(135deg,#022c22,#064e3b,#065f46,#059669);background-size:300% 300%;animation:gradientShift 5s ease infinite}
+.theme-staff .mode-btn.active{background:linear-gradient(135deg,#059669,#047857)}
+.theme-staff .submit-btn{background:linear-gradient(135deg,#059669,#047857)}
+.theme-staff .stat-card{background:linear-gradient(135deg,#059669,#047857)}
+.theme-staff .title-card{background:linear-gradient(135deg,#022c22,#064e3b,#022c22)}
+.theme-staff .user-avatar{background:linear-gradient(135deg,#6ee7b7,#059669);border-color:#a7f3d0}
+.theme-staff .user-level{background:linear-gradient(135deg,#6ee7b7,#059669)}
+.theme-staff .clock-widget .day{color:#059669}
+
+/* ===== PRINT/PDF ===== */
+@media print{body{background:white!important;animation:none!important}.login-page,.user-bar,.mode-toggle,.header-strip,.mydata-toggle,.inbox-filters,.inbox-card-actions{display:none!important}.page{display:block!important;padding:10px}.panel{box-shadow:none;border:1px solid #ccc;page-break-inside:avoid}.title-card{background:#333!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}}
+
+/* ===== MOBILE ===== */
+@media(max-width:640px){
+.mode-toggle{flex-direction:row}
+.mode-btn{font-size:10px;padding:6px}
+.user-bar{flex-wrap:nowrap;gap:4px;padding:3px 4px}
+.clock-widget{font-size:9px;padding:3px 6px;gap:3px}
+.clock-widget .time{font-size:11px}
+.clock-widget .day,.clock-widget .date{font-size:9px}
+.user-avatar{width:22px;height:22px;font-size:10px}
+.user-name{font-size:10px;max-width:60px}
+.user-level{font-size:7px}
+.logout-btn{padding:4px 8px;font-size:8px}
+.pwd-btn,.refresh-btn{width:22px;height:22px;font-size:10px}
+.stats-row{grid-template-columns:repeat(2,1fr)}
+.inbox-stats{grid-template-columns:repeat(2,1fr)}
+.personal-grid{grid-template-columns:1fr}
+select{font-size:14px;padding:10px 30px 10px 12px}
+input[type="text"]{font-size:15px;padding:12px 14px}
+.form-group label{font-size:11px}
+.output-grid div{min-width:120px;font-size:13px;padding:8px}
+.output-header{font-size:11px}
+}
+</style>
 </head>
 <body>
-  <!-- Floating Particles -->
-  <div class="particles">
-    <div class="particle"></div>
-    <div class="particle"></div>
-    <div class="particle"></div>
-    <div class="particle"></div>
-    <div class="particle"></div>
-    <div class="particle"></div>
-    <div class="particle"></div>
-    <div class="particle"></div>
-  </div>
 
-  <!-- Login Page -->
-  <div id="loginPage" class="login-container">
-    <div class="login-card">
-      <div class="login-logo">🔐</div>
-      <!-- Ravi you can change the login page title here -->
-      <h1 class="login-title">KKSO-KBGA DATA</h1>
-      <!-- Ravi you can change the login subtitle here -->
-      <p class="login-subtitle">Enter your credentials to continue</p>
-      <form id="loginForm">
-        <div class="input-group">
-          <label>User ID</label>
-          <input type="text" id="userId" placeholder="Enter your User ID" required>
-        </div>
-        <div class="input-group">
-          <label>Password</label>
-          <input type="password" id="password" placeholder="Enter your Password" required>
-        </div>
-        <button type="submit" class="login-btn">Login</button>
-        <div id="loginError" class="login-error hidden"></div>
-      </form>
-    </div>
-  </div>
+<!-- ===== LOGIN PAGE ===== -->
+<div class="login-page" id="loginPage">
+<div class="login-card">
+<h1>🔐 KKSO-KBGA</h1>
+<h3>Enter your credentials to continue</h3>
+<input type="text" class="login-input" id="loginUser" placeholder="👤 User ID" autocomplete="off">
+<input type="password" class="login-input" id="loginPass" placeholder="🔑 Password">
+<button class="login-btn" onclick="handleLogin()">LOGIN</button>
+<div class="login-error" id="loginError"></div>
+</div>
+</div>
 
-  <!-- Change Password Modal -->
-  <div id="passwordModal" class="modal-overlay">
-    <div class="modal-box">
-      <div class="modal-title">Change Password</div>
-      <div class="modal-input-group">
-        <label>Current Password</label>
-        <input type="password" id="currentPassword" placeholder="Enter current password">
-      </div>
-      <div class="modal-input-group">
-        <label>New Password</label>
-        <input type="password" id="newPassword" placeholder="Enter new password">
-      </div>
-      <div class="modal-input-group">
-        <label>Confirm New Password</label>
-        <input type="password" id="confirmPassword" placeholder="Confirm new password">
-      </div>
-      <div id="passwordMessage" class="modal-message" style="display: none;"></div>
-      <div class="modal-buttons">
-        <button class="modal-btn cancel" onclick="closePasswordModal()">Cancel</button>
-        <button class="modal-btn submit" id="changePwdSubmit" onclick="handleChangePassword()">Change</button>
-      </div>
-    </div>
-  </div>
+<!-- ===== MAIN APP ===== -->
+<div class="page" id="appPage">
+<div class="header-strip">
+<div class="h11"></div>
+<div class="h12"></div>
+<div class="h13"></div>
+</div>
 
-  <!-- Main App -->
-  <div id="appContainer" class="app-container">
-    <div class="page">
-      <!-- Header -->
-      <div class="header-strip">
-        <div class="header-logo logo-1"></div>
-        <div class="header-logo logo-2"></div>
-        <div class="header-logo logo-3"></div>
-      </div>
+<div class="user-bar" id="userBar">
+<div class="clock-widget"><span class="dot"></span><span class="day">-</span><span class="date">-</span><span class="time">-</span></div>
+<div class="user-info">
+<div class="user-avatar" id="userAvatar">?</div>
+<div class="user-details"><span class="user-name" id="userName">-</span><span class="user-level" id="userLevel">-</span></div>
+<button class="pwd-btn" onclick="openPasswordModal()" title="Change Password">🔑</button>
+<button class="refresh-btn" onclick="location.reload()" title="Refresh">🔄</button>
+<button class="logout-btn" onclick="handleLogout()">LOGOUT</button>
+</div>
+</div>
 
-      <!-- User Bar -->
-      <div class="user-bar">
-        <div class="clock-widget">
-          <div class="clock-dot"></div>
-          <span class="clock-day">--</span>
-          <span class="clock-date">--</span>
-          <span class="clock-time">--:--</span>
-        </div>
-        <div class="user-info">
-          <div class="user-avatar" id="userAvatar">U</div>
-          <div class="user-details">
-            <span class="user-name" id="userName">User</span>
-            <span class="user-level" id="userLevel">Staff</span>
-          </div>
-          <div class="user-actions">
-            <button class="change-pwd-btn" onclick="openPasswordModal()" title="Change Password">🔑</button>
-            <button class="refresh-btn" onclick="refreshApp()" title="Refresh App">🔄</button>
-            <button class="logout-btn" id="logoutBtn" onclick="handleLogout()">Logout</button>
-          </div>
-        </div>
-      </div>
+<div class="title-card">
+<h1>KKSO-KBGA DATA</h1>
+<h2 id="titleLevel">A Cloud Based Data System</h2>
+<h3 id="versionText">© Created by Ravi Malhotra</h3>
+</div>
 
-      <!-- Title Card -->
-      <div class="title-card">
-        <!-- Ravi you can change the main title, subtitle and copyright here -->
-        <div class="title-content">
-          <h1>KKSO-KBGA DATA</h1>
-          <h2 id="levelTitle">A Cloud Based Data System For Admin Level</h2>
-          <h3>© Created by Ravi Malhotra | <span id="appVersion">v1.0.0</span></h3>
-        </div>
-      </div>
+<!-- Ravi you can change the mode button text here -->
+<div class="mode-toggle">
+<button class="mode-btn active" onclick="switchMode('view')" id="viewBtn">📋 View Data</button>
+<button class="mode-btn" onclick="switchMode('entry')" id="entryBtn">✏️ Entry Data</button>
+<button class="mode-btn" onclick="switchMode('mydata')" id="mydataBtn">👤 My Data</button>
+</div>
 
-      <!-- Mode Toggle -->
-      <div class="mode-toggle">
-        <!-- Ravi you can change the mode button text here -->
-        <button class="mode-btn active" id="viewModeBtn" onclick="setMode('view')">📋 View Data</button>
-        <button class="mode-btn" id="entryModeBtn" onclick="setMode('entry')">✏️ Entry Data</button>
-      </div>
+<!-- VIEW MODE -->
+<div id="viewSection">
+<div class="panel">
+<div class="panel-title">📋 Data Viewer</div>
+<div class="form-group"><label>SUBJECT</label><div class="select-wrapper"><select id="viewSubject" class="colorful-select g1"><option value="">-- Select Subject --</option></select></div></div>
+<div id="viewSubSubjectGroup" class="form-group" style="display:none"><label>SUB-SUBJECT</label><div class="select-wrapper"><select id="viewSubSubject" class="colorful-select g2"><option value="">-- Select Sub-Subject --</option></select></div></div>
+<div id="viewDropdowns"></div>
+</div>
+<div id="viewOutput"></div>
+</div>
 
-      <!-- View Mode Panel -->
-      <div id="viewPanel" class="panel">
-        <div class="panel-title">📊 Data Viewer</div>
-        
-        <!-- Subject -->
-        <div class="form-group">
-          <label>Subject</label>
-          <div class="select-wrapper">
-            <select id="viewSubject" class="select-g1">
-              <option value="">-- Select Subject --</option>
-            </select>
-          </div>
-        </div>
+<!-- ENTRY MODE -->
+<div id="entrySection" style="display:none">
+<div class="panel">
+<div class="panel-title">✏️ Data Entry Form</div>
+<div class="form-group"><label>SUBJECT</label><div class="select-wrapper"><select id="entrySubject" class="colorful-select g1"><option value="">-- Select Subject --</option></select></div></div>
+<div id="entrySubSubjectGroup" class="form-group" style="display:none"><label>SUB-SUBJECT</label><div class="select-wrapper"><select id="entrySubSubject" class="colorful-select g2"><option value="">-- Select Sub-Subject --</option></select></div></div>
+<div id="entryDropdowns"></div>
+<div class="btn-group" id="entryBtnGroup" style="display:none">
+<button class="submit-btn" onclick="handleEntrySubmit()">📤 Submit Entry</button>
+<button class="clear-btn" onclick="handleEntryClear()">🗑️ Clear</button>
+</div>
+<div id="entryStatus"></div>
+</div>
+</div>
 
-        <!-- Sub-Subject -->
-        <div class="form-group" id="viewSubSubjectGroup">
-          <label>Sub-Subject</label>
-          <div class="select-wrapper">
-            <select id="viewSubSubject" class="select-g2" disabled>
-              <option value="">-- Select Sub-Subject --</option>
-            </select>
-          </div>
-        </div>
+<!-- MY DATA MODE -->
+<div id="mydataSection" style="display:none">
+<div class="mydata-toggle">
+<button class="mydata-btn active" onclick="switchMyData('entries')" id="myEntriesBtn">📝 My Entry Data</button>
+<button class="mydata-btn" onclick="switchMyData('inbox')" id="myInboxBtn">📥 My Inbox <span class="unread-badge" id="unreadBadge" style="display:none">0</span></button>
+</div>
 
-        <!-- Dynamic Dropdowns -->
-        <div id="viewDropdowns"></div>
-      </div>
+<!-- MY ENTRIES -->
+<div id="myEntriesSection">
+<div class="panel">
+<div id="personalInfo"></div>
+<div class="stats-row" id="statsRow">
+<div class="stat-card"><div class="stat-icon">📊</div><div class="stat-num" id="statTotal">0</div><div class="stat-label">Total</div></div>
+<div class="stat-card"><div class="stat-icon">📅</div><div class="stat-num" id="statToday">0</div><div class="stat-label">Today</div></div>
+<div class="stat-card"><div class="stat-icon">📆</div><div class="stat-num" id="statWeek">0</div><div class="stat-label">This Week</div></div>
+<div class="stat-card"><div class="stat-icon">🗓️</div><div class="stat-num" id="statMonth">0</div><div class="stat-label">This Month</div></div>
+</div>
+<div class="form-group"><label>Filter by Subject</label><div class="select-wrapper"><select id="mySubjectFilter" class="colorful-select g3"><option value="">-- All Entries --</option></select></div></div>
+<button class="submit-btn" onclick="loadMyData()" style="margin-bottom:10px;width:100%">🔄 Refresh Data</button>
+<button class="clear-btn" onclick="exportPDF()" style="margin-bottom:10px;width:100%;background:linear-gradient(135deg,#f59e0b,#d97706)">📄 Export PDF</button>
+<div id="myEntriesTable"></div>
+</div>
+</div>
 
-      <!-- View Output -->
-      <div id="viewOutput" class="output-container hidden"></div>
+<!-- MY INBOX -->
+<div id="myInboxSection" style="display:none">
+<div class="panel">
+<div class="inbox-stats" id="inboxStats"></div>
+<div class="inbox-filters" id="inboxFilters"></div>
+<div id="inboxCards"></div>
+</div>
+</div>
+</div>
+</div>
 
-      <!-- Entry Mode Panel -->
-      <div id="entryPanel" class="panel hidden">
-        <div class="panel-title">✏️ Data Entry Form</div>
-        
-        <!-- Subject -->
-        <div class="form-group">
-          <label>Subject</label>
-          <div class="select-wrapper">
-            <select id="entrySubject" class="select-g1">
-              <option value="">-- Select Subject --</option>
-            </select>
-          </div>
-        </div>
+<!-- PASSWORD MODAL -->
+<div class="modal-overlay" id="pwdModal">
+<div class="modal-card" style="position:relative">
+<button class="modal-close" onclick="closePasswordModal()">✕</button>
+<h2>🔑 Change Password</h2>
+<input type="password" class="login-input" id="pwdCurrent" placeholder="Current Password">
+<input type="password" class="login-input" id="pwdNew" placeholder="New Password (min 4 chars)">
+<input type="password" class="login-input" id="pwdConfirm" placeholder="Confirm New Password">
+<button class="login-btn" onclick="handlePasswordChange()">Change Password</button>
+<div id="pwdMessage" style="text-align:center;margin-top:10px;font-size:13px"></div>
+</div>
+</div>
 
-        <!-- Sub-Subject -->
-        <div class="form-group" id="entrySubSubjectGroup">
-          <label>Sub-Subject</label>
-          <div class="select-wrapper">
-            <select id="entrySubSubject" class="select-g2" disabled>
-              <option value="">-- Select Sub-Subject --</option>
-            </select>
-          </div>
-        </div>
+<script>
+/* ===================== APP VERSION ===================== */
+/* Ravi you can change the version number here */
+const APP_VERSION="4.4.0";
 
-        <!-- Dynamic Inputs -->
-        <div id="entryInputs"></div>
+/* ===================== CONFIGURATION ===================== */
+/* Ravi you can change all settings here */
+let CONFIG={
+  SHEET_ID:"136Fq_Pchc_kPJwEoBUgfRKzDqnYUs730w3vMhnSO9HI",
+  API_KEY:"AIzaSyAjBceUqA-G1ueMCsqevOiPEhb2Nk-pOhI",
+  SHEET_NAME:"master",
+  APPS_SCRIPT_URL:"https://script.google.com/macros/s/AKfycbzluFhsV2Ib6I-BK5OdFacx7hjK8nTZSRLlisBedPCr1-nGD5L6MDp85iJhv075odfa/exec",
+  INBOX_SHEET_NAME:"inbox",
+  VIEW_CONFIG_START_ROW:1,
+  VIEW_CONFIG_END_ROW:50,
+  ENTRY_CONFIG_START_ROW:82,
+  ENTRY_CONFIG_END_ROW:150,
+  USER_START_ROW:51,
+  USER_END_ROW:81,
+  CONFIG_END_COL:"AG",
+  DATA_FETCH_END_COL:"AB",
+  PERSONAL_DATA_LABELS:['Full Name','Designation','Department','Phone','Email','Address','Joining Date'],
+  CREDENTIAL_CHECK_INTERVAL:3600000
+};
 
-        <!-- Buttons -->
-        <div class="btn-group">
-          <button class="submit-btn" onclick="handleEntrySubmit()">📤 Submit Entry</button>
-          <button class="clear-btn" onclick="handleEntryClear()">🗑️ Clear</button>
-        </div>
+/* ===================== STATE ===================== */
+let currentUser="",currentPassword="",currentLevel="",currentUserRow=-1,currentUserPersonal=[];
+let viewConfig=[],entryConfig=[],appInitialized=false,credentialCheckInterval=null;
 
-        <!-- Status -->
-        <div id="entryStatus"></div>
-      </div>
-    </div>
-  </div>
+/* ===================== HELPERS ===================== */
+async function fetchSheet(sheetName,range){
+  const url=`https://sheets.googleapis.com/v4/spreadsheets/${CONFIG.SHEET_ID}/values/${encodeURIComponent(sheetName)}!${encodeURIComponent(range)}?key=${CONFIG.API_KEY}`;
+  const res=await fetch(url);
+  if(!res.ok)throw new Error(`API Error ${res.status}`);
+  const data=await res.json();
+  return data.values||[];
+}
+async function fetchSheetFormulas(sheetName,range){
+  const url=`https://sheets.googleapis.com/v4/spreadsheets/${CONFIG.SHEET_ID}/values/${encodeURIComponent(sheetName)}!${encodeURIComponent(range)}?key=${CONFIG.API_KEY}&valueRenderOption=FORMULA`;
+  const res=await fetch(url);
+  if(!res.ok)throw new Error(`API Error ${res.status}`);
+  const data=await res.json();
+  return data.values||[];
+}
+function colToIndex(col){let r=0;for(let i=0;i<col.length;i++)r=r*26+(col.charCodeAt(i)-64);return r-1}
+function isUrl(s){return typeof s==="string"&&/^https?:\/\//i.test(s)}
+function driveDirect(u){if(typeof u!=="string")return u;let m=u.match(/drive\.google\.com\/file\/d\/([^/]+)/i);if(m)return`https://drive.google.com/uc?export=view&id=${m[1]}`;m=u.match(/drive\.google\.com\/open\?id=([^&]+)/i);if(m)return`https://drive.google.com/uc?export=view&id=${m[1]}`;return u}
+function extractImage(v){if(typeof v!=="string")return null;const m=v.match(/=*\s*IMAGE\s*\(\s*"([^"]+)"/i);if(m)return driveDirect(m[1]);if(isUrl(v)&&/\.(jpg|jpeg|png|gif|webp|bmp|svg)/i.test(v))return driveDirect(v);return null}
+function driveFileId(u){if(typeof u!=="string")return null;let m=u.match(/drive\.google\.com\/file\/d\/([^/]+)/i);if(m)return m[1];m=u.match(/[?&]id=([^&]+)/i);if(m)return m[1];return null}
+function getLevelCols(level){if(level==="admin")return{sheetCol:27,subCol:28};if(level==="supervisor")return{sheetCol:29,subCol:30};return{sheetCol:31,subCol:32}}
 
-  <script>
-    // ===================== APP VERSION =====================
-    // ⚠️ Ravi you can change the version here when you update the app
-    // This helps track which version users are using
-    const APP_VERSION = "3.3.0";  // Ravi: Change this when you update
-    
-    // ===================== CONFIGURATION =====================
-    // ⚠️ Ravi you can change ALL settings here ⚠️
-    
-    let CONFIG = {
-      // ═══════════════════════════════════════════════════════════════
-      // Ravi you can change the Google Sheet ID here
-      // Find your Sheet ID in the URL: https://docs.google.com/spreadsheets/d/[SHEET_ID]/edit
-      // ═══════════════════════════════════════════════════════════════
-      SHEET_ID: "136Fq_Pchc_kPJwEoBUgfRKzDqnYUs730w3vMhnSO9HI",
-      
-      // ═══════════════════════════════════════════════════════════════
-      // Ravi you can change the Google API Key here
-      // Get a new API key from: https://console.cloud.google.com
-      // ═══════════════════════════════════════════════════════════════
-      API_KEY: "AIzaSyAjBceUqA-G1ueMCsqevOiPEhb2Nk-pOhI",
-      
-      // ═══════════════════════════════════════════════════════════════
-      // Ravi you can change the Sheet Tab Name here
-      // This is the name of the sheet tab at the bottom of your spreadsheet
-      // ═══════════════════════════════════════════════════════════════
-      SHEET_NAME: "master",
-      
-      // ═══════════════════════════════════════════════════════════════
-      // Ravi you can change the Apps Script URL here
-      // This URL is used for data entry and password change
-      // ═══════════════════════════════════════════════════════════════
-      APPS_SCRIPT_URL: "https://script.google.com/macros/s/AKfycbzluFhsV2Ib6I-BK5OdFacx7hjK8nTZSRLlisBedPCr1-nGD5L6MDp85iJhv075odfa/exec",
-      
-      // ═══════════════════════════════════════════════════════════════
-      // Ravi you can change the ROW RANGES here
-      // If you need more subjects or users, increase the end row numbers
-      // ═══════════════════════════════════════════════════════════════
-      VIEW_CONFIG_START_ROW: 1,      // View subjects start from row 1
-      VIEW_CONFIG_END_ROW: 50,       // View subjects end at row 50 (change to 100, 200, etc.)
-      ENTRY_CONFIG_START_ROW: 82,    // Entry subjects start from row 82
-      ENTRY_CONFIG_END_ROW: 150,     // Entry subjects end at row 150 (change to 200, 300, etc.)
-      USER_START_ROW: 51,            // User credentials start from row 51
-      USER_END_ROW: 81,              // User credentials end at row 81 (change to 150, 200, etc.)
-      
-      // ═══════════════════════════════════════════════════════════════
-      // Ravi you can change the COLUMN RANGES here
-      // If you need more input/output columns, change these
-      // ═══════════════════════════════════════════════════════════════
-      CONFIG_END_COL: "AG",          // Last config column (AG = column 33)
-      DATA_FETCH_END_COL: "Y",       // Last data column to fetch (Y = column 25)
-      
-      // ═══════════════════════════════════════════════════════════════
-      // Ravi you can change the credential check interval here
-      // 3600000 = 1 hour, 7200000 = 2 hours, 86400000 = 24 hours
-      // ═══════════════════════════════════════════════════════════════
-      CREDENTIAL_CHECK_INTERVAL: 3600000,
-      
-      // ═══════════════════════════════════════════════════════════════
-      // Ravi you can change the COLUMN INDICES here (0-based)
-      // A=0, B=1, C=2, ... Z=25, AA=26, AB=27, AC=28, AD=29, AE=30, AF=31, AG=32
-      // ═══════════════════════════════════════════════════════════════
-      COL: {
-        SUBJECT: 0,           // A - Subject column
-        SUB_SUBJECT: 1,       // B - Sub-Subject column
-        INPUT_START: 2,       // C - Input titles start (C-J = 8 inputs)
-        OUTPUT_START: 10,     // K - Output titles start (K-Y = 15 outputs)
-        INPUT_COUNT: 25,      // Z - Number of inputs column
-        OUTPUT_COUNT: 26,     // AA - Number of outputs/dropdowns column
-        
-        // User Level Columns (don't change unless you restructure the sheet)
-        ADMIN_SHEET: 27,      // AB - Admin target sheet name
-        ADMIN_HAS_SUB: 28,    // AC - Admin has sub-subject (true/false)
-        SUPERVISOR_SHEET: 29, // AD - Supervisor target sheet name
-        SUPERVISOR_HAS_SUB: 30, // AE - Supervisor has sub-subject (true/false)
-        STAFF_SHEET: 31,      // AF - Staff target sheet name
-        STAFF_HAS_SUB: 32,    // AG - Staff has sub-subject (true/false)
-        
-        USER_LEVEL: 2         // C - User level column in credentials (C51:C81)
-      }
-    };
-    // ═══════════════════════════════════════════════════════════════
-    // END OF CONFIGURATION - Edit above this line only
-    // ═══════════════════════════════════════════════════════════════
+/* ===================== CLOCK ===================== */
+function updateClock(){const el=document.querySelector('.clock-widget');if(!el)return;const now=new Date();el.querySelector('.day').textContent=now.toLocaleDateString(undefined,{weekday:'short'});el.querySelector('.date').textContent=now.toLocaleDateString(undefined,{year:'numeric',month:'short',day:'numeric'});el.querySelector('.time').textContent=now.toLocaleTimeString(undefined,{hour:'2-digit',minute:'2-digit',second:'2-digit'})}
+updateClock();setInterval(updateClock,1000);
 
-    // ===================== STATE =====================
-    let currentUser = null;
-    let currentPassword = null;
-    let currentUserLevel = null; // "admin", "supervisor", "staff"
-    let currentMode = 'view';
-    let appInitialized = false;
-    let credentialCheckInterval = null;
-
-    const state = {
-      // Config data
-      viewConfig: [],      // Rows 1-50
-      entryConfig: [],     // Rows 82-100
-      
-      // View mode state
-      viewDataValues: [],
-      viewDataFormulas: [],
-      viewSubjectRowIdxs: [],
-      viewInputTitles: [],
-      viewOutputTitles: [],
-      viewInputValues: {},
-      viewSelectedSubject: "",
-      viewSelectedSubSubject: "",
-      viewDataSource: { id: "", key: "", name: "" },
-      viewSubSubjectEnabled: true,
-      viewBaseInputCol: 2,
-      
-      // Entry mode state
-      entryDataValues: [],
-      entrySubjectRowIdxs: [],
-      entryInputTitles: [],
-      entryInputValues: {},
-      entrySelectedSubject: "",
-      entrySelectedSubSubject: "",
-      entryDataSource: { id: "", key: "", name: "" },
-      entrySubSubjectEnabled: true,
-      entryDropdownCount: 0,
-      entryBaseInputCol: 2
-    };
-
-    // ===================== DOM ELEMENTS =====================
-    const loginPage = document.getElementById('loginPage');
-    const appContainer = document.getElementById('appContainer');
-    const loginForm = document.getElementById('loginForm');
-    const loginError = document.getElementById('loginError');
-    const userIdInput = document.getElementById('userId');
-    const passwordInput = document.getElementById('password');
-    const userAvatar = document.getElementById('userAvatar');
-    const userName = document.getElementById('userName');
-    const userLevel = document.getElementById('userLevel');
-    const logoutBtn = document.getElementById('logoutBtn');
-
-    const viewModeBtn = document.getElementById('viewModeBtn');
-    const entryModeBtn = document.getElementById('entryModeBtn');
-    const viewPanel = document.getElementById('viewPanel');
-    const entryPanel = document.getElementById('entryPanel');
-    const viewOutput = document.getElementById('viewOutput');
-
-    const viewSubject = document.getElementById('viewSubject');
-    const viewSubSubject = document.getElementById('viewSubSubject');
-    const viewSubSubjectGroup = document.getElementById('viewSubSubjectGroup');
-    const viewDropdowns = document.getElementById('viewDropdowns');
-
-    const entrySubject = document.getElementById('entrySubject');
-    const entrySubSubject = document.getElementById('entrySubSubject');
-    const entrySubSubjectGroup = document.getElementById('entrySubSubjectGroup');
-    const entryInputs = document.getElementById('entryInputs');
-    const entryStatus = document.getElementById('entryStatus');
-
-    // ===================== UTILITY FUNCTIONS =====================
-    async function fetchSheet(sheetName, range, options = {}) {
-      const params = new URLSearchParams({ key: CONFIG.API_KEY });
-      if (options.valueRenderOption) params.set("valueRenderOption", options.valueRenderOption);
-      const url = `https://sheets.googleapis.com/v4/spreadsheets/${CONFIG.SHEET_ID}/values/${encodeURIComponent(sheetName)}!${encodeURIComponent(range)}?${params.toString()}`;
-      try {
-        const res = await fetch(url);
-        if (!res.ok) {
-          const errorText = await res.text().catch(() => "Unknown error");
-          console.error("API Error:", res.status, errorText);
-          throw new Error(`API Error ${res.status}`);
-        }
-        const data = await res.json();
-        return data.values || [];
-      } catch (error) {
-        console.error("Fetch Error:", error.message);
-        throw error;
+/* ===================== LOGIN ===================== */
+async function handleLogin(){
+  const uid=document.getElementById('loginUser').value.trim();
+  const pwd=document.getElementById('loginPass').value.trim();
+  const errEl=document.getElementById('loginError');
+  errEl.style.display='none';
+  if(!uid||!pwd){errEl.textContent='Please enter User ID and Password';errEl.style.display='block';return}
+  try{
+    const range=`A${CONFIG.USER_START_ROW}:J${CONFIG.USER_END_ROW}`;
+    const users=await fetchSheet(CONFIG.SHEET_NAME,range);
+    let found=false;
+    for(let i=0;i<users.length;i++){
+      const row=users[i]||[];
+      if(String(row[0]||'').trim()===uid&&String(row[1]||'').trim()===pwd){
+        currentUser=uid;currentPassword=pwd;
+        currentLevel=String(row[2]||'staff').trim().toLowerCase();
+        currentUserRow=CONFIG.USER_START_ROW+i;
+        currentUserPersonal=row.slice(3,10);
+        found=true;break;
       }
     }
+    if(!found){errEl.textContent='You are not registered';errEl.style.display='block';return}
+    localStorage.setItem('kkso_user',currentUser);
+    localStorage.setItem('kkso_password',currentPassword);
+    localStorage.setItem('kkso_level',currentLevel);
+    localStorage.setItem('kkso_row',String(currentUserRow));
+    showApp();
+  }catch(e){errEl.textContent='Connection error: '+e.message;errEl.style.display='block'}
+}
 
-    function isHttpUrl(s) {
-      return typeof s === "string" && /^https?:\/\//i.test(s);
+function showApp(){
+  document.getElementById('loginPage').style.display='none';
+  document.getElementById('appPage').style.display='block';
+  document.getElementById('userAvatar').textContent=currentUser.charAt(0).toUpperCase();
+  document.getElementById('userName').textContent=currentUser;
+  const levelIcons={admin:'👑',supervisor:'🛡️',staff:'👤'};
+  const levelNames={admin:'Admin',supervisor:'Supervisor',staff:'Staff'};
+  document.getElementById('userLevel').textContent=(levelIcons[currentLevel]||'')+' '+(levelNames[currentLevel]||currentLevel);
+  document.getElementById('titleLevel').textContent='A Cloud Based Data System For '+(levelNames[currentLevel]||'Staff')+' Level';
+  document.getElementById('versionText').textContent='© Created by Ravi Malhotra | v'+APP_VERSION;
+  document.body.className='theme-'+(currentLevel||'staff');
+  if(!appInitialized)initApp();
+  startCredentialCheck();
+}
+
+function handleLogout(){
+  if(credentialCheckInterval)clearInterval(credentialCheckInterval);
+  localStorage.removeItem('kkso_user');localStorage.removeItem('kkso_password');
+  localStorage.removeItem('kkso_level');localStorage.removeItem('kkso_row');
+  currentUser='';currentPassword='';currentLevel='';currentUserRow=-1;
+  appInitialized=false;
+  document.getElementById('appPage').style.display='none';
+  document.getElementById('loginPage').style.display='flex';
+  document.getElementById('loginUser').value='';document.getElementById('loginPass').value='';
+  document.getElementById('loginError').style.display='none';
+  document.body.className='';
+  document.getElementById('viewSubject').innerHTML='<option value="">-- Select Subject --</option>';
+  document.getElementById('entrySubject').innerHTML='<option value="">-- Select Subject --</option>';
+  document.getElementById('mySubjectFilter').innerHTML='<option value="">-- All Entries --</option>';
+}
+
+/* ===================== SESSION RESTORE ===================== */
+(function(){
+  const u=localStorage.getItem('kkso_user'),p=localStorage.getItem('kkso_password');
+  const l=localStorage.getItem('kkso_level'),r=localStorage.getItem('kkso_row');
+  if(u&&p){currentUser=u;currentPassword=p;currentLevel=l||'staff';currentUserRow=parseInt(r)||-1;showApp()}
+})();
+
+/* ===================== CREDENTIAL CHECK ===================== */
+function startCredentialCheck(){
+  if(credentialCheckInterval)clearInterval(credentialCheckInterval);
+  credentialCheckInterval=setInterval(async()=>{
+    if(!currentUser||!currentPassword)return;
+    try{
+      const range=`A${CONFIG.USER_START_ROW}:B${CONFIG.USER_END_ROW}`;
+      const users=await fetchSheet(CONFIG.SHEET_NAME,range);
+      let valid=false;
+      for(const row of users){if(row&&String(row[0]||'').trim()===currentUser&&String(row[1]||'').trim()===currentPassword){valid=true;break}}
+      if(!valid){alert('Your credentials have been changed. You will be logged out.');handleLogout()}
+    }catch(e){}
+  },CONFIG.CREDENTIAL_CHECK_INTERVAL);
+}
+
+/* ===================== PASSWORD CHANGE ===================== */
+function openPasswordModal(){document.getElementById('pwdModal').style.display='flex';document.getElementById('pwdCurrent').value='';document.getElementById('pwdNew').value='';document.getElementById('pwdConfirm').value='';document.getElementById('pwdMessage').textContent=''}
+function closePasswordModal(){document.getElementById('pwdModal').style.display='none'}
+async function handlePasswordChange(){
+  const cur=document.getElementById('pwdCurrent').value,nw=document.getElementById('pwdNew').value,cf=document.getElementById('pwdConfirm').value;
+  const msg=document.getElementById('pwdMessage');
+  if(!cur||!nw||!cf){msg.textContent='❌ Fill all fields';msg.style.color='#dc2626';return}
+  if(cur!==currentPassword){msg.textContent='❌ Current password wrong';msg.style.color='#dc2626';return}
+  if(nw!==cf){msg.textContent='❌ Passwords do not match';msg.style.color='#dc2626';return}
+  if(nw.length<4){msg.textContent='❌ Min 4 characters';msg.style.color='#dc2626';return}
+  if(nw===cur){msg.textContent='❌ Same as current';msg.style.color='#dc2626';return}
+  try{
+    msg.textContent='Changing...';msg.style.color='#2563eb';
+    await fetch(CONFIG.APPS_SCRIPT_URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({spreadsheetId:CONFIG.SHEET_ID,sheetName:CONFIG.SHEET_NAME,action:'changePassword',row:currentUserRow,newPassword:nw})});
+    currentPassword=nw;localStorage.setItem('kkso_password',nw);
+    msg.textContent='✅ Password changed! Logging out...';msg.style.color='#16a34a';
+    setTimeout(()=>{closePasswordModal();handleLogout()},2000);
+  }catch(e){msg.textContent='❌ Error: '+e.message;msg.style.color='#dc2626'}
+}
+
+/* ===================== MODE SWITCHING ===================== */
+function switchMode(mode){
+  document.getElementById('viewSection').style.display=mode==='view'?'block':'none';
+  document.getElementById('entrySection').style.display=mode==='entry'?'block':'none';
+  document.getElementById('mydataSection').style.display=mode==='mydata'?'block':'none';
+  document.getElementById('viewBtn').classList.toggle('active',mode==='view');
+  document.getElementById('entryBtn').classList.toggle('active',mode==='entry');
+  document.getElementById('mydataBtn').classList.toggle('active',mode==='mydata');
+  if(mode==='mydata')loadMyData();
+}
+function switchMyData(sub){
+  document.getElementById('myEntriesSection').style.display=sub==='entries'?'block':'none';
+  document.getElementById('myInboxSection').style.display=sub==='inbox'?'block':'none';
+  document.getElementById('myEntriesBtn').classList.toggle('active',sub==='entries');
+  document.getElementById('myInboxBtn').classList.toggle('active',sub==='inbox');
+  if(sub==='inbox')loadInbox();
+}
+
+/* ===================== INIT APP ===================== */
+async function initApp(){
+  if(appInitialized)return;appInitialized=true;
+  try{
+    const vcRange=`A${CONFIG.VIEW_CONFIG_START_ROW}:${CONFIG.CONFIG_END_COL}${CONFIG.VIEW_CONFIG_END_ROW}`;
+    const ecRange=`A${CONFIG.ENTRY_CONFIG_START_ROW}:${CONFIG.CONFIG_END_COL}${CONFIG.ENTRY_CONFIG_END_ROW}`;
+    const[vc,ec]=await Promise.all([fetchSheet(CONFIG.SHEET_NAME,vcRange),fetchSheet(CONFIG.SHEET_NAME,ecRange)]);
+    viewConfig=vc||[];entryConfig=ec||[];
+    const lc=getLevelCols(currentLevel);
+    // View subjects - only where user level has sheet name
+    const vSel=document.getElementById('viewSubject');
+    vSel.innerHTML='<option value="">-- Select Subject --</option>';
+    const vSubjects=[...new Set(viewConfig.filter(r=>r&&r[0]&&String(r[lc.sheetCol]||'').trim()).map(r=>String(r[0]).trim()))];
+    vSubjects.forEach(s=>{const o=document.createElement('option');o.value=s;o.textContent=s;vSel.appendChild(o)});
+    // Entry subjects
+    const eSel=document.getElementById('entrySubject');
+    eSel.innerHTML='<option value="">-- Select Subject --</option>';
+    const eSubjects=[...new Set(entryConfig.filter(r=>r&&r[0]&&String(r[lc.sheetCol]||'').trim()).map(r=>String(r[0]).trim()))];
+    eSubjects.forEach(s=>{const o=document.createElement('option');o.value=s;o.textContent=s;eSel.appendChild(o)});
+    // Load personal data if not from login
+    if(currentUserPersonal.length===0&&currentUserRow>0){
+      try{const pd=await fetchSheet(CONFIG.SHEET_NAME,`D${currentUserRow}:J${currentUserRow}`);currentUserPersonal=(pd[0]||[])}catch(e){}}
+  }catch(e){console.error('Init error:',e)}
+}
+
+/* ===================== VIEW MODE ===================== */
+let viewState={config:[],dataValues:[],dataFormulas:[],filteredIdxs:[],inputTitles:[],outputTitles:[],inputValues:{},subject:'',subSubject:'',subEnabled:false,baseInputCol:2};
+
+document.getElementById('viewSubject').addEventListener('change',function(){
+  const subject=this.value.trim();viewState.subject=subject;viewState.subSubject='';viewState.inputValues={};
+  document.getElementById('viewDropdowns').innerHTML='';document.getElementById('viewOutput').innerHTML='';
+  const ssGroup=document.getElementById('viewSubSubjectGroup');
+  const ssSel=document.getElementById('viewSubSubject');
+  ssSel.innerHTML='<option value="">-- Select Sub-Subject --</option>';
+  ssGroup.style.display='none';
+  if(!subject)return;
+  const lc=getLevelCols(currentLevel);
+  const rows=viewConfig.filter(r=>r&&String(r[0]||'').trim()===subject&&String(r[lc.sheetCol]||'').trim());
+  if(!rows.length)return;
+  const firstRow=rows[0];
+  const hasSub=String(firstRow[lc.subCol]||'').trim().toLowerCase()==='true';
+  viewState.subEnabled=hasSub;
+  if(hasSub){
+    ssGroup.style.display='block';
+    const subs=[...new Set(rows.map(r=>String(r[1]||'').trim()).filter(v=>v))];
+    subs.forEach(s=>{const o=document.createElement('option');o.value=s;o.textContent=s;ssSel.appendChild(o)});
+  }else{
+    const cfgIdx=viewConfig.indexOf(firstRow);
+    applyViewConfig(cfgIdx);
+  }
+});
+
+document.getElementById('viewSubSubject').addEventListener('change',function(){
+  const ss=this.value.trim();viewState.subSubject=ss;viewState.inputValues={};
+  document.getElementById('viewDropdowns').innerHTML='';document.getElementById('viewOutput').innerHTML='';
+  if(!ss)return;
+  const idx=viewConfig.findIndex(r=>r&&String(r[0]||'').trim()===viewState.subject&&String(r[1]||'').trim()===ss);
+  if(idx>=0)applyViewConfig(idx);
+});
+
+async function applyViewConfig(idx){
+  const row=viewConfig[idx]||[];
+  const lc=getLevelCols(currentLevel);
+  viewState.subEnabled=String(row[lc.subCol]||'').trim().toLowerCase()==='true';
+  viewState.baseInputCol=viewState.subEnabled?2:1;
+  const inputCount=Math.max(0,Math.min(parseInt(row[25]||'0',10)||0,8));
+  const outputCount=Math.max(0,Math.min(parseInt(row[26]||'0',10)||0,15));
+  const titles=[];for(let i=0;i<inputCount;i++)titles.push(String(row[viewState.baseInputCol+i]||''));
+  viewState.inputTitles=titles;
+  viewState.outputTitles=[];for(let i=0;i<outputCount;i++)viewState.outputTitles.push(String(row[10+i]||''));
+  const sheetName=String(row[lc.sheetCol]||'').trim();
+  if(!sheetName){document.getElementById('viewOutput').innerHTML='<div class="panel" style="color:red">No data sheet configured</div>';return}
+  try{
+    document.getElementById('viewOutput').innerHTML='<div class="panel">Loading...</div>';
+    const[vals,forms]=await Promise.all([fetchSheet(sheetName,'A:'+CONFIG.DATA_FETCH_END_COL),fetchSheetFormulas(sheetName,'A:'+CONFIG.DATA_FETCH_END_COL)]);
+    viewState.dataValues=vals||[];viewState.dataFormulas=forms||[];
+    viewState.filteredIdxs=[];
+    for(let i=0;i<viewState.dataValues.length;i++){
+      const r=viewState.dataValues[i]||[];
+      if(String(r[0]||'').trim()!==viewState.subject)continue;
+      if(viewState.subEnabled&&String(r[1]||'').trim()!==viewState.subSubject)continue;
+      viewState.filteredIdxs.push(i);
     }
+    document.getElementById('viewOutput').innerHTML='';
+    if(!viewState.filteredIdxs.length){document.getElementById('viewOutput').innerHTML='<div class="panel" style="color:#b00">No data found</div>';return}
+    buildViewDropdowns();checkViewOutput();
+  }catch(e){document.getElementById('viewOutput').innerHTML='<div class="panel" style="color:red">Error: '+e.message+'</div>'}
+}
 
-    function driveToDirect(u) {
-      if (typeof u !== "string") return null;
-      let m = u.match(/drive\.google\.com\/file\/d\/([^/]+)/i);
-      if (m) return `https://drive.google.com/uc?export=view&id=${m[1]}`;
-      m = u.match(/drive\.google\.com\/open\?id=([^&]+)/i);
-      if (m) return `https://drive.google.com/uc?export=view&id=${m[1]}`;
-      m = u.match(/drive\.google\.com\/uc\?(?:export=\w+&)?id=([^&]+)/i);
-      if (m) return `https://drive.google.com/uc?export=view&id=${m[1]}`;
-      return u;
-    }
+function buildViewDropdowns(){
+  const container=document.getElementById('viewDropdowns');container.innerHTML='';
+  viewState.inputTitles.forEach((label,idx)=>{
+    const div=document.createElement('div');div.className='form-group';
+    const lbl=document.createElement('label');lbl.textContent=label;
+    const wrap=document.createElement('div');wrap.className='select-wrapper';
+    const sel=document.createElement('select');sel.className='colorful-select g'+(idx%5+2);
+    sel.innerHTML=`<option value="">Select ${label}</option>`;
+    const opts=getViewOptions(idx);
+    opts.forEach(v=>{const o=document.createElement('option');o.value=v;o.textContent=v;if(viewState.inputValues[label]===v)o.selected=true;sel.appendChild(o)});
+    sel.addEventListener('change',e=>{viewState.inputValues[label]=e.target.value;buildViewDropdowns();checkViewOutput()});
+    wrap.appendChild(sel);div.appendChild(lbl);div.appendChild(wrap);container.appendChild(div);
+  });
+}
 
-    function extractImageUrl(valOrFormula) {
-      if (typeof valOrFormula !== "string") return null;
-      const s = valOrFormula.trim();
-      const fm = s.match(/^=*\s*IMAGE\s*\(\s*"([^"]+)"/i);
-      if (fm) return driveToDirect(fm[1]);
-      if (isHttpUrl(s)) return driveToDirect(s);
-      return null;
-    }
+function getViewOptions(curIdx){
+  const base=viewState.baseInputCol;
+  let idxs=viewState.filteredIdxs.slice();
+  for(let i=0;i<curIdx;i++){
+    const k=viewState.inputTitles[i],v=viewState.inputValues[k];
+    if(v)idxs=idxs.filter(ri=>String((viewState.dataValues[ri]||[])[base+i]||'')===v);
+  }
+  const set=new Set();
+  idxs.forEach(ri=>{const v=(viewState.dataValues[ri]||[])[base+curIdx];if(v!=null&&v!=='')set.add(String(v))});
+  return[...set];
+}
 
-    function getSheetAndSubColumns() {
-      // Based on user level, return the correct sheet column and has-sub-subject column
-      if (currentUserLevel === 'admin') {
-        return { sheetCol: CONFIG.COL.ADMIN_SHEET, hasSubCol: CONFIG.COL.ADMIN_HAS_SUB };
-      } else if (currentUserLevel === 'supervisor') {
-        return { sheetCol: CONFIG.COL.SUPERVISOR_SHEET, hasSubCol: CONFIG.COL.SUPERVISOR_HAS_SUB };
-      } else {
-        return { sheetCol: CONFIG.COL.STAFF_SHEET, hasSubCol: CONFIG.COL.STAFF_HAS_SUB };
-      }
-    }
+function checkViewOutput(){
+  if(viewState.inputTitles.length>0&&!viewState.inputTitles.every(k=>viewState.inputValues[k])){document.getElementById('viewOutput').innerHTML='';return}
+  const base=viewState.baseInputCol;
+  let idxs=viewState.filteredIdxs.slice();
+  viewState.inputTitles.forEach((k,i)=>{const v=viewState.inputValues[k];if(v)idxs=idxs.filter(ri=>String((viewState.dataValues[ri]||[])[base+i]||'')===v)});
+  const results=idxs.map(ri=>{
+    const rv=viewState.dataValues[ri]||[],rf=viewState.dataFormulas[ri]||[];
+    const cells=[];for(let c=10;c<10+viewState.outputTitles.length;c++)cells.push({value:rv[c]||'',formula:rf[c]||''});
+    return cells;
+  });
+  renderViewOutput(results);
+}
 
-    // ===================== CLOCK =====================
-    function updateClock() {
-      const now = new Date();
-      const day = now.toLocaleDateString(undefined, { weekday: 'short' });
-      const date = now.toLocaleDateString(undefined, { day: 'numeric', month: 'short' });
-      const time = now.toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit', second: '2-digit' });
-      
-      const dayEl = document.querySelector('.clock-day');
-      const dateEl = document.querySelector('.clock-date');
-      const timeEl = document.querySelector('.clock-time');
-      
-      if (dayEl) dayEl.textContent = day;
-      if (dateEl) dateEl.textContent = date;
-      if (timeEl) timeEl.textContent = time;
-    }
-    setInterval(updateClock, 1000);
-    updateClock();
-
-    // ===================== LOGIN =====================
-    loginForm.addEventListener('submit', async (e) => {
-      e.preventDefault();
-      loginError.classList.add('hidden');
-      
-      const userId = userIdInput.value.trim();
-      const password = passwordInput.value.trim();
-      
-      if (!userId || !password) {
-        showLoginError("Please enter both User ID and Password");
-        return;
-      }
-      
-      try {
-        // Build dynamic range for user credentials
-        const userRange = `A${CONFIG.USER_START_ROW}:C${CONFIG.USER_END_ROW}`;
-        const credentials = await fetchSheet(CONFIG.SHEET_NAME, userRange);
-        let isValid = false;
-        let userLevelValue = 'staff';
-        
-        for (const row of credentials) {
-          if (row[0] && row[1]) {
-            if (String(row[0]).trim() === userId && String(row[1]).trim() === password) {
-              isValid = true;
-              userLevelValue = String(row[2] || 'staff').trim().toLowerCase();
-              break;
-            }
-          }
-        }
-        
-        if (isValid) {
-          currentUser = userId;
-          currentPassword = password;
-          currentUserLevel = userLevelValue;
-          
-          localStorage.setItem('kkso_user', userId);
-          localStorage.setItem('kkso_password', password);
-          localStorage.setItem('kkso_level', userLevelValue);
-          
-          showApp();
-          startCredentialCheck();
-        } else {
-          // Ravi you can change the error message here
-          showLoginError("You are not registered");
-        }
-      } catch (error) {
-        console.error("Login error:", error);
-        showLoginError("Connection error: " + error.message);
-      }
+function renderViewOutput(data){
+  const container=document.getElementById('viewOutput');container.innerHTML='';
+  if(!data.length)return;
+  const title=document.createElement('div');title.className='output-title';title.textContent='Your Result';container.appendChild(title);
+  const scroll=document.createElement('div');scroll.className='output-scroll';
+  const cols=viewState.outputTitles.length;
+  const gridStyle=`grid-template-columns:repeat(${cols},minmax(150px,1fr))`;
+  // Header
+  const hdr=document.createElement('div');hdr.className='output-grid';hdr.style.cssText=gridStyle;
+  viewState.outputTitles.forEach(t=>{const d=document.createElement('div');d.textContent=t;d.classList.add('output-header');hdr.appendChild(d)});
+  scroll.appendChild(hdr);
+  // Rows
+  data.forEach(row=>{
+    const r=document.createElement('div');r.className='output-grid';r.style.cssText=gridStyle;
+    row.forEach(cell=>{
+      const d=document.createElement('div');
+      const img=extractImage(cell.formula)||extractImage(cell.value);
+      if(img){const el=document.createElement('img');el.src=img;el.loading='lazy';el.onclick=()=>window.open(img,'_blank');d.appendChild(el)}
+      else if(isUrl(cell.value)){const a=document.createElement('a');a.href=driveDirect(cell.value);a.target='_blank';a.className='file-link';a.textContent='image';d.appendChild(a)}
+      else{d.textContent=cell.value||''}
+      r.appendChild(d);
     });
+    scroll.appendChild(r);
+  });
+  container.appendChild(scroll);
+}
 
-    function showLoginError(msg) {
-      loginError.textContent = msg;
-      loginError.classList.remove('hidden');
+/* ===================== ENTRY MODE ===================== */
+let entryState={config:[],dataValues:[],filteredIdxs:[],inputTitles:[],dropdownCount:0,inputValues:{},subject:'',subSubject:'',subEnabled:false,baseInputCol:2,targetSheet:''};
+
+document.getElementById('entrySubject').addEventListener('change',function(){
+  const subject=this.value.trim();entryState.subject=subject;entryState.subSubject='';entryState.inputValues={};
+  document.getElementById('entryDropdowns').innerHTML='';document.getElementById('entryBtnGroup').style.display='none';
+  document.getElementById('entryStatus').innerHTML='';
+  const ssGroup=document.getElementById('entrySubSubjectGroup');
+  const ssSel=document.getElementById('entrySubSubject');
+  ssSel.innerHTML='<option value="">-- Select Sub-Subject --</option>';ssGroup.style.display='none';
+  if(!subject)return;
+  const lc=getLevelCols(currentLevel);
+  const rows=entryConfig.filter(r=>r&&String(r[0]||'').trim()===subject&&String(r[lc.sheetCol]||'').trim());
+  if(!rows.length)return;
+  const firstRow=rows[0];
+  const hasSub=String(firstRow[lc.subCol]||'').trim().toLowerCase()==='true';
+  entryState.subEnabled=hasSub;
+  if(hasSub){
+    ssGroup.style.display='block';
+    const subs=[...new Set(rows.map(r=>String(r[1]||'').trim()).filter(v=>v))];
+    subs.forEach(s=>{const o=document.createElement('option');o.value=s;o.textContent=s;ssSel.appendChild(o)});
+  }else{
+    const cfgIdx=entryConfig.indexOf(firstRow);
+    applyEntryConfig(cfgIdx);
+  }
+});
+
+document.getElementById('entrySubSubject').addEventListener('change',function(){
+  const ss=this.value.trim();entryState.subSubject=ss;entryState.inputValues={};
+  document.getElementById('entryDropdowns').innerHTML='';document.getElementById('entryBtnGroup').style.display='none';
+  if(!ss)return;
+  const idx=entryConfig.findIndex(r=>r&&String(r[0]||'').trim()===entryState.subject&&String(r[1]||'').trim()===ss);
+  if(idx>=0)applyEntryConfig(idx);
+});
+
+async function applyEntryConfig(idx){
+  const row=entryConfig[idx]||[];
+  const lc=getLevelCols(currentLevel);
+  entryState.subEnabled=String(row[lc.subCol]||'').trim().toLowerCase()==='true';
+  entryState.baseInputCol=entryState.subEnabled?2:1;
+  const totalInputs=Math.max(0,parseInt(row[25]||'0',10)||0);
+  entryState.dropdownCount=Math.max(0,parseInt(row[26]||'0',10)||0);
+  const titles=[];for(let i=0;i<totalInputs;i++)titles.push(String(row[entryState.baseInputCol+i]||''));
+  entryState.inputTitles=titles;
+  entryState.targetSheet=String(row[lc.sheetCol]||'').trim();
+  if(!entryState.targetSheet)return;
+  try{
+    const vals=await fetchSheet(entryState.targetSheet,'A:'+CONFIG.DATA_FETCH_END_COL);
+    entryState.dataValues=vals||[];
+    entryState.filteredIdxs=[];
+    for(let i=0;i<entryState.dataValues.length;i++){
+      const r=entryState.dataValues[i]||[];
+      if(String(r[0]||'').trim()!==entryState.subject)continue;
+      if(entryState.subEnabled&&String(r[1]||'').trim()!==entryState.subSubject)continue;
+      entryState.filteredIdxs.push(i);
     }
+    buildEntryFields();
+  }catch(e){document.getElementById('entryStatus').innerHTML='<div class="status-msg" style="color:red">Error: '+e.message+'</div>'}
+}
 
-    function showApp() {
-      loginPage.style.display = 'none';
-      appContainer.style.display = 'block';
-      
-      userAvatar.textContent = currentUser.charAt(0).toUpperCase();
-      userName.textContent = currentUser;
-      userLevel.textContent = currentUserLevel.charAt(0).toUpperCase() + currentUserLevel.slice(1);
-      
-      // Update title based on user level
-      const levelTitle = document.getElementById('levelTitle');
-      if (levelTitle) {
-        const levelName = currentUserLevel.charAt(0).toUpperCase() + currentUserLevel.slice(1);
-        levelTitle.textContent = `A Cloud Based Data System For ${levelName} Level`;
-      }
-      
-      if (!appInitialized) {
-        initApp();
-      }
+function buildEntryFields(){
+  const container=document.getElementById('entryDropdowns');container.innerHTML='';
+  entryState.inputTitles.forEach((label,idx)=>{
+    const div=document.createElement('div');div.className='form-group';
+    const lbl=document.createElement('label');lbl.textContent=label;div.appendChild(lbl);
+    if(idx<entryState.dropdownCount){
+      const wrap=document.createElement('div');wrap.className='select-wrapper';
+      const sel=document.createElement('select');sel.className='colorful-select g'+(idx%5+2);sel.dataset.label=label;
+      sel.innerHTML=`<option value="">Select ${label}</option>`;
+      const opts=getEntryOptions(idx);
+      opts.forEach(v=>{const o=document.createElement('option');o.value=v;o.textContent=v;if(entryState.inputValues[label]===v)o.selected=true;sel.appendChild(o)});
+      sel.addEventListener('change',e=>{entryState.inputValues[label]=e.target.value;buildEntryFields()});
+      wrap.appendChild(sel);div.appendChild(wrap);
+    }else{
+      const inp=document.createElement('input');inp.type='text';inp.placeholder='Enter '+label;inp.dataset.label=label;
+      inp.value=entryState.inputValues[label]||'';
+      inp.addEventListener('input',e=>{entryState.inputValues[label]=e.target.value});
+      div.appendChild(inp);
     }
+    container.appendChild(div);
+  });
+  document.getElementById('entryBtnGroup').style.display=entryState.inputTitles.length?'flex':'none';
+}
 
-    function handleLogout() {
-      currentUser = null;
-      currentPassword = null;
-      currentUserLevel = null;
-      appInitialized = false;
-      
-      localStorage.removeItem('kkso_user');
-      localStorage.removeItem('kkso_password');
-      localStorage.removeItem('kkso_level');
-      
-      if (credentialCheckInterval) {
-        clearInterval(credentialCheckInterval);
-        credentialCheckInterval = null;
-      }
-      
-      // Clear selects
-      viewSubject.innerHTML = '<option value="">-- Select Subject --</option>';
-      viewSubSubject.innerHTML = '<option value="">-- Select Sub-Subject --</option>';
-      entrySubject.innerHTML = '<option value="">-- Select Subject --</option>';
-      entrySubSubject.innerHTML = '<option value="">-- Select Sub-Subject --</option>';
-      viewDropdowns.innerHTML = '';
-      entryInputs.innerHTML = '';
-      viewOutput.innerHTML = '';
-      viewOutput.classList.add('hidden');
-      entryStatus.innerHTML = '';
-      
-      // Reset state
-      state.viewSelectedSubject = '';
-      state.viewSelectedSubSubject = '';
-      state.viewInputValues = {};
-      state.entrySelectedSubject = '';
-      state.entrySelectedSubSubject = '';
-      state.entryInputValues = {};
-      
-      appContainer.style.display = 'none';
-      loginPage.style.display = 'flex';
-      userIdInput.value = '';
-      passwordInput.value = '';
-      loginError.classList.add('hidden');
-    }
+function getEntryOptions(curIdx){
+  const base=entryState.baseInputCol;
+  let idxs=entryState.filteredIdxs.slice();
+  for(let i=0;i<curIdx;i++){
+    const k=entryState.inputTitles[i],v=entryState.inputValues[k];
+    if(v)idxs=idxs.filter(ri=>String((entryState.dataValues[ri]||[])[base+i]||'')===v);
+  }
+  const set=new Set();
+  idxs.forEach(ri=>{const v=(entryState.dataValues[ri]||[])[base+curIdx];if(v!=null&&v!=='')set.add(String(v))});
+  return[...set];
+}
 
-    function startCredentialCheck() {
-      if (credentialCheckInterval) clearInterval(credentialCheckInterval);
-      
-      async function checkCredentials() {
-        if (!currentUser || !currentPassword) return;
-        
-        try {
-          const userRange = `A${CONFIG.USER_START_ROW}:C${CONFIG.USER_END_ROW}`;
-          const credentials = await fetchSheet(CONFIG.SHEET_NAME, userRange);
-          let isValid = false;
-          
-          for (const row of credentials) {
-            if (row[0] && row[1]) {
-              if (String(row[0]).trim() === currentUser && String(row[1]).trim() === currentPassword) {
-                isValid = true;
-                break;
-              }
-            }
-          }
-          
-          if (!isValid) {
-            alert("Your credentials have been changed. You will be logged out.");
-            handleLogout();
-          }
-        } catch (error) {
-          // Silently ignore errors
+async function handleEntrySubmit(){
+  const statusEl=document.getElementById('entryStatus');
+  if(!entryState.inputTitles.every(k=>entryState.inputValues[k])){statusEl.innerHTML='<div class="status-msg" style="background:#fef2f2;color:#dc2626">❌ Please fill all fields</div>';return}
+  const dataArr=[entryState.subject];
+  if(entryState.subEnabled)dataArr.push(entryState.subSubject);
+  entryState.inputTitles.forEach(k=>dataArr.push(entryState.inputValues[k]||''));
+  while(dataArr.length<15)dataArr.push('');
+  const now=new Date();
+  const dt=now.toLocaleDateString('en-GB')+', '+now.toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
+  dataArr.push(currentUser);dataArr.push(dt);dataArr.push(currentLevel);
+  try{
+    statusEl.innerHTML='<div class="status-msg" style="background:#eff6ff;color:#2563eb">Submitting...</div>';
+    await fetch(CONFIG.APPS_SCRIPT_URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({spreadsheetId:CONFIG.SHEET_ID,sheetName:entryState.targetSheet,data:dataArr})});
+    statusEl.innerHTML='<div class="status-msg" style="background:#f0fdf4;color:#16a34a">✅ Data submitted successfully</div>';
+    entryState.inputTitles.forEach((k,i)=>{if(i>=entryState.dropdownCount)entryState.inputValues[k]=''});
+    buildEntryFields();
+  }catch(e){statusEl.innerHTML='<div class="status-msg" style="background:#fef2f2;color:#dc2626">❌ Error: '+e.message+'</div>'}
+}
+
+function handleEntryClear(){
+  entryState.inputTitles.forEach((k,i)=>{if(i>=entryState.dropdownCount)entryState.inputValues[k]=''});
+  document.getElementById('entryStatus').innerHTML='';buildEntryFields();
+}
+
+/* ===================== MY DATA ===================== */
+let allMyEntries=[];
+let myEntrySheetMap={};
+
+async function loadMyData(){
+  const lc=getLevelCols(currentLevel);
+  // Build personal info
+  const piDiv=document.getElementById('personalInfo');
+  if(currentUserPersonal.some(v=>v)){
+    let html='<div class="personal-card"><h3>👤 Personal Information</h3><div class="personal-grid">';
+    html+=`<div class="personal-item"><div class="p-label">User ID</div><div class="p-value">${currentUser}</div></div>`;
+    html+=`<div class="personal-item"><div class="p-label">Level</div><div class="p-value">${currentLevel}</div></div>`;
+    CONFIG.PERSONAL_DATA_LABELS.forEach((label,i)=>{
+      const val=currentUserPersonal[i];
+      if(val)html+=`<div class="personal-item"><div class="p-label">${label}</div><div class="p-value">${val}</div></div>`;
+    });
+    html+='</div></div>';piDiv.innerHTML=html;
+  }else{piDiv.innerHTML=''}
+
+  // Collect ALL target sheets from ENTRY config for this user level
+  allMyEntries=[];myEntrySheetMap={};
+  const sheetNames=[...new Set(entryConfig.filter(r=>r&&String(r[lc.sheetCol]||'').trim()).map(r=>String(r[lc.sheetCol]).trim()))];
+
+  for(const sn of sheetNames){
+    try{
+      const data=await fetchSheet(sn,'K:'+CONFIG.DATA_FETCH_END_COL);
+      for(let i=0;i<data.length;i++){
+        const row=data[i]||[];
+        const submitter=String(row[15]||'').trim(); // Column Z = index 15 from K (K=0,L=1,...Z=15)
+        if(submitter===currentUser){
+          allMyEntries.push({sheet:sn,subject:String(row[0]||'').trim(),subSubject:String(row[1]||'').trim(),data:row,rowIdx:i+1});
         }
       }
-      
-      // Ravi you can change the credential check interval here
-      // 3600000 = 1 hour, 7200000 = 2 hours
-      credentialCheckInterval = setInterval(checkCredentials, CONFIG.CREDENTIAL_CHECK_INTERVAL);
+    }catch(e){}
+  }
+
+  // Sort newest first (by date in column AA = index 16 from K)
+  allMyEntries.sort((a,b)=>{
+    const da=String((a.data||[])[16]||'');const db=String((b.data||[])[16]||'');
+    return db.localeCompare(da);
+  });
+
+  // Stats
+  const now=new Date();const todayStr=now.toLocaleDateString('en-GB');
+  const weekAgo=new Date(now);weekAgo.setDate(weekAgo.getDate()-7);
+  const monthStart=new Date(now.getFullYear(),now.getMonth(),1);
+  let today=0,week=0,month=0;
+  allMyEntries.forEach(e=>{
+    const ds=String((e.data||[])[16]||'');
+    if(ds.startsWith(todayStr))today++;
+    // Simple date parsing for week/month
+    const parts=ds.split(/[/,\s]+/);
+    if(parts.length>=3){
+      const d=new Date(parts[2]+'-'+parts[1]+'-'+parts[0]);
+      if(!isNaN(d)){if(d>=weekAgo)week++;if(d>=monthStart)month++}
     }
+  });
+  document.getElementById('statTotal').textContent=allMyEntries.length;
+  document.getElementById('statToday').textContent=today;
+  document.getElementById('statWeek').textContent=week;
+  document.getElementById('statMonth').textContent=month;
 
-    // ===================== MODE TOGGLE =====================
-    function setMode(mode) {
-      currentMode = mode;
-      
-      if (mode === 'view') {
-        viewModeBtn.classList.add('active');
-        entryModeBtn.classList.remove('active');
-        viewPanel.classList.remove('hidden');
-        entryPanel.classList.add('hidden');
-      } else {
-        viewModeBtn.classList.remove('active');
-        entryModeBtn.classList.add('active');
-        viewPanel.classList.add('hidden');
-        entryPanel.classList.remove('hidden');
-        viewOutput.classList.add('hidden');
-      }
+  // Subject filter - only subjects user has submitted
+  const mySubjects=[...new Set(allMyEntries.map(e=>e.subject).filter(v=>v))];
+  const filterSel=document.getElementById('mySubjectFilter');
+  filterSel.innerHTML='<option value="">-- All Entries --</option>';
+  mySubjects.forEach(s=>{const o=document.createElement('option');o.value=s;o.textContent=s;filterSel.appendChild(o)});
+  filterSel.onchange=()=>renderMyEntries(filterSel.value);
+
+  renderMyEntries('');
+}
+
+function renderMyEntries(filterSubject){
+  const container=document.getElementById('myEntriesTable');
+  let entries=allMyEntries;
+  if(filterSubject)entries=entries.filter(e=>e.subject===filterSubject);
+
+  if(!entries.length){container.innerHTML='<div style="text-align:center;color:#64748b;padding:20px">No entries found</div>';return}
+
+  const lc=getLevelCols(currentLevel);
+
+  // If specific subject selected, get input titles from entry config
+  let headers=['SL','Subject'];
+  let useDetailedHeaders=false;
+  let detailedConfig=null;
+
+  if(filterSubject){
+    // Find matching entry config row for this subject and user level
+    const cfgRow=entryConfig.find(r=>r&&String(r[0]||'').trim()===filterSubject&&String(r[lc.sheetCol]||'').trim());
+    if(cfgRow){
+      detailedConfig=cfgRow;
+      useDetailedHeaders=true;
+      const hasSub=String(cfgRow[lc.subCol]||'').trim().toLowerCase()==='true';
+      const baseCol=hasSub?2:1;
+      const inputCount=Math.max(0,parseInt(cfgRow[25]||'0',10)||0);
+      if(hasSub)headers.push('Sub-Subject');
+      for(let i=0;i<inputCount;i++)headers.push(String(cfgRow[baseCol+i]||'Input '+(i+1)));
     }
+  }
+  if(!useDetailedHeaders)headers.push('Data');
+  headers.push('Date/Time');
 
-    // ===================== INIT APP =====================
-    async function initApp() {
-      if (appInitialized) return;
-      appInitialized = true;
-      
-      try {
-        // Build dynamic ranges from config
-        const viewRange = `A${CONFIG.VIEW_CONFIG_START_ROW}:${CONFIG.CONFIG_END_COL}${CONFIG.VIEW_CONFIG_END_ROW}`;
-        const entryRange = `A${CONFIG.ENTRY_CONFIG_START_ROW}:${CONFIG.CONFIG_END_COL}${CONFIG.ENTRY_CONFIG_END_ROW}`;
-        
-        // Fetch view config
-        state.viewConfig = await fetchSheet(CONFIG.SHEET_NAME, viewRange, { valueRenderOption: "FORMATTED_VALUE" });
-        
-        // Fetch entry config
-        state.entryConfig = await fetchSheet(CONFIG.SHEET_NAME, entryRange, { valueRenderOption: "FORMATTED_VALUE" });
-        
-        // Get sheet column based on user level
-        const { sheetCol } = getSheetAndSubColumns();
-        
-        // Populate view subjects - only show subjects where user's sheet column has a value
-        const viewSubjects = state.viewConfig
-          .filter(r => {
-            if (!r || !r[0]) return false;
-            const subject = String(r[0]).trim();
-            if (!subject || subject.toLowerCase() === "subject") return false;
-            // Check if the sheet column for this user level has a value
-            const sheetName = String(r[sheetCol] || "").trim();
-            return sheetName !== "";
-          })
-          .map(r => String(r[0]).trim());
-        const uniqueViewSubjects = [...new Set(viewSubjects)];
-        
-        viewSubject.innerHTML = '<option value="">-- Select Subject --</option>';
-        uniqueViewSubjects.forEach(val => {
-          const opt = document.createElement('option');
-          opt.value = val;
-          opt.textContent = val;
-          viewSubject.appendChild(opt);
-        });
-        
-        // Populate entry subjects - only show subjects where user's sheet column has a value
-        const entrySubjects = state.entryConfig
-          .filter(r => {
-            if (!r || !r[0]) return false;
-            const subject = String(r[0]).trim();
-            if (!subject || subject.toLowerCase() === "subject") return false;
-            // Check if the sheet column for this user level has a value
-            const sheetName = String(r[sheetCol] || "").trim();
-            return sheetName !== "";
-          })
-          .map(r => String(r[0]).trim());
-        const uniqueEntrySubjects = [...new Set(entrySubjects)];
-        
-        entrySubject.innerHTML = '<option value="">-- Select Subject --</option>';
-        uniqueEntrySubjects.forEach(val => {
-          const opt = document.createElement('option');
-          opt.value = val;
-          opt.textContent = val;
-          entrySubject.appendChild(opt);
-        });
-        
-      } catch (error) {
-        console.error("Init error:", error);
-        alert("Failed to load app: " + error.message + "\n\nPlease check:\n1. Sheet ID is correct\n2. Sheet name 'master' exists\n3. Sheet is publicly shared");
+  let html='<div class="history-scroll"><table class="history-table"><thead><tr>';
+  headers.forEach(h=>{html+=`<th>${h}</th>`});
+  html+='</tr></thead><tbody>';
+
+  entries.forEach((entry,idx)=>{
+    html+='<tr>';
+    html+=`<td>${idx+1}</td>`;
+    html+=`<td>${entry.subject}</td>`;
+    if(useDetailedHeaders&&detailedConfig){
+      const hasSub=String(detailedConfig[lc.subCol]||'').trim().toLowerCase()==='true';
+      const baseCol=hasSub?2:1;
+      const inputCount=Math.max(0,parseInt(detailedConfig[25]||'0',10)||0);
+      if(hasSub)html+=`<td>${entry.subSubject||''}</td>`;
+      // Data columns start at index 2 from K (L=1, M=2... based on sub-subject)
+      const dataStart=hasSub?2:1;
+      for(let i=0;i<inputCount;i++){
+        html+=`<td>${String((entry.data||[])[dataStart+i]||'')}</td>`;
       }
+    }else{
+      // Show all data as comma separated
+      const dataCols=[];
+      for(let i=1;i<15;i++){const v=(entry.data||[])[i];if(v)dataCols.push(v)}
+      html+=`<td>${dataCols.join(', ')}</td>`;
     }
+    html+=`<td>${String((entry.data||[])[16]||'')}</td>`;
+    html+='</tr>';
+  });
 
-    // ===================== VIEW MODE =====================
-    viewSubject.addEventListener('change', handleViewSubjectChange);
-    viewSubSubject.addEventListener('change', handleViewSubSubjectChange);
+  html+='</tbody></table></div>';
+  container.innerHTML=html;
+}
 
-    async function handleViewSubjectChange() {
-      const subject = viewSubject.value.trim();
-      state.viewSelectedSubject = subject;
-      state.viewSelectedSubSubject = "";
-      state.viewInputValues = {};
-      viewDropdowns.innerHTML = "";
-      viewOutput.innerHTML = "";
-      viewOutput.classList.add('hidden');
-      
-      viewSubSubject.innerHTML = '<option value="">-- Select Sub-Subject --</option>';
-      viewSubSubject.disabled = true;
-      
-      if (!subject) {
-        viewSubSubjectGroup.classList.remove('hidden');
-        return;
-      }
-      
-      const { sheetCol, hasSubCol } = getSheetAndSubColumns();
-      
-      // Find rows for this subject
-      const subjectRows = state.viewConfig.filter(row => {
-        if (!row) return false;
-        const colA = String(row[0] ?? "").trim();
-        const colBLower = String(row[1] ?? "").trim().toLowerCase();
-        if (!colA) return false;
-        if (colBLower === "sub-subject") return false;
-        return colA === subject;
-      });
-      
-      if (!subjectRows.length) {
-        viewSubSubjectGroup.classList.add('hidden');
-        viewOutput.innerHTML = '<div class="status-error">No configuration found for this Subject.</div>';
-        viewOutput.classList.remove('hidden');
-        return;
-      }
-      
-      // Check if sub-subject is enabled based on user level column
-      const firstRow = subjectRows[0];
-      const firstRowIndex = state.viewConfig.indexOf(firstRow);
-      const hasSubFlag = String(firstRow[hasSubCol] ?? "").trim().toLowerCase();
-      const useSubSubject = hasSubFlag === "true";
-      
-      if (!useSubSubject) {
-        // No sub-subject
-        viewSubSubjectGroup.classList.add('hidden');
-        state.viewSubSubjectEnabled = false;
-        applyViewConfigRow(firstRowIndex);
-        return;
-      }
-      
-      // Has sub-subject
-      viewSubSubjectGroup.classList.remove('hidden');
-      state.viewSubSubjectEnabled = true;
-      
-      const subSet = new Set();
-      subjectRows.forEach(row => {
-        const colB = String(row[1] ?? "").trim();
-        if (colB && colB.toLowerCase() !== "sub-subject") subSet.add(colB);
-      });
-      
-      if (subSet.size === 0) {
-        viewOutput.innerHTML = '<div class="status-error">No sub-subjects found for this subject.</div>';
-        viewOutput.classList.remove('hidden');
-        return;
-      }
-      
-      viewSubSubject.disabled = false;
-      Array.from(subSet).forEach(ss => {
-        const opt = document.createElement('option');
-        opt.value = ss;
-        opt.textContent = ss;
-        viewSubSubject.appendChild(opt);
-      });
+function exportPDF(){window.print()}
+
+/* ===================== INBOX ===================== */
+let inboxData=[];
+async function loadInbox(){
+  try{
+    const data=await fetchSheet(CONFIG.INBOX_SHEET_NAME,'A:J');
+    inboxData=[];
+    // Also load user's personal email from master sheet
+    let userEmail='';
+    if(currentUserRow>0){
+      try{const pe=await fetchSheet(CONFIG.SHEET_NAME,`J${currentUserRow}:J${currentUserRow}`);userEmail=String((pe[0]||[])[0]||'').trim()}catch(e){}
     }
-
-    async function handleViewSubSubjectChange() {
-      const subject = state.viewSelectedSubject;
-      const subSubject = viewSubSubject.value.trim();
-      
-      state.viewSelectedSubSubject = subSubject;
-      state.viewInputValues = {};
-      viewDropdowns.innerHTML = "";
-      viewOutput.innerHTML = "";
-      viewOutput.classList.add('hidden');
-      
-      if (!subject || !subSubject) return;
-      
-      // Find the config row for this subject + sub-subject
-      const rowIndex = state.viewConfig.findIndex(r =>
-        r &&
-        String(r[0] || "").trim() === subject &&
-        String(r[1] || "").trim() === subSubject
-      );
-      
-      if (rowIndex === -1) {
-        viewOutput.innerHTML = '<div class="status-error">Configuration not found.</div>';
-        viewOutput.classList.remove('hidden');
-        return;
-      }
-      
-      applyViewConfigRow(rowIndex);
-    }
-
-    async function applyViewConfigRow(rowIndex) {
-      if (rowIndex < 0 || rowIndex >= state.viewConfig.length) {
-        viewOutput.innerHTML = '<div class="status-error">Configuration not found.</div>';
-        viewOutput.classList.remove('hidden');
-        return;
-      }
-      
-      const cfgRow = state.viewConfig[rowIndex] || [];
-      const { sheetCol, hasSubCol } = getSheetAndSubColumns();
-      
-      const hasSubFlag = String(cfgRow[hasSubCol] ?? "").trim().toLowerCase();
-      const subDisabled = hasSubFlag !== "true";
-      
-      state.viewBaseInputCol = subDisabled ? 1 : 2;
-      state.viewSubSubjectEnabled = !subDisabled;
-      
-      // Input count from column Z (index 25)
-      const rawInputCount = parseInt(cfgRow[CONFIG.COL.INPUT_COUNT], 10);
-      const inputCount = Math.max(0, Math.min(isNaN(rawInputCount) ? 0 : rawInputCount, 8));
-      
-      // Output count from column AA (index 26)
-      const rawOutputCount = parseInt(cfgRow[CONFIG.COL.OUTPUT_COUNT], 10);
-      const outputCount = Math.max(0, Math.min(isNaN(rawOutputCount) ? 0 : rawOutputCount, 15));
-      
-      // Build input titles (from C or B onwards)
-      const titles = [];
-      for (let i = 0; i < inputCount; i++) {
-        const colIndex = (subDisabled ? 1 : 2) + i;
-        titles.push(String(cfgRow[colIndex] || ""));
-      }
-      state.viewInputTitles = titles;
-      
-      // Build output titles (K to Y = indices 10 to 24)
-      state.viewOutputTitles = (cfgRow.slice(CONFIG.COL.OUTPUT_START, CONFIG.COL.OUTPUT_START + outputCount) || [])
-        .map(v => String(v || ""));
-      
-      // Get data sheet name based on user level
-      const dataSheetName = String(cfgRow[sheetCol] || "").trim();
-      if (!dataSheetName) {
-        viewOutput.innerHTML = '<div class="status-error">No data sheet configured for your access level.</div>';
-        viewOutput.classList.remove('hidden');
-        return;
-      }
-      
-      state.viewDataSource = { id: CONFIG.SHEET_ID, key: CONFIG.API_KEY, name: dataSheetName };
-      
-      try {
-        viewOutput.innerHTML = '<div style="text-align:center;padding:20px;">Loading data...</div>';
-        viewOutput.classList.remove('hidden');
-        
-        const dataRange = `A:${CONFIG.DATA_FETCH_END_COL}`;
-        const [values, formulas] = await Promise.all([
-          fetchSheet(dataSheetName, dataRange, { valueRenderOption: "FORMATTED_VALUE" }),
-          fetchSheet(dataSheetName, dataRange, { valueRenderOption: "FORMULA" })
-        ]);
-        
-        state.viewDataValues = values || [];
-        state.viewDataFormulas = formulas || [];
-        
-        const subject = state.viewSelectedSubject;
-        const subSubject = state.viewSelectedSubSubject;
-        
-        state.viewSubjectRowIdxs = [];
-        for (let i = 0; i < state.viewDataValues.length; i++) {
-          const r = state.viewDataValues[i] || [];
-          const colA = String(r[0] ?? "").trim();
-          const colB = String(r[1] ?? "").trim();
-          
-          // Always match subject from Column A
-          if (!subject || colA !== subject) continue;
-          
-          // If sub-subject is enabled, also match Column B
-          if (state.viewSubSubjectEnabled) {
-            if (!subSubject || colB !== subSubject) continue;
-          }
-          
-          state.viewSubjectRowIdxs.push(i);
-        }
-        
-        viewOutput.innerHTML = "";
-        
-        if (state.viewSubjectRowIdxs.length === 0) {
-          viewOutput.innerHTML = '<div class="status-error">No data found for selected options.</div>';
-          viewOutput.classList.remove('hidden');
-          return;
-        }
-        
-        buildViewDropdowns();
-        checkAndShowViewOutput();
-        
-      } catch (error) {
-        console.error(error);
-        viewOutput.innerHTML = '<div class="status-error">Failed to load data. Check your connection.</div>';
-        viewOutput.classList.remove('hidden');
+    for(let i=0;i<data.length;i++){
+      const row=data[i]||[];
+      if(String(row[0]||'').trim()===currentUser){
+        inboxData.push({row:i+1,to:row[0]||'',from:row[1]||'',date:row[2]||'',type:String(row[3]||'message').toLowerCase(),
+          subject:row[4]||'',message:row[5]||'',link:row[6]||'',status:String(row[7]||'unread').toLowerCase(),
+          priority:String(row[8]||'medium').toLowerCase(),email:String(row[9]||'').trim()||userEmail});
       }
     }
+    inboxData.sort((a,b)=>String(b.date).localeCompare(String(a.date)));
+    renderInboxStats();renderInboxCards('all');
+    // Update unread badge
+    const unread=inboxData.filter(m=>m.status==='unread').length;
+    const badge=document.getElementById('unreadBadge');
+    if(unread>0){badge.textContent=unread;badge.style.display='inline-flex'}else{badge.style.display='none'}
+  }catch(e){document.getElementById('inboxCards').innerHTML='<div style="text-align:center;color:#64748b;padding:20px">No inbox data or error loading</div>'}
+}
 
-    function buildViewDropdowns() {
-      viewDropdowns.innerHTML = "";
-      if (!state.viewInputTitles.length) return;
-      
-      state.viewInputTitles.forEach((label, idx) => {
-        const group = document.createElement('div');
-        group.className = 'form-group';
-        
-        const labelEl = document.createElement('label');
-        labelEl.textContent = label;
-        
-        const wrapper = document.createElement('div');
-        wrapper.className = 'select-wrapper';
-        
-        const selectEl = document.createElement('select');
-        selectEl.className = `select-g${(idx % 5) + 1}`;
-        selectEl.innerHTML = `<option value="">-- Select ${label} --</option>`;
-        selectEl.dataset.label = label;
-        
-        selectEl.addEventListener('change', (e) => {
-          state.viewInputValues[label] = e.target.value;
-          buildViewDropdowns();
-          checkAndShowViewOutput();
-        });
-        
-        const options = getViewDropdownOptions(idx);
-        options.forEach((val) => {
-          const opt = document.createElement('option');
-          opt.value = val;
-          opt.textContent = val;
-          if (state.viewInputValues[label] === val) opt.selected = true;
-          selectEl.appendChild(opt);
-        });
-        
-        wrapper.appendChild(selectEl);
-        group.appendChild(labelEl);
-        group.appendChild(wrapper);
-        viewDropdowns.appendChild(group);
-      });
-    }
+function renderInboxStats(){
+  const total=inboxData.length,unread=inboxData.filter(m=>m.status==='unread').length;
+  const tasks=inboxData.filter(m=>m.type==='task'&&m.status!=='done').length;
+  const high=inboxData.filter(m=>m.priority==='high'&&m.status!=='done').length;
+  document.getElementById('inboxStats').innerHTML=`
+    <div class="inbox-stat"><div class="is-num">${total}</div><div class="is-label">Total</div></div>
+    <div class="inbox-stat"><div class="is-num" style="color:#ef4444">${unread}</div><div class="is-label">Unread</div></div>
+    <div class="inbox-stat"><div class="is-num" style="color:#2563eb">${tasks}</div><div class="is-label">Tasks</div></div>
+    <div class="inbox-stat"><div class="is-num" style="color:#dc2626">${high}</div><div class="is-label">High Priority</div></div>`;
+  const types=['all','task','pdf','message','notice'];
+  const typeIcons={all:'📬',task:'📋',pdf:'📄',message:'💬',notice:'📢'};
+  let fhtml='';
+  types.forEach(t=>{fhtml+=`<button class="inbox-filter-btn ${t==='all'?'active':''}" onclick="filterInbox('${t}')">${typeIcons[t]} ${t.charAt(0).toUpperCase()+t.slice(1)}</button>`});
+  document.getElementById('inboxFilters').innerHTML=fhtml;
+}
 
-    function getViewDropdownOptions(currentIdx) {
-      const baseCol = state.viewBaseInputCol || 2;
-      let idxs = state.viewSubjectRowIdxs.slice();
-      
-      for (let i = 0; i < currentIdx; i++) {
-        const key = state.viewInputTitles[i];
-        const val = state.viewInputValues[key];
-        if (val) {
-          const col = baseCol + i;
-          idxs = idxs.filter((ri) => {
-            const r = state.viewDataValues[ri] || [];
-            return String(r[col] ?? "") === String(val);
-          });
-        }
-      }
-      
-      const targetCol = baseCol + currentIdx;
-      const set = new Set();
-      idxs.forEach((ri) => {
-        const r = state.viewDataValues[ri] || [];
-        const v = r[targetCol];
-        if (v !== undefined && v !== null && v !== "") set.add(String(v));
-      });
-      
-      return Array.from(set);
-    }
+function filterInbox(type){
+  document.querySelectorAll('.inbox-filter-btn').forEach(b=>b.classList.remove('active'));
+  event.target.classList.add('active');
+  renderInboxCards(type);
+}
 
-    function checkAndShowViewOutput() {
-      if (state.viewInputTitles.length > 0 && !state.viewInputTitles.every(k => state.viewInputValues[k])) {
-        viewOutput.innerHTML = "";
-        viewOutput.classList.add('hidden');
-        return;
-      }
-      
-      const baseCol = state.viewBaseInputCol || 2;
-      let idxs = state.viewSubjectRowIdxs.slice();
-      
-      state.viewInputTitles.forEach((k, i) => {
-        const target = state.viewInputValues[k];
-        const col = baseCol + i;
-        idxs = idxs.filter((ri) => {
-          const r = state.viewDataValues[ri] || [];
-          return String(r[col] ?? "") === String(target);
-        });
-      });
-      
-      const outputs = idxs.map((ri) => {
-        const rowValues = state.viewDataValues[ri] || [];
-        const rowFormulas = state.viewDataFormulas[ri] || [];
-        const start = CONFIG.COL.OUTPUT_START; // K = 10
-        const end = start + state.viewOutputTitles.length;
-        const cells = [];
-        for (let c = start; c < end; c++) {
-          cells.push({
-            value: rowValues[c] ?? "",
-            formula: rowFormulas[c] ?? ""
-          });
-        }
-        return cells;
-      });
-      
-      renderViewOutput(outputs);
-    }
-
-    function renderViewOutput(dataCells) {
-      viewOutput.innerHTML = "";
-      viewOutput.classList.add('hidden');
-      
-      if (!dataCells || dataCells.length === 0) return;
-      
-      const heading = document.createElement('div');
-      heading.className = 'output-title';
-      heading.textContent = 'Your Result';
-      viewOutput.appendChild(heading);
-      
-      const scrollContainer = document.createElement('div');
-      scrollContainer.className = 'output-scroll';
-      
-      const colCount = state.viewOutputTitles.length;
-      const gridStyle = `grid-template-columns: repeat(${colCount}, minmax(150px, 1fr));`;
-      
-      // Header row using grid
-      const headerRow = document.createElement('div');
-      headerRow.className = 'output-grid';
-      headerRow.style.cssText = gridStyle;
-      state.viewOutputTitles.forEach((title) => {
-        const cell = document.createElement('div');
-        cell.textContent = title;
-        cell.classList.add('output-header');
-        headerRow.appendChild(cell);
-      });
-      scrollContainer.appendChild(headerRow);
-      
-      // Data rows using grid
-      dataCells.forEach((row) => {
-        const rowEl = document.createElement('div');
-        rowEl.className = 'output-grid';
-        rowEl.style.cssText = gridStyle;
-        
-        row.forEach((cellObj) => {
-          const cell = document.createElement('div');
-          
-          const maybeFormula = typeof cellObj.formula === "string" ? cellObj.formula : "";
-          const maybeValue = typeof cellObj.value === "string" ? cellObj.value : (cellObj.value ?? "").toString();
-          
-          const imgUrl = extractImageUrl(maybeFormula) || extractImageUrl(maybeValue);
-          
-          if (imgUrl) {
-            const img = document.createElement('img');
-            img.src = imgUrl;
-            img.alt = "Image";
-            img.loading = "lazy";
-            img.addEventListener('click', () => window.open(imgUrl, '_blank'));
-            cell.appendChild(img);
-          } else if (isHttpUrl(maybeValue)) {
-            const link = document.createElement('a');
-            link.href = driveToDirect(maybeValue);
-            link.target = "_blank";
-            link.textContent = "Open Link";
-            link.className = "file-link";
-            cell.appendChild(link);
-          } else {
-            cell.textContent = maybeValue ?? "";
-          }
-          
-          rowEl.appendChild(cell);
-        });
-        
-        scrollContainer.appendChild(rowEl);
-      });
-      
-      viewOutput.appendChild(scrollContainer);
-      viewOutput.classList.remove('hidden');
-    }
-
-    // ===================== ENTRY MODE =====================
-    entrySubject.addEventListener('change', handleEntrySubjectChange);
-    entrySubSubject.addEventListener('change', handleEntrySubSubjectChange);
-
-    async function handleEntrySubjectChange() {
-      const subject = entrySubject.value.trim();
-      state.entrySelectedSubject = subject;
-      state.entrySelectedSubSubject = "";
-      state.entryInputValues = {};
-      entryInputs.innerHTML = "";
-      entryStatus.innerHTML = "";
-      
-      entrySubSubject.innerHTML = '<option value="">-- Select Sub-Subject --</option>';
-      entrySubSubject.disabled = true;
-      
-      if (!subject) {
-        entrySubSubjectGroup.classList.remove('hidden');
-        return;
-      }
-      
-      const { sheetCol, hasSubCol } = getSheetAndSubColumns();
-      
-      // Find rows for this subject
-      const subjectRows = state.entryConfig.filter(row => {
-        if (!row) return false;
-        const colA = String(row[0] ?? "").trim();
-        const colBLower = String(row[1] ?? "").trim().toLowerCase();
-        if (!colA) return false;
-        if (colBLower === "sub-subject") return false;
-        return colA === subject;
-      });
-      
-      if (!subjectRows.length) {
-        entrySubSubjectGroup.classList.add('hidden');
-        entryStatus.innerHTML = '<div class="status-error">No configuration found for this Subject.</div>';
-        return;
-      }
-      
-      // Check if sub-subject is enabled
-      const firstRow = subjectRows[0];
-      const firstRowIndex = state.entryConfig.indexOf(firstRow);
-      const hasSubFlag = String(firstRow[hasSubCol] ?? "").trim().toLowerCase();
-      const useSubSubject = hasSubFlag === "true";
-      
-      if (!useSubSubject) {
-        entrySubSubjectGroup.classList.add('hidden');
-        state.entrySubSubjectEnabled = false;
-        applyEntryConfigRow(firstRowIndex);
-        return;
-      }
-      
-      // Has sub-subject
-      entrySubSubjectGroup.classList.remove('hidden');
-      state.entrySubSubjectEnabled = true;
-      
-      const subSet = new Set();
-      subjectRows.forEach(row => {
-        const colB = String(row[1] ?? "").trim();
-        if (colB && colB.toLowerCase() !== "sub-subject") subSet.add(colB);
-      });
-      
-      if (subSet.size === 0) {
-        entryStatus.innerHTML = '<div class="status-error">No sub-subjects found for this subject.</div>';
-        return;
-      }
-      
-      entrySubSubject.disabled = false;
-      Array.from(subSet).forEach(ss => {
-        const opt = document.createElement('option');
-        opt.value = ss;
-        opt.textContent = ss;
-        entrySubSubject.appendChild(opt);
-      });
-    }
-
-    async function handleEntrySubSubjectChange() {
-      const subject = state.entrySelectedSubject;
-      const subSubject = entrySubSubject.value.trim();
-      
-      state.entrySelectedSubSubject = subSubject;
-      state.entryInputValues = {};
-      entryInputs.innerHTML = "";
-      entryStatus.innerHTML = "";
-      
-      if (!subject || !subSubject) return;
-      
-      const rowIndex = state.entryConfig.findIndex(r =>
-        r &&
-        String(r[0] || "").trim() === subject &&
-        String(r[1] || "").trim() === subSubject
-      );
-      
-      if (rowIndex === -1) {
-        entryStatus.innerHTML = '<div class="status-error">Configuration not found.</div>';
-        return;
-      }
-      
-      applyEntryConfigRow(rowIndex);
-    }
-
-    async function applyEntryConfigRow(rowIndex) {
-      if (rowIndex < 0 || rowIndex >= state.entryConfig.length) {
-        entryStatus.innerHTML = '<div class="status-error">Configuration not found.</div>';
-        return;
-      }
-      
-      const cfgRow = state.entryConfig[rowIndex] || [];
-      const { sheetCol, hasSubCol } = getSheetAndSubColumns();
-      
-      const hasSubFlag = String(cfgRow[hasSubCol] ?? "").trim().toLowerCase();
-      const subDisabled = hasSubFlag !== "true";
-      
-      state.entryBaseInputCol = subDisabled ? 1 : 2;
-      state.entrySubSubjectEnabled = !subDisabled;
-      
-      // Input count from column Z (index 25)
-      const rawInputCount = parseInt(cfgRow[CONFIG.COL.INPUT_COUNT], 10);
-      const inputCount = Math.max(0, Math.min(isNaN(rawInputCount) ? 0 : rawInputCount, 8));
-      
-      // Dropdown count from column AA (index 26)
-      const rawDropdownCount = parseInt(cfgRow[CONFIG.COL.OUTPUT_COUNT], 10);
-      state.entryDropdownCount = Math.max(0, Math.min(isNaN(rawDropdownCount) ? 0 : rawDropdownCount, inputCount));
-      
-      // Build input titles
-      const titles = [];
-      for (let i = 0; i < inputCount; i++) {
-        const colIndex = (subDisabled ? 1 : 2) + i;
-        titles.push(String(cfgRow[colIndex] || ""));
-      }
-      state.entryInputTitles = titles;
-      
-      // Get data sheet for dropdowns
-      const dataSheetName = String(cfgRow[sheetCol] || "").trim();
-      if (!dataSheetName) {
-        entryStatus.innerHTML = '<div class="status-error">No data sheet configured for your access level.</div>';
-        return;
-      }
-      
-      state.entryDataSource = { id: CONFIG.SHEET_ID, key: CONFIG.API_KEY, name: dataSheetName };
-      
-      try {
-        // Fetch data for cascading dropdowns
-        const values = await fetchSheet(dataSheetName, "A:J", { valueRenderOption: "FORMATTED_VALUE" });
-        state.entryDataValues = values || [];
-        
-        const subject = state.entrySelectedSubject;
-        const subSubject = state.entrySelectedSubSubject;
-        
-        state.entrySubjectRowIdxs = [];
-        for (let i = 0; i < state.entryDataValues.length; i++) {
-          const r = state.entryDataValues[i] || [];
-          const colA = String(r[0] ?? "").trim();
-          const colB = String(r[1] ?? "").trim();
-          
-          // Always match subject from Column A
-          if (!subject || colA !== subject) continue;
-          
-          // If sub-subject is enabled, also match Column B
-          if (state.entrySubSubjectEnabled) {
-            if (!subSubject || colB !== subSubject) continue;
-          }
-          
-          state.entrySubjectRowIdxs.push(i);
-        }
-        
-        buildEntryInputs();
-        
-      } catch (error) {
-        console.error(error);
-        entryStatus.innerHTML = '<div class="status-error">Failed to load data. Check your connection.</div>';
+function renderInboxCards(type){
+  let items=type==='all'?inboxData:inboxData.filter(m=>m.type===type);
+  const container=document.getElementById('inboxCards');
+  if(!items.length){container.innerHTML='<div style="text-align:center;color:#64748b;padding:20px">No messages</div>';return}
+  let html='';
+  items.forEach(m=>{
+    const priBadge=m.priority==='high'?'badge-high':m.priority==='low'?'badge-low':'badge-medium';
+    const priText=m.priority==='high'?'🔴 High':m.priority==='low'?'🟢 Low':'🟡 Medium';
+    const typeBadge='badge-'+m.type;const typeText=m.type.charAt(0).toUpperCase()+m.type.slice(1);
+    const statusBadge=m.status==='unread'?'badge-unread':m.status==='done'?'badge-done':'badge-read';
+    const statusText=m.status.charAt(0).toUpperCase()+m.status.slice(1);
+    html+=`<div class="inbox-card" style="${m.status==='unread'?'border-left:4px solid #ef4444':''}">
+      <div class="inbox-card-header">
+        <span class="inbox-badge ${priBadge}">${priText}</span>
+        <span class="inbox-badge ${typeBadge}">${typeText}</span>
+        <span class="inbox-badge ${statusBadge}">${statusText}</span>
+      </div>
+      <div class="inbox-card-title">${m.subject}</div>
+      <div class="inbox-card-msg">${m.message}</div>
+      <div class="inbox-card-footer">
+        <div class="inbox-card-meta">From: ${m.from} | ${m.date}</div>
+        <div class="inbox-card-actions">`;
+    if(m.link){
+      if(m.email){
+        const fid=driveFileId(m.link);
+        const openUrl=fid?`https://drive.google.com/file/d/${fid}/view?authuser=${encodeURIComponent(m.email)}`:m.link;
+        html+=`<a href="${openUrl}" target="_blank" class="inbox-file-btn">📂 Open</a>`;
+      }else{
+        html+=`<button class="inbox-file-btn no-access" onclick="alert('Email not provided. Cannot open file.')">🔒 No Access</button>`;
       }
     }
+    if(m.status==='unread')html+=`<button class="inbox-action-btn mark-read" onclick="updateInboxStatus(${m.row},'read')">✓ Read</button>`;
+    if(m.type==='task'&&m.status!=='done')html+=`<button class="inbox-action-btn mark-done" onclick="updateInboxStatus(${m.row},'done')">✓ Done</button>`;
+    html+=`</div></div></div>`;
+  });
+  container.innerHTML=html;
+}
 
-    function buildEntryInputs() {
-      entryInputs.innerHTML = "";
-      if (!state.entryInputTitles.length) return;
-      
-      state.entryInputTitles.forEach((label, idx) => {
-        const group = document.createElement('div');
-        group.className = 'form-group';
-        
-        const labelEl = document.createElement('label');
-        labelEl.textContent = label;
-        group.appendChild(labelEl);
-        
-        if (idx < state.entryDropdownCount) {
-          // Dropdown
-          const wrapper = document.createElement('div');
-          wrapper.className = 'select-wrapper';
-          
-          const selectEl = document.createElement('select');
-          selectEl.className = `select-g${(idx % 5) + 1}`;
-          selectEl.id = `entryInput_${idx}`;
-          selectEl.innerHTML = `<option value="">-- Select ${label} --</option>`;
-          selectEl.dataset.label = label;
-          selectEl.dataset.type = 'dropdown';
-          
-          selectEl.addEventListener('change', (e) => {
-            state.entryInputValues[label] = e.target.value;
-            buildEntryInputs();
-          });
-          
-          const options = getEntryDropdownOptions(idx);
-          options.forEach((val) => {
-            const opt = document.createElement('option');
-            opt.value = val;
-            opt.textContent = val;
-            if (state.entryInputValues[label] === val) opt.selected = true;
-            selectEl.appendChild(opt);
-          });
-          
-          wrapper.appendChild(selectEl);
-          group.appendChild(wrapper);
-        } else {
-          // Text input
-          const input = document.createElement('input');
-          input.type = 'text';
-          input.className = 'text-input';
-          input.id = `entryInput_${idx}`;
-          input.placeholder = `Enter ${label}`;
-          input.dataset.label = label;
-          input.dataset.type = 'text';
-          input.value = state.entryInputValues[label] || '';
-          
-          input.addEventListener('input', (e) => {
-            state.entryInputValues[label] = e.target.value;
-          });
-          
-          group.appendChild(input);
-        }
-        
-        entryInputs.appendChild(group);
-      });
-    }
-
-    function getEntryDropdownOptions(currentIdx) {
-      const baseCol = state.entryBaseInputCol || 2;
-      let idxs = state.entrySubjectRowIdxs.slice();
-      
-      for (let i = 0; i < currentIdx; i++) {
-        const key = state.entryInputTitles[i];
-        const val = state.entryInputValues[key];
-        if (val) {
-          const col = baseCol + i;
-          idxs = idxs.filter((ri) => {
-            const r = state.entryDataValues[ri] || [];
-            return String(r[col] ?? "") === String(val);
-          });
-        }
-      }
-      
-      const targetCol = baseCol + currentIdx;
-      const set = new Set();
-      idxs.forEach((ri) => {
-        const r = state.entryDataValues[ri] || [];
-        const v = r[targetCol];
-        if (v !== undefined && v !== null && v !== "") set.add(String(v));
-      });
-      
-      return Array.from(set);
-    }
-
-    async function handleEntrySubmit() {
-      entryStatus.innerHTML = "";
-      
-      if (!state.entrySelectedSubject) {
-        entryStatus.innerHTML = '<div class="status-error">Please select a Subject.</div>';
-        return;
-      }
-      
-      if (state.entrySubSubjectEnabled && !state.entrySelectedSubSubject) {
-        entryStatus.innerHTML = '<div class="status-error">Please select a Sub-Subject.</div>';
-        return;
-      }
-      
-      // Check all inputs are filled
-      for (const title of state.entryInputTitles) {
-        if (!state.entryInputValues[title]) {
-          entryStatus.innerHTML = `<div class="status-error">Please fill in "${title}".</div>`;
-          return;
-        }
-      }
-      
-      // Build data array
-      // Start with Subject
-      const dataToSubmit = [state.entrySelectedSubject];
-      
-      // Add Sub-Subject if enabled
-      if (state.entrySubSubjectEnabled) {
-        dataToSubmit.push(state.entrySelectedSubSubject);
-      }
-      
-      // Add all input values
-      state.entryInputTitles.forEach(title => {
-        dataToSubmit.push(state.entryInputValues[title] || "");
-      });
-      
-      // Pad to 15 values for columns K:Y (15 columns)
-      while (dataToSubmit.length < 15) {
-        dataToSubmit.push("");
-      }
-      
-      // Add submitter name (column Z)
-      dataToSubmit.push(currentUser);
-      
-      // Add date/time (column AA)
-      const now = new Date();
-      const dateTime = now.toLocaleDateString('en-GB') + ", " + 
-        now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true }).toLowerCase();
-      dataToSubmit.push(dateTime);
-      
-      // Add user level (column AB)
-      dataToSubmit.push(currentUserLevel);
-      
-      try {
-        entryStatus.innerHTML = '<div style="text-align:center;padding:10px;">Submitting...</div>';
-        
-        const response = await fetch(CONFIG.APPS_SCRIPT_URL, {
-          method: 'POST',
-          mode: 'no-cors',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            spreadsheetId: CONFIG.SHEET_ID,
-            sheetName: state.entryDataSource.name,
-            data: dataToSubmit,
-            startColumn: 'K'
-          })
-        });
-        
-        // Ravi you can change the success message here
-        entryStatus.innerHTML = '<div class="status-success">✅ Data submitted successfully</div>';
-        
-        // Clear text inputs only
-        document.querySelectorAll('#entryInputs input[data-type="text"]').forEach(input => {
-          input.value = '';
-          const label = input.dataset.label;
-          if (label) state.entryInputValues[label] = '';
-        });
-        
-      } catch (error) {
-        console.error(error);
-        entryStatus.innerHTML = '<div class="status-error">Failed to submit. Please try again.</div>';
-      }
-    }
-
-    function handleEntryClear() {
-      // Clear only text inputs
-      document.querySelectorAll('#entryInputs input[data-type="text"]').forEach(input => {
-        input.value = '';
-        const label = input.dataset.label;
-        if (label) state.entryInputValues[label] = '';
-      });
-      entryStatus.innerHTML = "";
-    }
-
-    // ===================== CHECK SESSION =====================
-    function checkSession() {
-      const savedUser = localStorage.getItem('kkso_user');
-      const savedPassword = localStorage.getItem('kkso_password');
-      const savedLevel = localStorage.getItem('kkso_level');
-      
-      if (savedUser && savedPassword && savedLevel) {
-        currentUser = savedUser;
-        currentPassword = savedPassword;
-        currentUserLevel = savedLevel;
-        showApp();
-        startCredentialCheck();
-      }
-    }
-
-    // ===================== CHANGE PASSWORD =====================
-    function openPasswordModal() {
-      document.getElementById('passwordModal').classList.add('active');
-      document.getElementById('currentPassword').value = '';
-      document.getElementById('newPassword').value = '';
-      document.getElementById('confirmPassword').value = '';
-      document.getElementById('passwordMessage').style.display = 'none';
-    }
-
-    function closePasswordModal() {
-      document.getElementById('passwordModal').classList.remove('active');
-    }
-
-    async function handleChangePassword() {
-      const currentPwd = document.getElementById('currentPassword').value.trim();
-      const newPwd = document.getElementById('newPassword').value.trim();
-      const confirmPwd = document.getElementById('confirmPassword').value.trim();
-      const messageEl = document.getElementById('passwordMessage');
-      const submitBtn = document.getElementById('changePwdSubmit');
-
-      // Validation
-      if (!currentPwd || !newPwd || !confirmPwd) {
-        messageEl.textContent = 'Please fill in all fields';
-        messageEl.className = 'modal-message error';
-        messageEl.style.display = 'block';
-        return;
-      }
-
-      if (currentPwd !== currentPassword) {
-        messageEl.textContent = 'Current password is incorrect';
-        messageEl.className = 'modal-message error';
-        messageEl.style.display = 'block';
-        return;
-      }
-
-      if (newPwd !== confirmPwd) {
-        messageEl.textContent = 'New passwords do not match';
-        messageEl.className = 'modal-message error';
-        messageEl.style.display = 'block';
-        return;
-      }
-
-      if (newPwd.length < 4) {
-        messageEl.textContent = 'Password must be at least 4 characters';
-        messageEl.className = 'modal-message error';
-        messageEl.style.display = 'block';
-        return;
-      }
-
-      if (newPwd === currentPwd) {
-        messageEl.textContent = 'New password must be different from current';
-        messageEl.className = 'modal-message error';
-        messageEl.style.display = 'block';
-        return;
-      }
-
-      // Find user row in A51:B81
-      try {
-        submitBtn.disabled = true;
-        submitBtn.textContent = 'Changing...';
-
-        // First, find the row number for this user
-        const userRange = `A${CONFIG.USER_START_ROW}:B${CONFIG.USER_END_ROW}`;
-        const credentials = await fetchSheet(CONFIG.SHEET_NAME, userRange);
-        let userRowIndex = -1;
-
-        for (let i = 0; i < credentials.length; i++) {
-          if (credentials[i][0] && String(credentials[i][0]).trim() === currentUser) {
-            userRowIndex = i;
-            break;
-          }
-        }
-
-        if (userRowIndex === -1) {
-          messageEl.textContent = 'User not found in database';
-          messageEl.className = 'modal-message error';
-          messageEl.style.display = 'block';
-          submitBtn.disabled = false;
-          submitBtn.textContent = 'Change';
-          return;
-        }
-
-        // Calculate actual row number based on config
-        const actualRow = CONFIG.USER_START_ROW + userRowIndex;
-
-        // Send password update request to Apps Script
-        const response = await fetch(CONFIG.APPS_SCRIPT_URL, {
-          method: 'POST',
-          mode: 'no-cors',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            action: 'changePassword',
-            spreadsheetId: CONFIG.SHEET_ID,
-            sheetName: CONFIG.SHEET_NAME,
-            row: actualRow,
-            column: 'B',
-            newPassword: newPwd
-          })
-        });
-
-        // Clear local password (will re-login with new password)
-        currentPassword = newPwd;
-        localStorage.setItem('kkso_password', newPwd);
-
-        // Ravi you can change the password success message here
-        messageEl.textContent = '✅ Password changed! Logging out...';
-        messageEl.className = 'modal-message success';
-        messageEl.style.display = 'block';
-
-        // Ravi you can change the logout delay here (2000 = 2 seconds)
-        // Auto logout after 2 seconds so user can login with new password
-        setTimeout(() => {
-          closePasswordModal();
-          handleLogout();
-        }, 2000);
-
-      } catch (error) {
-        console.error('Password change error:', error);
-        messageEl.textContent = 'Failed to change password. Please try again.';
-        messageEl.className = 'modal-message error';
-        messageEl.style.display = 'block';
-      } finally {
-        submitBtn.disabled = false;
-        submitBtn.textContent = 'Change';
-      }
-    }
-
-    // ===================== REFRESH APP =====================
-    // This function refreshes the app to get latest updates
-    function refreshApp() {
-      // Clear cache and reload
-      if ('caches' in window) {
-        caches.keys().then(names => {
-          names.forEach(name => caches.delete(name));
-        });
-      }
-      // Force reload from server
-      location.reload(true);
-    }
-
-    // ===================== VERSION DISPLAY =====================
-    function showVersion() {
-      const versionEl = document.getElementById('appVersion');
-      if (versionEl) {
-        versionEl.textContent = 'v' + APP_VERSION;
-      }
-    }
-
-    // Initialize
-    showVersion();
-    checkSession();
-  </script>
+async function updateInboxStatus(row,status){
+  try{
+    await fetch(CONFIG.APPS_SCRIPT_URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({spreadsheetId:CONFIG.SHEET_ID,sheetName:CONFIG.INBOX_SHEET_NAME,action:'updateInboxStatus',row:row,status:status})});
+    const item=inboxData.find(m=>m.row===row);if(item)item.status=status;
+    renderInboxStats();renderInboxCards('all');
+    const unread=inboxData.filter(m=>m.status==='unread').length;
+    const badge=document.getElementById('unreadBadge');
+    if(unread>0){badge.textContent=unread;badge.style.display='inline-flex'}else{badge.style.display='none'}
+  }catch(e){}
+}
+</script>
 </body>
 </html>
