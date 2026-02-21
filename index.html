@@ -18,6 +18,7 @@ body{font-family:'Inter',system-ui,sans-serif;color:var(--text);min-height:100vh
 @keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-8px)}75%{transform:translateX(8px)}}
 @keyframes driveGradient{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
 @keyframes slideUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+@keyframes fadeIn{from{opacity:0;transform:scale(0.97)}to{opacity:1;transform:scale(1)}}
 .page{max-width:1200px;margin:0 auto;padding:8px 8px 30px;display:none}
 
 /* ===== LOGIN ===== */
@@ -146,19 +147,6 @@ input[type="text"]:focus{box-shadow:0 0 0 3px var(--ring)}
 .inbox-file-btn.no-access{background:#94a3b8;cursor:not-allowed}
 .unread-badge{background:#ef4444;color:white;border-radius:50%;width:18px;height:18px;display:inline-flex;align-items:center;justify-content:center;font-size:10px;font-weight:700}
 
-/* ===== MORE / APPS SECTION ===== */
-.apps-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px;margin-top:12px}
-.app-card{background:white;border:2px solid var(--card-border);border-radius:16px;padding:20px;text-align:center;cursor:pointer;transition:all 0.3s;box-shadow:0 4px 15px rgba(0,0,0,0.08)}
-.app-card:hover{transform:translateY(-4px);box-shadow:0 8px 25px rgba(102,126,234,0.3);border-color:#667eea}
-.app-card .app-icon{font-size:48px;margin-bottom:12px;display:block}
-.app-card .app-name{font-size:16px;font-weight:800;color:var(--text);margin-bottom:6px}
-.app-card .app-desc{font-size:11px;color:var(--muted);line-height:1.4}
-.app-card .app-access{font-size:9px;padding:3px 8px;border-radius:10px;margin-top:8px;display:inline-block;background:#e0e7ff;color:#4f46e5;font-weight:700}
-.embedded-app-container{position:relative;width:100%;height:calc(100vh - 200px);min-height:500px;background:white;border-radius:16px;overflow:hidden;box-shadow:var(--shadow)}
-.embedded-app-container iframe{width:100%;height:100%;border:none}
-.back-btn{position:absolute;top:10px;left:10px;z-index:10;padding:8px 16px;background:linear-gradient(135deg,#667eea,#764ba2);color:white;border:none;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;box-shadow:0 4px 15px rgba(102,126,234,0.4);display:flex;align-items:center;gap:6px}
-.back-btn:hover{transform:scale(1.05)}
-
 /* ===== HISTORY TABLE ===== */
 .history-table{width:100%;border-collapse:separate;border-spacing:0 4px;font-size:12px}
 .history-table thead{position:sticky;top:0;z-index:2}
@@ -172,6 +160,44 @@ input[type="text"]:focus{box-shadow:0 0 0 3px var(--ring)}
 .modal-card{background:white;border-radius:20px;padding:30px;width:100%;max-width:380px;box-shadow:0 25px 60px rgba(0,0,0,0.3)}
 .modal-card h2{font-size:20px;font-weight:800;text-align:center;margin-bottom:20px}
 .modal-close{position:absolute;top:12px;right:16px;background:none;border:none;font-size:24px;cursor:pointer;color:#64748b}
+
+/* ===== MORE / SIMULATOR ===== */
+/* More dropdown grid */
+.more-section{animation:slideUp 0.3s ease}
+.more-header{background:linear-gradient(135deg,#1a0533,#2d1b69,#1a0533);border-radius:14px;padding:14px;margin-bottom:10px;text-align:center}
+.more-header h2{font-size:16px;font-weight:900;background:linear-gradient(90deg,#fbbf24,#ef4444,#ec4899,#06b6d4,#22c55e,#fbbf24);background-size:300% 300%;-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;animation:rainbowText 4s ease infinite}
+.more-header p{font-size:11px;color:rgba(255,255,255,0.7);margin-top:4px}
+.more-apps-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px;margin-bottom:10px}
+.more-app-card{background:var(--card);border:1px solid var(--card-border);border-radius:14px;padding:16px 10px;text-align:center;cursor:pointer;transition:all 0.25s;box-shadow:0 4px 12px rgba(0,0,0,0.07);position:relative;overflow:hidden}
+.more-app-card::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(102,126,234,0.08),rgba(118,75,162,0.08));opacity:0;transition:opacity 0.3s}
+.more-app-card:hover::before{opacity:1}
+.more-app-card:hover{transform:translateY(-3px);box-shadow:0 8px 25px rgba(102,126,234,0.25);border-color:#a5b4fc}
+.more-app-card:active{transform:scale(0.97)}
+.more-app-icon{font-size:36px;margin-bottom:8px;display:block;line-height:1}
+.more-app-name{font-size:12px;font-weight:800;color:var(--text);margin-bottom:4px;line-height:1.2}
+.more-app-desc{font-size:10px;color:var(--muted);line-height:1.3}
+.more-app-badge{position:absolute;top:8px;right:8px;background:linear-gradient(135deg,#667eea,#764ba2);color:white;font-size:8px;font-weight:700;padding:2px 6px;border-radius:6px}
+.more-loading{text-align:center;padding:30px;color:var(--muted);font-size:13px}
+.more-empty{text-align:center;padding:30px;background:var(--card);border-radius:14px;border:1px solid var(--card-border)}
+.more-empty p{font-size:13px;color:var(--muted)}
+
+/* App embed viewer */
+.app-embed-wrapper{display:none;position:fixed;inset:0;z-index:500;background:#0f172a;flex-direction:column}
+.app-embed-wrapper.visible{display:flex}
+.app-embed-topbar{display:flex;align-items:center;gap:10px;padding:8px 14px;background:linear-gradient(135deg,#1e1b4b,#312e81,#4c1d95);min-height:46px;flex-shrink:0}
+.app-embed-back{background:rgba(255,255,255,0.15);border:1px solid rgba(255,255,255,0.25);color:white;padding:6px 14px;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;transition:all 0.2s;white-space:nowrap}
+.app-embed-back:hover{background:rgba(255,255,255,0.28)}
+.app-embed-title{color:white;font-size:13px;font-weight:800;flex:1;text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.app-embed-iframe{flex:1;border:none;width:100%;background:white}
+.app-embed-loading{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:#0f172a;color:white;font-size:14px;flex-direction:column;gap:10px;z-index:1}
+.app-embed-spinner{width:36px;height:36px;border:3px solid rgba(255,255,255,0.2);border-top-color:#667eea;border-radius:50%;animation:spin 0.8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* More section future apps placeholder style */
+.more-app-card.future{opacity:0.55;cursor:default}
+.more-app-card.future:hover{transform:none;box-shadow:0 4px 12px rgba(0,0,0,0.07);border-color:var(--card-border)}
+.more-app-card.future::before{display:none}
+.more-access-denied{background:linear-gradient(135deg,#fef2f2,#fff);border:1px solid #fca5a5;border-radius:14px;padding:20px;text-align:center;color:#dc2626;font-size:13px;font-weight:700}
 
 /* ===== THEME: ADMIN ===== */
 body.theme-admin{background:linear-gradient(135deg,#667eea 0%,#764ba2 25%,#f093fb 50%,#5ee7df 75%,#667eea 100%);background-size:400% 400%;animation:gradientShift 12s ease infinite}
@@ -229,8 +255,9 @@ input[type="text"]{font-size:15px;padding:12px 14px}
 .form-group label{font-size:11px}
 .output-grid div{min-width:120px;font-size:13px;padding:8px}
 .output-header{font-size:11px}
-.apps-grid{grid-template-columns:1fr}
-.embedded-app-container{height:calc(100vh - 250px);min-height:400px}
+.more-apps-grid{grid-template-columns:repeat(2,1fr)}
+.app-embed-topbar{padding:6px 10px}
+.app-embed-title{font-size:11px}
 }
 </style>
 </head>
@@ -273,6 +300,7 @@ input[type="text"]{font-size:15px;padding:12px 14px}
 <h3 id="versionText">© Created by Ravi Malhotra</h3>
 </div>
 
+<!-- MODE TOGGLE — 4 tabs now including More -->
 <div class="mode-toggle">
 <button class="mode-btn active" onclick="switchMode('view')" id="viewBtn">📋 View Data</button>
 <button class="mode-btn" onclick="switchMode('entry')" id="entryBtn">✏️ Entry Data</button>
@@ -313,7 +341,7 @@ input[type="text"]{font-size:15px;padding:12px 14px}
 <button class="mydata-btn" onclick="switchMyData('inbox')" id="myInboxBtn">📥 My Inbox <span class="unread-badge" id="unreadBadge" style="display:none">0</span></button>
 </div>
 
-<!-- MY ENTRIES -->
+<!-- MY ENTRIES - NO personal info here -->
 <div id="myEntriesSection">
 <div class="panel">
 <div class="stats-row" id="statsRow">
@@ -329,7 +357,7 @@ input[type="text"]{font-size:15px;padding:12px 14px}
 </div>
 </div>
 
-<!-- MY INBOX -->
+<!-- MY INBOX - WITH personal info -->
 <div id="myInboxSection" style="display:none">
 <div class="panel">
 <div id="inboxPersonalInfo"></div>
@@ -340,23 +368,20 @@ input[type="text"]{font-size:15px;padding:12px 14px}
 </div>
 </div>
 
-<!-- MORE / APPS MODE -->
+<!-- MORE MODE (Simulator hub) -->
 <div id="moreSection" style="display:none">
-<div class="panel">
-<div class="panel-title">📦 More Apps</div>
-<div id="appsContainer">
-<div style="text-align:center;padding:20px;color:var(--muted)">Loading apps...</div>
+<div class="more-section">
+<div class="more-header">
+<h2>📦 More Apps & Tools</h2>
+<p>Select an app or simulator below to launch it</p>
+</div>
+<div id="moreAppsContainer">
+<div class="more-loading">⏳ Loading apps...</div>
 </div>
 </div>
 </div>
 
-<!-- EMBEDDED APP CONTAINER -->
-<div id="embeddedSection" style="display:none">
-<div class="embedded-app-container">
-<button class="back-btn" onclick="backToApps()">← Back to More</button>
-<iframe id="embeddedFrame" src=""></iframe>
-</div>
-</div>
+</div><!-- end appPage -->
 
 <!-- PASSWORD MODAL -->
 <div class="modal-overlay" id="pwdModal">
@@ -371,18 +396,38 @@ input[type="text"]{font-size:15px;padding:12px 14px}
 </div>
 </div>
 
+<!-- APP EMBED FULLSCREEN WRAPPER -->
+<div class="app-embed-wrapper" id="appEmbedWrapper">
+<div class="app-embed-topbar">
+<button class="app-embed-back" onclick="closeEmbeddedApp()">← Back</button>
+<div class="app-embed-title" id="appEmbedTitle">Loading…</div>
+<div style="width:60px;flex-shrink:0"></div><!-- spacer to balance back btn -->
+</div>
+<div class="app-embed-loading" id="appEmbedLoading">
+<div class="app-embed-spinner"></div>
+<span>Loading app…</span>
+</div>
+<iframe class="app-embed-iframe" id="appEmbedIframe" src="" allowfullscreen
+  sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-modals"
+  onload="onIframeLoad()"></iframe>
+</div>
+
 <script>
 /* ===================== APP VERSION ===================== */
-const APP_VERSION="4.6.0";
+/* Ravi you can change the version number here */
+const APP_VERSION="4.5.1";
 
 /* ===================== CONFIGURATION ===================== */
+/* Ravi you can change all settings here */
 let CONFIG={
   SHEET_ID:"136Fq_Pchc_kPJwEoBUgfRKzDqnYUs730w3vMhnSO9HI",
   API_KEY:"AIzaSyAjBceUqA-G1ueMCsqevOiPEhb2Nk-pOhI",
   SHEET_NAME:"master",
-  APPS_SCRIPT_URL:"https://script.google.com/macros/s/AkfycbzluFhsV2Ib6I-BK5OdFacx7hjK8nTZSRLlisBedPCr1-nGD5L6MDp85iJhv075odfa/exec",
+  APPS_SCRIPT_URL:"https://script.google.com/macros/s/AKfycbzluFhsV2Ib6I-BK5OdFacx7hjK8nTZSRLlisBedPCr1-nGD5L6MDp85iJhv075odfa/exec",
   INBOX_SHEET_NAME:"inbox",
   APPS_SHEET_NAME:"apps",
+  /* Ravi: Put your GitHub raw base URL here — the folder where you upload HTML files */
+  GITHUB_BASE_URL:"https://ravimalhotra.github.io/kkso-kbga/",
   VIEW_CONFIG_START_ROW:1,
   VIEW_CONFIG_END_ROW:50,
   ENTRY_CONFIG_START_ROW:82,
@@ -392,14 +437,13 @@ let CONFIG={
   CONFIG_END_COL:"AG",
   DATA_FETCH_END_COL:"AB",
   PERSONAL_DATA_LABELS:['Full Name','Designation','Department','Phone','Email','Address','Joining Date'],
-  CREDENTIAL_CHECK_INTERVAL:3600000,
-  GITHUB_BASE_URL:"https://Ravikumarmalhotra.github.io/KKSO-KBGA-APP"
+  CREDENTIAL_CHECK_INTERVAL:3600000
 };
 
 /* ===================== STATE ===================== */
 let currentUser="",currentPassword="",currentLevel="",currentUserRow=-1,currentUserPersonal=[];
 let viewConfig=[],entryConfig=[],appInitialized=false,credentialCheckInterval=null;
-let availableApps=[];
+let moreAppsLoaded=false;
 
 /* ===================== HELPERS ===================== */
 async function fetchSheet(sheetName,range){
@@ -438,6 +482,7 @@ function buildPersonalHTML(targetId){
 }
 
 /* ===================== CLOCK ===================== */
+/* Ravi you can change the clock format here - year:'2-digit' shows 25 instead of 2025 */
 function updateClock(){const el=document.querySelector('.clock-widget');if(!el)return;const now=new Date();el.querySelector('.day').textContent=now.toLocaleDateString(undefined,{weekday:'short'});el.querySelector('.date').textContent=now.toLocaleDateString(undefined,{year:'2-digit',month:'short',day:'numeric'});el.querySelector('.time').textContent=now.toLocaleTimeString(undefined,{hour:'2-digit',minute:'2-digit',second:'2-digit'})}
 updateClock();setInterval(updateClock,1000);
 
@@ -491,7 +536,7 @@ function handleLogout(){
   localStorage.removeItem('kkso_user');localStorage.removeItem('kkso_password');
   localStorage.removeItem('kkso_level');localStorage.removeItem('kkso_row');
   currentUser='';currentPassword='';currentLevel='';currentUserRow=-1;currentUserPersonal=[];
-  appInitialized=false;
+  appInitialized=false;moreAppsLoaded=false;
   document.getElementById('appPage').style.display='none';
   document.getElementById('loginPage').style.display='flex';
   document.getElementById('loginUser').value='';document.getElementById('loginPass').value='';
@@ -500,6 +545,8 @@ function handleLogout(){
   document.getElementById('viewSubject').innerHTML='<option value="">-- Select Subject --</option>';
   document.getElementById('entrySubject').innerHTML='<option value="">-- Select Subject --</option>';
   document.getElementById('mySubjectFilter').innerHTML='<option value="">-- All Entries --</option>';
+  document.getElementById('moreAppsContainer').innerHTML='<div class="more-loading">⏳ Loading apps...</div>';
+  closeEmbeddedApp();
 }
 
 /* ===================== SESSION RESTORE ===================== */
@@ -551,13 +598,12 @@ function switchMode(mode){
   document.getElementById('entrySection').style.display=mode==='entry'?'block':'none';
   document.getElementById('mydataSection').style.display=mode==='mydata'?'block':'none';
   document.getElementById('moreSection').style.display=mode==='more'?'block':'none';
-  document.getElementById('embeddedSection').style.display='none';
   document.getElementById('viewBtn').classList.toggle('active',mode==='view');
   document.getElementById('entryBtn').classList.toggle('active',mode==='entry');
   document.getElementById('mydataBtn').classList.toggle('active',mode==='mydata');
   document.getElementById('moreBtn').classList.toggle('active',mode==='more');
   if(mode==='mydata')loadMyData();
-  if(mode==='more')loadApps();
+  if(mode==='more')loadMoreApps();
 }
 function switchMyData(sub){
   document.getElementById('myEntriesSection').style.display=sub==='entries'?'block':'none';
@@ -589,65 +635,130 @@ async function initApp(){
   }catch(e){console.error('Init error:',e)}
 }
 
-/* ===================== APPS / MORE SECTION ===================== */
-async function loadApps(){
-  const container=document.getElementById('appsContainer');
+/* ===================== MORE / SIMULATOR ===================== */
+
+/* Card gradient palettes for visual variety */
+const APP_CARD_GRADIENTS=[
+  'linear-gradient(135deg,#667eea,#764ba2)',
+  'linear-gradient(135deg,#f093fb,#f5576c)',
+  'linear-gradient(135deg,#4facfe,#00f2fe)',
+  'linear-gradient(135deg,#43e97b,#38f9d7)',
+  'linear-gradient(135deg,#fa709a,#fee140)',
+  'linear-gradient(135deg,#a18cd1,#fbc2eb)',
+  'linear-gradient(135deg,#ffecd2,#fcb69f)',
+  'linear-gradient(135deg,#a1c4fd,#c2e9fb)',
+];
+
+async function loadMoreApps(){
+  if(moreAppsLoaded)return;
+  const container=document.getElementById('moreAppsContainer');
+  container.innerHTML='<div class="more-loading">⏳ Loading apps list…</div>';
+
+  /* Try to fetch from "apps" sheet. Columns: A=Name B=File C=Icon D=Admin E=Supervisor F=Staff */
+  let appsData=[];
   try{
-    const data=await fetchSheet(CONFIG.APPS_SHEET_NAME,'A:F');
-    if(!data||data.length<2){
-      container.innerHTML='<div style="text-align:center;padding:20px;color:#64748b">No apps configured yet. Add apps to "apps" sheet.</div>';
-      return;
-    }
-    availableApps=[];
-    for(let i=1;i<data.length;i++){
-      const row=data[i]||[];
-      const appName=String(row[0]||'').trim();
-      const fileUrl=String(row[1]||'').trim();
+    const rows=await fetchSheet(CONFIG.APPS_SHEET_NAME,'A:F');
+    /* Skip header row (row 0) */
+    for(let i=1;i<rows.length;i++){
+      const row=rows[i]||[];
+      const name=String(row[0]||'').trim();
+      const file=String(row[1]||'').trim();
       const icon=String(row[2]||'📦').trim();
       const adminAccess=String(row[3]||'false').trim().toLowerCase()==='true';
       const supervisorAccess=String(row[4]||'false').trim().toLowerCase()==='true';
       const staffAccess=String(row[5]||'false').trim().toLowerCase()==='true';
-      if(!appName)continue;
-      const hasAccess=(currentLevel==='admin'&&adminAccess)||(currentLevel==='supervisor'&&supervisorAccess)||(currentLevel==='staff'&&staffAccess);
-      if(hasAccess){
-        availableApps.push({name:appName,fileUrl:fileUrl,icon:icon,adminAccess,supervisorAccess,staffAccess});
-      }
+      if(!name||!file)continue;
+      appsData.push({name,file,icon,adminAccess,supervisorAccess,staffAccess});
     }
-    if(availableApps.length===0){
-      container.innerHTML='<div style="text-align:center;padding:20px;color:#64748b">No apps available for your access level.</div>';
-      return;
-    }
-    let html='<div class="apps-grid">';
-    availableApps.forEach(app=>{
-      html+=`<div class="app-card" onclick="openApp('${app.fileUrl}')">
-        <span class="app-icon">${app.icon}</span>
-        <div class="app-name">${app.name}</div>
-        <div class="app-desc">Click to open ${app.name}</div>
-        <div class="app-access">${currentLevel.toUpperCase()}</div>
-      </div>`;
-    });
-    html+='</div>';
-    container.innerHTML=html;
   }catch(e){
-    container.innerHTML='<div style="text-align:center;padding:20px;color:#dc2626">Error loading apps: '+e.message+'</div>';
+    /* Sheet not found or error — fallback to hardcoded ETS SIMULATION */
+    console.warn('Could not load apps sheet, using fallback.',e);
+    appsData=[
+      {name:'ETS SIMULATION',file:'etssimulation.html',icon:'🎮',adminAccess:true,supervisorAccess:true,staffAccess:false}
+    ];
   }
+
+  /* Filter by access level */
+  const accessKey=currentLevel==='admin'?'adminAccess':currentLevel==='supervisor'?'supervisorAccess':'staffAccess';
+  const accessible=appsData.filter(a=>a[accessKey]);
+
+  if(appsData.length===0){
+    container.innerHTML='<div class="more-empty"><p>⚠️ No apps configured yet.<br>Add apps to the "apps" sheet in your spreadsheet.</p></div>';
+    return;
+  }
+
+  let html='<div class="more-apps-grid">';
+  appsData.forEach((app,idx)=>{
+    const canAccess=app[accessKey];
+    const gradBg=APP_CARD_GRADIENTS[idx%APP_CARD_GRADIENTS.length];
+    if(canAccess){
+      html+=`<div class="more-app-card" onclick="openEmbeddedApp('${app.name}','${app.file}')" title="Open ${app.name}">
+        <div class="more-app-badge" style="background:${gradBg}">LAUNCH</div>
+        <span class="more-app-icon">${app.icon}</span>
+        <div class="more-app-name">${app.name}</div>
+        <div class="more-app-desc">Tap to open</div>
+      </div>`;
+    }else{
+      html+=`<div class="more-app-card future" title="Access restricted">
+        <div class="more-app-badge" style="background:#94a3b8">LOCKED</div>
+        <span class="more-app-icon" style="filter:grayscale(1)">${app.icon}</span>
+        <div class="more-app-name" style="color:#94a3b8">${app.name}</div>
+        <div class="more-app-desc" style="color:#cbd5e1">No access</div>
+      </div>`;
+    }
+  });
+  html+='</div>';
+
+  if(accessible.length===0){
+    html+='<div class="more-access-denied">🔒 No apps are available for your access level ('+currentLevel+'). Please contact Admin.</div>';
+  }
+
+  container.innerHTML=html;
+  moreAppsLoaded=true;
 }
 
-function openApp(fileUrl){
-  let url=fileUrl;
-  if(!isUrl(fileUrl)){
-    url=CONFIG.GITHUB_BASE_URL+'/'+fileUrl;
+/* ===================== EMBEDDED APP VIEWER ===================== */
+
+function openEmbeddedApp(appName,fileName){
+  /* Build URL: if fileName starts with http use as-is, else prepend GitHub base */
+  let url=fileName;
+  if(!/^https?:\/\//i.test(fileName)){
+    /* Use raw GitHub Pages URL */
+    url=CONFIG.GITHUB_BASE_URL.replace(/\/$/,'')+'/'+fileName;
   }
-  document.getElementById('moreSection').style.display='none';
-  document.getElementById('embeddedSection').style.display='block';
-  document.getElementById('embeddedFrame').src=url;
+
+  const wrapper=document.getElementById('appEmbedWrapper');
+  const iframe=document.getElementById('appEmbedIframe');
+  const titleEl=document.getElementById('appEmbedTitle');
+  const loadingEl=document.getElementById('appEmbedLoading');
+
+  titleEl.textContent=appName;
+  loadingEl.style.display='flex';
+  iframe.src='';/* reset */
+  wrapper.classList.add('visible');
+  document.body.style.overflow='hidden';
+
+  /* Small delay to show loader before setting iframe src */
+  setTimeout(()=>{iframe.src=url;},80);
 }
 
-function backToApps(){
-  document.getElementById('embeddedSection').style.display='none';
-  document.getElementById('moreSection').style.display='block';
-  document.getElementById('embeddedFrame').src='';
+function onIframeLoad(){
+  const loadingEl=document.getElementById('appEmbedLoading');
+  if(loadingEl)loadingEl.style.display='none';
 }
+
+function closeEmbeddedApp(){
+  const wrapper=document.getElementById('appEmbedWrapper');
+  const iframe=document.getElementById('appEmbedIframe');
+  wrapper.classList.remove('visible');
+  document.body.style.overflow='';
+  setTimeout(()=>{iframe.src='';},300);
+}
+
+/* ESC key closes embedded app */
+document.addEventListener('keydown',function(e){
+  if(e.key==='Escape'){closeEmbeddedApp()}
+});
 
 /* ===================== VIEW MODE ===================== */
 let viewState={config:[],dataValues:[],dataFormulas:[],filteredIdxs:[],inputTitles:[],outputTitles:[],inputValues:{},subject:'',subSubject:'',subEnabled:false,baseInputCol:2};
@@ -904,6 +1015,8 @@ let allMyEntries=[];
 
 async function loadMyData(){
   const lc=getLevelCols(currentLevel);
+  /* NO personal info in My Entry Data - only in Inbox */
+
   allMyEntries=[];
   const sheetNames=[...new Set(entryConfig.filter(r=>r&&String(r[lc.sheetCol]||'').trim()).map(r=>String(r[lc.sheetCol]).trim()))];
 
@@ -1014,6 +1127,7 @@ function exportPDF(){window.print()}
 /* ===================== INBOX ===================== */
 let inboxData=[];
 async function loadInbox(){
+  /* Personal info ONLY in Inbox */
   buildPersonalHTML('inboxPersonalInfo');
 
   try{
@@ -1099,10 +1213,12 @@ function renderInboxCards(type){
 }
 
 async function updateInboxStatus(row,status,btnEl){
+  /* Ravi: This sends update to Apps Script and then reloads inbox from sheet */
   if(btnEl){btnEl.textContent='...';btnEl.disabled=true}
   try{
     await fetch(CONFIG.APPS_SCRIPT_URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'application/json'},
       body:JSON.stringify({spreadsheetId:CONFIG.SHEET_ID,sheetName:CONFIG.INBOX_SHEET_NAME,action:'updateInboxStatus',row:row,status:status})});
+    /* Wait 2 seconds for Apps Script to process, then reload inbox from sheet */
     setTimeout(async()=>{
       await loadInbox();
     },2000);
