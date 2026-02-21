@@ -3,557 +3,288 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <!-- Ravi you can change the browser tab title here -->
   <title>KKSO-KBGA DATA</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap" rel="stylesheet">
   <style>
-    /* ===================== ROOT VARIABLES ===================== */
     :root {
-      --text: #0f172a;
-      --muted: #475569;
-      --card: rgba(255,255,255,0.88);
-      --card-border: #e2e8f0;
-      --shadow: 0 10px 30px rgba(2,8,23,0.08);
-      --ring: rgba(79,70,229,0.35);
-      --g1: linear-gradient(135deg,#e0f2fe,#fef3c7);
-      --g2: linear-gradient(135deg,#fce7f3,#cffafe);
-      --g3: linear-gradient(135deg,#e9d5ff,#d1fae5);
-      --g4: linear-gradient(135deg,#f3e8ff,#e0f2fe);
-      --g5: linear-gradient(135deg,#fee2e2,#dbeafe);
-      --g6: linear-gradient(135deg,#ffedd5,#ede9fe);
+      --text:#0f172a; --muted:#475569; --card:rgba(255,255,255,0.88);
+      --card-border:#e2e8f0; --shadow:0 10px 30px rgba(2,8,23,0.08);
+      --ring:rgba(79,70,229,0.35);
+      --g1:linear-gradient(135deg,#e0f2fe,#fef3c7); --g2:linear-gradient(135deg,#fce7f3,#cffafe);
+      --g3:linear-gradient(135deg,#e9d5ff,#d1fae5); --g4:linear-gradient(135deg,#f3e8ff,#e0f2fe);
+      --g5:linear-gradient(135deg,#fee2e2,#dbeafe); --g6:linear-gradient(135deg,#ffedd5,#ede9fe);
     }
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    body {
-      font-family: 'Inter', system-ui, sans-serif;
-      color: var(--text);
-      min-height: 100vh;
-      background: linear-gradient(135deg,#eef2ff 0%,#f0fdf4 45%,#fff7ed 100%);
-      background-attachment: fixed;
-    }
-    /* ===================== ANIMATIONS ===================== */
-    @keyframes gradientShift {
-      0%{background-position:0% 50%}
-      50%{background-position:100% 50%}
-      100%{background-position:0% 50%}
-    }
-    @keyframes rainbowText {
-      0%{background-position:0% 50%}
-      50%{background-position:100% 50%}
-      100%{background-position:0% 50%}
-    }
-    @keyframes glowPulse {
-      0%,100%{box-shadow:0 0 20px rgba(139,92,246,0.4),0 0 40px rgba(236,72,153,0.2)}
-      50%{box-shadow:0 0 40px rgba(139,92,246,0.7),0 0 80px rgba(236,72,153,0.4)}
-    }
-    @keyframes blink {
-      0%,100%{opacity:1}
-      50%{opacity:0.3}
-    }
-    @keyframes fadeIn {
-      from{opacity:0;transform:translateY(10px)}
-      to{opacity:1;transform:translateY(0)}
-    }
-    @keyframes slideUp {
-      from{opacity:0;transform:translateY(20px)}
-      to{opacity:1;transform:translateY(0)}
-    }
-    @keyframes pulse {
-      0%,100%{transform:scale(1)}
-      50%{transform:scale(1.05)}
-    }
-    @keyframes shake {
-      0%,100%{transform:translateX(0)}
-      25%{transform:translateX(-8px)}
-      75%{transform:translateX(8px)}
-    }
-    @keyframes shimmer {
-      0%{transform:rotate(0deg)}
-      100%{transform:rotate(360deg)}
-    }
-    @keyframes driveGradient {
-      0%{background-position:0% 50%}
-      50%{background-position:100% 50%}
-      100%{background-position:0% 50%}
-    }
-    @keyframes countUp {
-      from{opacity:0;transform:scale(0.5)}
-      to{opacity:1;transform:scale(1)}
-    }
+    *{box-sizing:border-box;margin:0;padding:0;}
+    body{font-family:'Inter',system-ui,sans-serif;color:var(--text);min-height:100vh;background:linear-gradient(135deg,#eef2ff 0%,#f0fdf4 45%,#fff7ed 100%);background-attachment:fixed;}
+    @keyframes gradientShift{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
+    @keyframes rainbowText{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
+    @keyframes glowPulse{0%,100%{box-shadow:0 0 20px rgba(139,92,246,0.4),0 0 40px rgba(236,72,153,0.2)}50%{box-shadow:0 0 40px rgba(139,92,246,0.7),0 0 80px rgba(236,72,153,0.4)}}
+    @keyframes blink{0%,100%{opacity:1}50%{opacity:0.3}}
+    @keyframes fadeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+    @keyframes slideUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+    @keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.05)}}
+    @keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-8px)}75%{transform:translateX(8px)}}
+    @keyframes shimmer{0%{transform:rotate(0deg)}100%{transform:rotate(360deg)}}
+    @keyframes driveGradient{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
+    @keyframes countUp{from{opacity:0;transform:scale(0.5)}to{opacity:1;transform:scale(1)}}
 
-    /* ===================== THEMES ===================== */
-    /* Admin Theme - Purple/Pink */
-    body.theme-admin { background: linear-gradient(135deg,#4c1d95,#831843,#6d28d9,#9d174d,#4c1d95); background-size:400% 400%; animation:gradientShift 8s ease infinite; }
-    body.theme-admin .user-bar { background: linear-gradient(135deg,#2d1b69,#4a044e,#1e1b4b) !important; }
-    body.theme-admin .level-badge { background: linear-gradient(135deg,#7c3aed,#db2777) !important; }
-    body.theme-admin .user-avatar { background: linear-gradient(135deg,#7c3aed,#db2777) !important; border-color:#a78bfa !important; }
-    body.theme-admin .mode-btn.active { background: linear-gradient(135deg,#7c3aed,#db2777) !important; box-shadow:0 4px 15px rgba(124,58,237,0.5) !important; }
-    body.theme-admin .submit-btn { background: linear-gradient(135deg,#7c3aed,#db2777) !important; box-shadow:0 4px 15px rgba(124,58,237,0.4) !important; }
-    body.theme-admin .title-card { background: linear-gradient(135deg,#1a0533,#2d0a4e,#1a0533) !important; }
-    /* Supervisor Theme - Blue/Indigo */
-    body.theme-supervisor { background: linear-gradient(135deg,#1e3a8a,#0c4a6e,#1e40af,#075985,#1e3a8a); background-size:400% 400%; animation:gradientShift 8s ease infinite; }
-    body.theme-supervisor .user-bar { background: linear-gradient(135deg,#1e3a8a,#0c4a6e,#1e40af) !important; }
-    body.theme-supervisor .level-badge { background: linear-gradient(135deg,#2563eb,#0891b2) !important; }
-    body.theme-supervisor .user-avatar { background: linear-gradient(135deg,#2563eb,#0891b2) !important; border-color:#93c5fd !important; }
-    body.theme-supervisor .mode-btn.active { background: linear-gradient(135deg,#2563eb,#0891b2) !important; box-shadow:0 4px 15px rgba(37,99,235,0.5) !important; }
-    body.theme-supervisor .submit-btn { background: linear-gradient(135deg,#2563eb,#0891b2) !important; box-shadow:0 4px 15px rgba(37,99,235,0.4) !important; }
-    body.theme-supervisor .title-card { background: linear-gradient(135deg,#0a1628,#0c2461,#0a1628) !important; }
-    /* Staff Theme - Green/Teal */
-    body.theme-staff { background: linear-gradient(135deg,#064e3b,#134e4a,#065f46,#0f766e,#064e3b); background-size:400% 400%; animation:gradientShift 8s ease infinite; }
-    body.theme-staff .user-bar { background: linear-gradient(135deg,#064e3b,#134e4a,#065f46) !important; }
-    body.theme-staff .level-badge { background: linear-gradient(135deg,#059669,#0d9488) !important; }
-    body.theme-staff .user-avatar { background: linear-gradient(135deg,#059669,#0d9488) !important; border-color:#6ee7b7 !important; }
-    body.theme-staff .mode-btn.active { background: linear-gradient(135deg,#059669,#0d9488) !important; box-shadow:0 4px 15px rgba(5,150,105,0.5) !important; }
-    body.theme-staff .submit-btn { background: linear-gradient(135deg,#059669,#0d9488) !important; box-shadow:0 4px 15px rgba(5,150,105,0.4) !important; }
-    body.theme-staff .title-card { background: linear-gradient(135deg,#022c22,#064e3b,#022c22) !important; }
+    /* THEMES */
+    body.theme-admin{background:linear-gradient(135deg,#4c1d95,#831843,#6d28d9,#9d174d,#4c1d95);background-size:400% 400%;animation:gradientShift 8s ease infinite;}
+    body.theme-admin .user-bar{background:linear-gradient(135deg,#2d1b69,#4a044e,#1e1b4b)!important;}
+    body.theme-admin .level-badge{background:linear-gradient(135deg,#7c3aed,#db2777)!important;}
+    body.theme-admin .user-avatar{background:linear-gradient(135deg,#7c3aed,#db2777)!important;border-color:#a78bfa!important;}
+    body.theme-admin .mode-btn.active{background:linear-gradient(135deg,#7c3aed,#db2777)!important;box-shadow:0 4px 15px rgba(124,58,237,0.5)!important;}
+    body.theme-admin .submit-btn{background:linear-gradient(135deg,#7c3aed,#db2777)!important;box-shadow:0 4px 15px rgba(124,58,237,0.4)!important;}
+    body.theme-admin .title-card{background:linear-gradient(135deg,#1a0533,#2d0a4e,#1a0533)!important;}
+    body.theme-admin .mydata-tab.active{background:linear-gradient(135deg,#7c3aed,#db2777)!important;}
+    body.theme-supervisor{background:linear-gradient(135deg,#1e3a8a,#0c4a6e,#1e40af,#075985,#1e3a8a);background-size:400% 400%;animation:gradientShift 8s ease infinite;}
+    body.theme-supervisor .user-bar{background:linear-gradient(135deg,#1e3a8a,#0c4a6e,#1e40af)!important;}
+    body.theme-supervisor .level-badge{background:linear-gradient(135deg,#2563eb,#0891b2)!important;}
+    body.theme-supervisor .user-avatar{background:linear-gradient(135deg,#2563eb,#0891b2)!important;border-color:#93c5fd!important;}
+    body.theme-supervisor .mode-btn.active{background:linear-gradient(135deg,#2563eb,#0891b2)!important;box-shadow:0 4px 15px rgba(37,99,235,0.5)!important;}
+    body.theme-supervisor .submit-btn{background:linear-gradient(135deg,#2563eb,#0891b2)!important;box-shadow:0 4px 15px rgba(37,99,235,0.4)!important;}
+    body.theme-supervisor .title-card{background:linear-gradient(135deg,#0a1628,#0c2461,#0a1628)!important;}
+    body.theme-supervisor .mydata-tab.active{background:linear-gradient(135deg,#2563eb,#0891b2)!important;}
+    body.theme-staff{background:linear-gradient(135deg,#064e3b,#134e4a,#065f46,#0f766e,#064e3b);background-size:400% 400%;animation:gradientShift 8s ease infinite;}
+    body.theme-staff .user-bar{background:linear-gradient(135deg,#064e3b,#134e4a,#065f46)!important;}
+    body.theme-staff .level-badge{background:linear-gradient(135deg,#059669,#0d9488)!important;}
+    body.theme-staff .user-avatar{background:linear-gradient(135deg,#059669,#0d9488)!important;border-color:#6ee7b7!important;}
+    body.theme-staff .mode-btn.active{background:linear-gradient(135deg,#059669,#0d9488)!important;box-shadow:0 4px 15px rgba(5,150,105,0.5)!important;}
+    body.theme-staff .submit-btn{background:linear-gradient(135deg,#059669,#0d9488)!important;box-shadow:0 4px 15px rgba(5,150,105,0.4)!important;}
+    body.theme-staff .title-card{background:linear-gradient(135deg,#022c22,#064e3b,#022c22)!important;}
+    body.theme-staff .mydata-tab.active{background:linear-gradient(135deg,#059669,#0d9488)!important;}
 
-    /* ===================== LOGIN PAGE ===================== */
-    .login-page {
-      min-height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 20px;
-      background: linear-gradient(135deg,#667eea 0%,#764ba2 25%,#f64f59 50%,#c471ed 75%,#12c2e9 100%);
-      background-size: 400% 400%;
-      animation: gradientShift 8s ease infinite;
-    }
-    .login-card {
-      background: rgba(255,255,255,0.95);
-      backdrop-filter: blur(20px);
-      border: 1px solid rgba(255,255,255,0.3);
-      border-radius: 24px;
-      padding: 40px 36px;
-      width: 100%;
-      max-width: 420px;
-      box-shadow: 0 25px 50px rgba(0,0,0,0.2);
-      animation: slideUp 0.5s ease;
-    }
-    .login-logo {
-      width: 70px; height: 70px;
-      background: linear-gradient(135deg,#667eea,#764ba2);
-      border-radius: 20px;
-      display: flex; align-items: center; justify-content: center;
-      margin: 0 auto 20px;
-      font-size: 32px;
-      animation: pulse 2s ease infinite;
-      box-shadow: 0 10px 30px rgba(102,126,234,0.4);
-    }
-    .login-title { text-align:center; font-size:22px; font-weight:800; color:#1e293b; margin-bottom:6px; }
-    .login-subtitle { text-align:center; font-size:13px; color:#64748b; margin-bottom:28px; }
-    .login-field { margin-bottom:16px; }
-    .login-field label { display:block; font-size:12px; font-weight:700; color:#475569; margin-bottom:6px; text-transform:uppercase; letter-spacing:0.5px; }
-    .login-field input {
-      width:100%; padding:14px 16px;
-      border:2px solid #e2e8f0; border-radius:12px;
-      font-size:15px; outline:none; color:#1e293b;
-      background:#f8fafc;
-      transition: all 0.2s;
-    }
-    .login-field input:focus { border-color:#667eea; background:#fff; box-shadow:0 0 0 4px rgba(102,126,234,0.15); }
-    .login-btn {
-      width:100%; padding:15px;
-      background: linear-gradient(135deg,#667eea,#764ba2);
-      color:white; border:none; border-radius:12px;
-      font-size:15px; font-weight:700; cursor:pointer;
-      margin-top:8px;
-      box-shadow: 0 6px 20px rgba(102,126,234,0.4);
-      transition: all 0.2s;
-    }
-    .login-btn:hover { transform:translateY(-2px); box-shadow:0 10px 30px rgba(102,126,234,0.5); }
-    .login-error {
-      background:#fef2f2; border:1px solid #fecaca;
-      color:#dc2626; padding:12px 16px; border-radius:10px;
-      font-size:13px; margin-top:14px; text-align:center;
-      animation: shake 0.5s ease;
-    }
+    /* LOGIN */
+    .login-page{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px;background:linear-gradient(135deg,#667eea 0%,#764ba2 25%,#f64f59 50%,#c471ed 75%,#12c2e9 100%);background-size:400% 400%;animation:gradientShift 8s ease infinite;}
+    .login-card{background:rgba(255,255,255,0.95);backdrop-filter:blur(20px);border:1px solid rgba(255,255,255,0.3);border-radius:24px;padding:40px 36px;width:100%;max-width:420px;box-shadow:0 25px 50px rgba(0,0,0,0.2);animation:slideUp 0.5s ease;}
+    .login-logo{width:70px;height:70px;background:linear-gradient(135deg,#667eea,#764ba2);border-radius:20px;display:flex;align-items:center;justify-content:center;margin:0 auto 20px;font-size:32px;animation:pulse 2s ease infinite;box-shadow:0 10px 30px rgba(102,126,234,0.4);}
+    .login-title{text-align:center;font-size:22px;font-weight:800;color:#1e293b;margin-bottom:6px;}
+    .login-subtitle{text-align:center;font-size:13px;color:#64748b;margin-bottom:28px;}
+    .login-field{margin-bottom:16px;}
+    .login-field label{display:block;font-size:12px;font-weight:700;color:#475569;margin-bottom:6px;text-transform:uppercase;letter-spacing:0.5px;}
+    .login-field input{width:100%;padding:14px 16px;border:2px solid #e2e8f0;border-radius:12px;font-size:15px;outline:none;color:#1e293b;background:#f8fafc;transition:all 0.2s;}
+    .login-field input:focus{border-color:#667eea;background:#fff;box-shadow:0 0 0 4px rgba(102,126,234,0.15);}
+    .login-btn{width:100%;padding:15px;background:linear-gradient(135deg,#667eea,#764ba2);color:white;border:none;border-radius:12px;font-size:15px;font-weight:700;cursor:pointer;margin-top:8px;box-shadow:0 6px 20px rgba(102,126,234,0.4);transition:all 0.2s;}
+    .login-btn:hover{transform:translateY(-2px);box-shadow:0 10px 30px rgba(102,126,234,0.5);}
+    .login-error{background:#fef2f2;border:1px solid #fecaca;color:#dc2626;padding:12px 16px;border-radius:10px;font-size:13px;margin-top:14px;text-align:center;animation:shake 0.5s ease;}
 
-    /* ===================== APP CONTAINER ===================== */
-    .app-container { display:none; flex-direction:column; min-height:100vh; }
-    .page { max-width:1200px; margin:0 auto; padding:6px 8px 30px; }
+    /* APP */
+    .app-container{display:none;flex-direction:column;min-height:100vh;}
+    .page{max-width:1200px;margin:0 auto;padding:6px 8px 30px;}
 
-    /* ===================== HEADER STRIP ===================== */
-    .header-strip {
-      /* Ravi you can change header logos here */
-      display:flex; align-items:center; justify-content:space-between;
-      height:55px; padding:4px 8px;
-      background:radial-gradient(circle,rgba(63,94,251,0.18) 0%,rgba(255,255,255,1) 100%);
-      border:1px solid var(--card-border); border-radius:12px;
-      box-shadow:var(--shadow); overflow:hidden; margin-bottom:6px;
-    }
-    .h11,.h12,.h13 { height:100%; background-repeat:no-repeat; background-size:contain; background-position:center; }
+    /* HEADER STRIP */
+    .header-strip{display:flex;align-items:center;justify-content:space-between;height:55px;padding:4px 8px;background:radial-gradient(circle,rgba(63,94,251,0.18) 0%,rgba(255,255,255,1) 100%);border:1px solid var(--card-border);border-radius:12px;box-shadow:var(--shadow);overflow:hidden;margin-bottom:6px;}
+    .h11,.h12,.h13{height:100%;background-repeat:no-repeat;background-size:contain;background-position:center;}
     /* Ravi you can change logo URLs here */
-    .h11 { width:15%; background-image:url("https://lh3.googleusercontent.com/d/1oYWlcTQA9fugWbxnbyw9CUaRabmjUzlI"); }
-    .h12 { width:65%; background-image:url("https://lh3.googleusercontent.com/d/1Lq0ri1xMDU4PERzu3QAfuZ3XfkHMnF0b"); }
-    .h13 { width:20%; background-image:url("https://lh3.googleusercontent.com/d/1z57jNNPGjl3jZvXcCoTDcK7cWTeNIt87"); }
+    .h11{width:15%;background-image:url("https://lh3.googleusercontent.com/d/1oYWlcTQA9fugWbxnbyw9CUaRabmjUzlI");}
+    .h12{width:65%;background-image:url("https://lh3.googleusercontent.com/d/1Lq0ri1xMDU4PERzu3QAfuZ3XfkHMnF0b");}
+    .h13{width:20%;background-image:url("https://lh3.googleusercontent.com/d/1z57jNNPGjl3jZvXcCoTDcK7cWTeNIt87");}
 
-    /* ===================== USER BAR ===================== */
-    .user-bar {
-      display:flex; align-items:center; justify-content:space-between;
-      padding:4px 8px; border-radius:10px; margin-bottom:6px;
-      background:linear-gradient(135deg,#4c1d95,#831843,#1e40af);
-      background-size:300% 300%; animation:gradientShift 6s ease infinite;
-      flex-wrap:wrap; gap:4px;
-    }
-    .clock-widget {
-      display:inline-flex; align-items:center; gap:6px;
-      background:rgba(255,255,255,0.15); backdrop-filter:blur(10px);
-      border:1px solid rgba(255,255,255,0.25); border-radius:20px;
-      padding:4px 10px; color:white; white-space:nowrap;
-    }
-    .clock-dot { width:6px; height:6px; background:#4ade80; border-radius:50%; animation:blink 1.5s ease infinite; flex-shrink:0; }
-    .clock-day { font-size:11px; font-weight:600; color:#bfdbfe; }
-    .clock-date { font-size:11px; color:#e0e7ff; }
-    .clock-time { font-size:13px; font-weight:700; color:#fff; }
-    .user-info { display:flex; align-items:center; gap:6px; flex-wrap:wrap; flex-shrink:0; }
-    .user-avatar {
-      width:28px; height:28px; border-radius:50%;
-      background:linear-gradient(135deg,#7c3aed,#db2777);
-      border:2px solid rgba(255,255,255,0.5);
-      display:flex; align-items:center; justify-content:center;
-      color:white; font-weight:800; font-size:11px; flex-shrink:0;
-    }
-    .user-details { display:flex; flex-direction:column; }
-    .user-name { font-size:11px; font-weight:700; color:white; max-width:80px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
-    .level-badge { font-size:8px; font-weight:700; color:white; padding:1px 6px; border-radius:8px; background:linear-gradient(135deg,#7c3aed,#db2777); }
-    .logout-btn {
-      padding:5px 10px; border-radius:15px; border:none; cursor:pointer;
-      background:rgba(255,255,255,0.9); color:#dc2626;
-      font-size:10px; font-weight:700; text-transform:uppercase;
-      letter-spacing:0.3px; flex-shrink:0; z-index:100;
-      transition:all 0.2s;
-    }
-    .logout-btn:hover { background:#fff; transform:translateY(-1px); }
-    .pwd-btn {
-      width:26px; height:26px; border-radius:50%; border:none; cursor:pointer;
-      background:linear-gradient(135deg,#3b82f6,#1d4ed8);
-      color:white; font-size:12px; flex-shrink:0; z-index:100;
-      display:flex; align-items:center; justify-content:center;
-      transition:all 0.2s;
-    }
-    .pwd-btn:hover { transform:translateY(-1px) rotate(15deg); }
-    .refresh-btn {
-      width:26px; height:26px; border-radius:50%; border:none; cursor:pointer;
-      background:linear-gradient(135deg,#10b981,#059669);
-      color:white; font-size:12px; flex-shrink:0; z-index:100;
-      display:flex; align-items:center; justify-content:center;
-      transition:all 0.2s;
-    }
-    .refresh-btn:hover { transform:rotate(180deg); }
+    /* USER BAR */
+    .user-bar{display:flex;align-items:center;justify-content:space-between;padding:4px 8px;border-radius:10px;margin-bottom:6px;background:linear-gradient(135deg,#4c1d95,#831843,#1e40af);background-size:300% 300%;animation:gradientShift 6s ease infinite;flex-wrap:wrap;gap:4px;}
+    .clock-widget{display:inline-flex;align-items:center;gap:6px;background:rgba(255,255,255,0.15);backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,0.25);border-radius:20px;padding:4px 10px;color:white;white-space:nowrap;}
+    .clock-dot{width:6px;height:6px;background:#4ade80;border-radius:50%;animation:blink 1.5s ease infinite;flex-shrink:0;}
+    .clock-day{font-size:11px;font-weight:600;color:#bfdbfe;}
+    .clock-date{font-size:11px;color:#e0e7ff;}
+    .clock-time{font-size:13px;font-weight:700;color:#fff;}
+    .user-info{display:flex;align-items:center;gap:6px;flex-wrap:wrap;flex-shrink:0;}
+    .user-avatar{width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,#7c3aed,#db2777);border:2px solid rgba(255,255,255,0.5);display:flex;align-items:center;justify-content:center;color:white;font-weight:800;font-size:11px;flex-shrink:0;}
+    .user-details{display:flex;flex-direction:column;}
+    .user-name{font-size:11px;font-weight:700;color:white;max-width:80px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+    .level-badge{font-size:8px;font-weight:700;color:white;padding:1px 6px;border-radius:8px;background:linear-gradient(135deg,#7c3aed,#db2777);}
+    .logout-btn{padding:5px 10px;border-radius:15px;border:none;cursor:pointer;background:rgba(255,255,255,0.9);color:#dc2626;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.3px;flex-shrink:0;z-index:100;transition:all 0.2s;}
+    .logout-btn:hover{background:#fff;transform:translateY(-1px);}
+    .pwd-btn{width:26px;height:26px;border-radius:50%;border:none;cursor:pointer;background:linear-gradient(135deg,#3b82f6,#1d4ed8);color:white;font-size:12px;flex-shrink:0;z-index:100;display:flex;align-items:center;justify-content:center;transition:all 0.2s;}
+    .pwd-btn:hover{transform:translateY(-1px) rotate(15deg);}
+    .refresh-btn{width:26px;height:26px;border-radius:50%;border:none;cursor:pointer;background:linear-gradient(135deg,#10b981,#059669);color:white;font-size:12px;flex-shrink:0;z-index:100;display:flex;align-items:center;justify-content:center;transition:all 0.2s;}
+    .refresh-btn:hover{transform:rotate(180deg);}
 
-    /* ===================== TITLE CARD ===================== */
-    .title-card {
-      position:relative; overflow:hidden;
-      background:linear-gradient(135deg,#1a0533,#2d0a4e,#1a0533);
-      border:1px solid rgba(255,255,255,0.1); border-radius:14px;
-      padding:10px 16px; margin-bottom:8px;
-      animation:glowPulse 3s ease infinite;
-    }
-    .title-card::before {
-      content:''; position:absolute; top:-50%; left:-50%;
-      width:200%; height:200%;
-      background:radial-gradient(circle,rgba(255,255,255,0.03) 0%,transparent 70%);
-      animation:shimmer 8s linear infinite;
-      pointer-events:none;
-    }
-    .title-content { text-align:center; position:relative; z-index:1; }
+    /* TITLE CARD */
+    .title-card{position:relative;overflow:hidden;background:linear-gradient(135deg,#1a0533,#2d0a4e,#1a0533);border:1px solid rgba(255,255,255,0.1);border-radius:14px;padding:10px 16px;margin-bottom:8px;animation:glowPulse 3s ease infinite;}
+    .title-card::before{content:'';position:absolute;top:-50%;left:-50%;width:200%;height:200%;background:radial-gradient(circle,rgba(255,255,255,0.03) 0%,transparent 70%);animation:shimmer 8s linear infinite;pointer-events:none;}
+    .title-content{text-align:center;position:relative;z-index:1;}
     /* Ravi you can change the main title here */
-    .title-h1 {
-      font-size:18px; font-weight:900; text-transform:uppercase; letter-spacing:1px;
-      background:linear-gradient(90deg,#ffd700,#ff6b6b,#ff69b4,#00bfff,#00ff88,#ffd700);
-      background-size:300% 300%; animation:rainbowText 3s ease infinite;
-      -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text;
-      text-shadow:none;
-      filter:drop-shadow(2px 2px 4px rgba(0,0,0,0.5));
-    }
+    .title-h1{font-size:18px;font-weight:900;text-transform:uppercase;letter-spacing:1px;background:linear-gradient(90deg,#ffd700,#ff6b6b,#ff69b4,#00bfff,#00ff88,#ffd700);background-size:300% 300%;animation:rainbowText 3s ease infinite;-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;filter:drop-shadow(2px 2px 4px rgba(0,0,0,0.5));}
     /* Ravi you can change the subtitle here */
-    .title-h2 {
-      font-size:10px; font-weight:600; margin-top:2px;
-      background:linear-gradient(90deg,#00bfff,#00ff88,#ffd700,#ff6b6b,#00bfff);
-      background-size:300% 300%; animation:rainbowText 4s ease infinite;
-      -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text;
-      filter:drop-shadow(1px 1px 2px rgba(0,0,0,0.5));
-    }
+    .title-h2{font-size:10px;font-weight:600;margin-top:2px;background:linear-gradient(90deg,#00bfff,#00ff88,#ffd700,#ff6b6b,#00bfff);background-size:300% 300%;animation:rainbowText 4s ease infinite;-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;filter:drop-shadow(1px 1px 2px rgba(0,0,0,0.5));}
     /* Ravi you can change the copyright here */
-    .title-h3 {
-      font-size:8px; font-weight:600; margin-top:2px; opacity:0.9;
-      background:linear-gradient(90deg,#ff69b4,#ff6b6b,#ffd700,#ff69b4);
-      background-size:300% 300%; animation:rainbowText 5s ease infinite;
-      -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text;
+    .title-h3{font-size:8px;font-weight:600;margin-top:2px;opacity:0.9;background:linear-gradient(90deg,#ff69b4,#ff6b6b,#ffd700,#ff69b4);background-size:300% 300%;animation:rainbowText 5s ease infinite;-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+
+    /* MODE TOGGLE */
+    .mode-toggle{display:flex;gap:4px;margin-bottom:8px;}
+    .mode-btn{flex:1;padding:8px 6px;border:none;border-radius:10px;cursor:pointer;font-size:12px;font-weight:700;color:#64748b;background:rgba(255,255,255,0.8);backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,0.5);transition:all 0.2s;display:flex;align-items:center;justify-content:center;gap:4px;}
+    .mode-btn:hover{transform:translateY(-1px);box-shadow:0 4px 12px rgba(0,0,0,0.15);}
+    .mode-btn.active{background:linear-gradient(135deg,#7c3aed,#db2777);color:white;box-shadow:0 4px 15px rgba(124,58,237,0.4);border-color:transparent;}
+
+    /* PANEL */
+    .panel{background:rgba(255,255,255,0.92);backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,0.5);border-radius:14px;box-shadow:var(--shadow);padding:12px;animation:fadeIn 0.3s ease;}
+    .panel-title{font-size:14px;font-weight:800;color:#1e293b;text-align:center;margin-bottom:10px;}
+    .form-group{margin-bottom:8px;}
+    .form-label{display:block;font-size:13px;font-weight:700;color:#475569;margin-bottom:4px;text-transform:uppercase;letter-spacing:0.3px;}
+    .select-wrapper{position:relative;}
+    .select-wrapper::after{content:"▾";position:absolute;right:10px;top:50%;transform:translateY(-50%);color:#334155;pointer-events:none;font-size:12px;}
+    select{width:100%;padding:10px 32px 10px 12px;border-radius:10px;border:1.5px solid rgba(0,0,0,0.08);outline:none;font-size:15px;color:#0f172a;appearance:none;-webkit-appearance:none;box-shadow:0 2px 8px rgba(2,8,23,0.06);transition:all 0.2s;cursor:pointer;}
+    select:hover{box-shadow:0 6px 16px rgba(2,8,23,0.1);transform:translateY(-1px);}
+    select:focus{box-shadow:0 0 0 3px var(--ring);}
+    .colorful-select.g1{background:var(--g1);}.colorful-select.g2{background:var(--g2);}
+    .colorful-select.g3{background:var(--g3);}.colorful-select.g4{background:var(--g4);}
+    .colorful-select.g5{background:var(--g5);}.colorful-select.g6{background:var(--g6);}
+    .text-input{width:100%;padding:12px 14px;border-radius:10px;border:1.5px solid rgba(0,0,0,0.08);font-size:16px;color:#0f172a;outline:none;background:linear-gradient(135deg,#f8fafc,#f1f5f9);box-shadow:0 2px 8px rgba(2,8,23,0.06);transition:all 0.2s;}
+    .text-input:focus{box-shadow:0 0 0 3px var(--ring);border-color:#7c3aed;}
+
+    /* BUTTONS */
+    .btn-group{display:flex;gap:8px;margin-top:12px;}
+    .submit-btn{flex:2;padding:10px 16px;background:linear-gradient(135deg,#7c3aed,#db2777);color:white;border:none;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer;box-shadow:0 4px 15px rgba(124,58,237,0.4);transition:all 0.2s;}
+    .submit-btn:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(124,58,237,0.5);}
+    .clear-btn{flex:1;padding:10px 16px;background:linear-gradient(135deg,#64748b,#475569);color:white;border:none;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer;transition:all 0.2s;}
+    .clear-btn:hover{transform:translateY(-2px);}
+
+    /* OUTPUT */
+    .output-title{font-weight:700;color:#1e293b;margin:10px 0 14px 0;text-align:center;font-size:18px;}
+    .output-scroll{overflow-x:auto;border-radius:14px;background:linear-gradient(180deg,#fafafa,#ffffff);border:1px solid var(--card-border);padding:14px;display:block;min-width:100%;box-shadow:var(--shadow);}
+    .output-grid{display:grid;gap:2px;}
+    .output-grid div{background:white;padding:10px;border:1px solid #e2e8f0;border-radius:10px;min-width:150px;text-align:center;word-break:break-word;box-shadow:0 2px 8px rgba(2,8,23,0.06);font-size:14px;}
+    .output-header{position:sticky;top:0;z-index:2;background:linear-gradient(180deg,#f8fafc,#eef2ff)!important;font-weight:700;color:#ea580c!important;border-color:#e2e8f0;text-transform:uppercase;letter-spacing:0.4px;font-size:13px!important;}
+    .output-grid img{border-radius:8px;max-width:80px;max-height:65px;object-fit:contain;cursor:zoom-in;transition:transform 0.15s ease;}
+    .output-grid img:hover{transform:scale(1.05);}
+    .output-grid a.file-link{display:inline-flex;align-items:center;justify-content:center;gap:4px;padding:6px 12px;background:linear-gradient(135deg,#4285f4,#0d47a1,#4285f4);background-size:200% 200%;animation:driveGradient 3s ease infinite;color:white;border-radius:20px;font-weight:700;font-size:11px;text-decoration:none;border:1px solid rgba(255,255,255,0.3);box-shadow:0 3px 10px rgba(66,133,244,0.4);transition:all 0.2s;}
+    .output-grid a.file-link:hover{transform:translateY(-2px) scale(1.05);}
+
+    /* STATUS */
+    .status-msg{padding:8px 12px;border-radius:8px;font-size:12px;font-weight:600;text-align:center;margin-top:8px;animation:fadeIn 0.3s ease;}
+    .status-success{background:#f0fdf4;border:1px solid #86efac;color:#166534;}
+    .status-error{background:#fef2f2;border:1px solid #fecaca;color:#dc2626;}
+    .status-loading{background:#f0f9ff;border:1px solid #7dd3fc;color:#0369a1;}
+
+    /* MY DATA */
+    .mydata-tabs{display:flex;gap:6px;margin-bottom:10px;}
+    .mydata-tab{flex:1;padding:8px;border:none;border-radius:10px;cursor:pointer;font-size:12px;font-weight:700;color:#64748b;background:rgba(255,255,255,0.8);transition:all 0.2s;position:relative;}
+    .mydata-tab.active{background:linear-gradient(135deg,#7c3aed,#db2777);color:white;}
+    .unread-badge{position:absolute;top:-4px;right:-4px;background:#ef4444;color:white;border-radius:50%;width:16px;height:16px;font-size:9px;font-weight:700;display:flex;align-items:center;justify-content:center;}
+    .stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:10px;}
+    .stat-card{background:rgba(255,255,255,0.9);border-radius:10px;padding:8px 6px;text-align:center;border:1px solid rgba(255,255,255,0.5);box-shadow:0 4px 12px rgba(0,0,0,0.08);animation:countUp 0.5s ease;}
+    .stat-icon{font-size:16px;margin-bottom:2px;}
+    .stat-number{font-size:18px;font-weight:800;color:#1e293b;}
+    .stat-label{font-size:7px;font-weight:600;color:#64748b;text-transform:uppercase;}
+
+    /* PERSONAL INFO */
+    .personal-card{background:rgba(255,255,255,0.9);border-radius:12px;padding:12px;border:1px solid rgba(255,255,255,0.5);margin-bottom:10px;box-shadow:0 4px 12px rgba(0,0,0,0.08);}
+    .personal-title{font-size:13px;font-weight:800;color:#1e293b;margin-bottom:8px;display:flex;align-items:center;gap:6px;}
+    .personal-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;}
+    .personal-item{background:#f8fafc;border-radius:8px;padding:8px;border:1px solid #e2e8f0;}
+    .personal-item-label{font-size:9px;font-weight:700;color:#64748b;text-transform:uppercase;}
+    .personal-item-value{font-size:12px;font-weight:600;color:#1e293b;margin-top:2px;word-break:break-word;}
+
+    /* INBOX */
+    .inbox-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:10px;}
+    .inbox-stat{background:rgba(255,255,255,0.9);border-radius:10px;padding:8px;text-align:center;box-shadow:0 2px 8px rgba(0,0,0,0.06);}
+    .inbox-stat-num{font-size:20px;font-weight:800;color:#1e293b;}
+    .inbox-stat-label{font-size:8px;color:#64748b;text-transform:uppercase;font-weight:600;}
+    .inbox-filter{display:flex;gap:4px;margin-bottom:10px;flex-wrap:wrap;}
+    .inbox-filter-btn{padding:5px 10px;border:1px solid #e2e8f0;border-radius:20px;font-size:11px;font-weight:600;cursor:pointer;background:white;color:#475569;transition:all 0.2s;}
+    .inbox-filter-btn.active{background:linear-gradient(135deg,#7c3aed,#db2777);color:white;border-color:transparent;}
+    .inbox-card{background:white;border-radius:12px;padding:12px;margin-bottom:8px;border:1px solid #e2e8f0;box-shadow:0 2px 8px rgba(0,0,0,0.06);animation:fadeIn 0.3s ease;}
+    .inbox-card-header{display:flex;align-items:center;gap:6px;margin-bottom:8px;flex-wrap:wrap;}
+    .priority-badge{padding:2px 8px;border-radius:10px;font-size:10px;font-weight:700;}
+    .priority-high{background:#fef2f2;color:#dc2626;}
+    .priority-medium{background:#fffbeb;color:#d97706;}
+    .priority-low{background:#f0fdf4;color:#16a34a;}
+    .type-badge{padding:2px 8px;border-radius:10px;font-size:10px;font-weight:700;background:#eff6ff;color:#2563eb;}
+    .status-badge{padding:2px 8px;border-radius:10px;font-size:10px;font-weight:700;}
+    .status-unread{background:#fef3c7;color:#d97706;}
+    .status-read{background:#f0fdf4;color:#16a34a;}
+    .status-done{background:#ede9fe;color:#7c3aed;}
+    .inbox-subject{font-size:14px;font-weight:700;color:#1e293b;margin-bottom:4px;}
+    .inbox-message{font-size:13px;color:#475569;margin-bottom:8px;}
+    .inbox-footer{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:6px;}
+    .inbox-meta{font-size:11px;color:#94a3b8;}
+    .inbox-actions{display:flex;gap:6px;}
+    .inbox-action-btn{padding:5px 10px;border:none;border-radius:8px;font-size:11px;font-weight:600;cursor:pointer;transition:all 0.2s;}
+    .btn-read{background:#f0fdf4;color:#16a34a;}
+    .btn-done{background:#ede9fe;color:#7c3aed;}
+    .btn-open{background:linear-gradient(135deg,#4285f4,#0d47a1);color:white;text-decoration:none;display:inline-flex;align-items:center;gap:4px;}
+    .btn-noaccess{background:#f1f5f9;color:#94a3b8;cursor:not-allowed;}
+
+    /* HISTORY TABLE */
+    .history-table{width:100%;border-collapse:separate;border-spacing:2px;font-size:13px;}
+    .history-table th{background:linear-gradient(180deg,#f8fafc,#eef2ff);color:#ea580c;font-weight:700;padding:10px 12px;text-align:center;text-transform:uppercase;font-size:11px;letter-spacing:0.4px;border-radius:6px;position:sticky;top:0;z-index:2;}
+    .history-table td{background:white;padding:10px 12px;text-align:center;border:1px solid #e2e8f0;border-radius:6px;word-break:break-word;color:#1e293b;}
+    .history-table tr:hover td{background:#f8fafc;}
+    .export-btn{padding:8px 14px;background:linear-gradient(135deg,#dc2626,#b91c1c);color:white;border:none;border-radius:10px;font-size:12px;font-weight:700;cursor:pointer;transition:all 0.2s;}
+    .export-btn:hover{transform:translateY(-1px);}
+
+    /* MORE TAB */
+    .apps-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:12px;margin-top:10px;}
+    .app-card{background:rgba(255,255,255,0.95);border-radius:14px;padding:20px 12px;text-align:center;cursor:pointer;border:2px solid rgba(255,255,255,0.8);box-shadow:0 4px 15px rgba(0,0,0,0.1);transition:all 0.3s;animation:fadeIn 0.3s ease;}
+    .app-card:hover{transform:translateY(-6px);box-shadow:0 15px 35px rgba(0,0,0,0.2);border-color:rgba(124,58,237,0.3);}
+    .app-card-icon{font-size:40px;margin-bottom:10px;display:block;}
+    .app-card-name{font-size:13px;font-weight:800;color:#1e293b;line-height:1.3;}
+    .app-card-desc{font-size:10px;color:#64748b;margin-top:4px;}
+    .embedded-app-container{display:none;}
+    .embedded-header{display:flex;align-items:center;gap:10px;margin-bottom:10px;padding:10px 14px;background:rgba(255,255,255,0.9);border-radius:12px;box-shadow:var(--shadow);}
+    .back-btn{padding:8px 16px;background:linear-gradient(135deg,#7c3aed,#db2777);color:white;border:none;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer;transition:all 0.2s;white-space:nowrap;}
+    .back-btn:hover{transform:translateY(-1px);}
+    .embedded-app-title{font-size:15px;font-weight:800;color:#1e293b;}
+    .embedded-iframe{width:100%;height:calc(100vh - 180px);min-height:500px;border:2px solid #e2e8f0;border-radius:14px;box-shadow:var(--shadow);}
+    .no-apps-msg{text-align:center;padding:40px 20px;color:#64748b;font-size:14px;}
+
+    /* PASSWORD MODAL */
+    .modal-overlay{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.5);backdrop-filter:blur(4px);z-index:1000;align-items:center;justify-content:center;}
+    .modal-overlay.show{display:flex;}
+    .modal-card{background:white;border-radius:20px;padding:28px;width:90%;max-width:380px;box-shadow:0 25px 50px rgba(0,0,0,0.25);animation:slideUp 0.3s ease;}
+    .modal-title{font-size:18px;font-weight:800;color:#1e293b;margin-bottom:20px;text-align:center;}
+    .modal-field{margin-bottom:14px;}
+    .modal-field label{display:block;font-size:11px;font-weight:700;color:#475569;margin-bottom:5px;text-transform:uppercase;}
+    .modal-field input{width:100%;padding:12px 14px;border:2px solid #e2e8f0;border-radius:10px;font-size:14px;outline:none;transition:all 0.2s;}
+    .modal-field input:focus{border-color:#7c3aed;box-shadow:0 0 0 3px rgba(124,58,237,0.15);}
+    .modal-btns{display:flex;gap:8px;margin-top:18px;}
+    .modal-submit{flex:2;padding:12px;background:linear-gradient(135deg,#7c3aed,#db2777);color:white;border:none;border-radius:10px;font-size:14px;font-weight:700;cursor:pointer;}
+    .modal-cancel{flex:1;padding:12px;background:#f1f5f9;color:#475569;border:none;border-radius:10px;font-size:14px;font-weight:700;cursor:pointer;}
+    .modal-msg{text-align:center;font-size:12px;margin-top:10px;padding:8px;border-radius:8px;}
+
+    @media print{
+      .user-bar,.mode-toggle,.header-strip,.title-card,.btn-group,.export-btn,.mydata-tabs{display:none!important;}
+      .panel{box-shadow:none;border:1px solid #e2e8f0;}
+      body{background:white;}
     }
 
-    /* ===================== MODE TOGGLE ===================== */
-    .mode-toggle { display:flex; gap:4px; margin-bottom:8px; }
-    .mode-btn {
-      flex:1; padding:8px 6px; border:none; border-radius:10px; cursor:pointer;
-      font-size:12px; font-weight:700; color:#64748b;
-      background:rgba(255,255,255,0.8); backdrop-filter:blur(10px);
-      border:1px solid rgba(255,255,255,0.5);
-      transition:all 0.2s; display:flex; align-items:center; justify-content:center; gap:4px;
-    }
-    .mode-btn:hover { transform:translateY(-1px); box-shadow:0 4px 12px rgba(0,0,0,0.15); }
-    .mode-btn.active {
-      background:linear-gradient(135deg,#7c3aed,#db2777);
-      color:white; box-shadow:0 4px 15px rgba(124,58,237,0.4);
-      border-color:transparent;
-    }
-
-    /* ===================== PANEL ===================== */
-    .panel {
-      background:rgba(255,255,255,0.92); backdrop-filter:blur(10px);
-      border:1px solid rgba(255,255,255,0.5); border-radius:14px;
-      box-shadow:var(--shadow); padding:12px; animation:fadeIn 0.3s ease;
-    }
-    .panel-title { font-size:14px; font-weight:800; color:#1e293b; text-align:center; margin-bottom:10px; }
-    .form-group { margin-bottom:8px; }
-    .form-label { display:block; font-size:13px; font-weight:700; color:#475569; margin-bottom:4px; text-transform:uppercase; letter-spacing:0.3px; }
-    .select-wrapper { position:relative; }
-    .select-wrapper::after { content:"▾"; position:absolute; right:10px; top:50%; transform:translateY(-50%); color:#334155; pointer-events:none; font-size:12px; }
-    select {
-      width:100%; padding:10px 32px 10px 12px;
-      border-radius:10px; border:1.5px solid rgba(0,0,0,0.08);
-      outline:none; font-size:15px; color:#0f172a;
-      appearance:none; -webkit-appearance:none;
-      box-shadow:0 2px 8px rgba(2,8,23,0.06);
-      transition:all 0.2s; cursor:pointer;
-    }
-    select:hover { box-shadow:0 6px 16px rgba(2,8,23,0.1); transform:translateY(-1px); }
-    select:focus { box-shadow:0 0 0 3px var(--ring); }
-    .colorful-select.g1{background:var(--g1);} .colorful-select.g2{background:var(--g2);}
-    .colorful-select.g3{background:var(--g3);} .colorful-select.g4{background:var(--g4);}
-    .colorful-select.g5{background:var(--g5);} .colorful-select.g6{background:var(--g6);}
-    .text-input {
-      width:100%; padding:12px 14px;
-      border-radius:10px; border:1.5px solid rgba(0,0,0,0.08);
-      font-size:16px; color:#0f172a; outline:none;
-      background:linear-gradient(135deg,#f8fafc,#f1f5f9);
-      box-shadow:0 2px 8px rgba(2,8,23,0.06);
-      transition:all 0.2s;
-    }
-    .text-input:focus { box-shadow:0 0 0 3px var(--ring); border-color:#7c3aed; }
-
-    /* ===================== BUTTONS ===================== */
-    .btn-group { display:flex; gap:8px; margin-top:12px; }
-    .submit-btn {
-      flex:2; padding:10px 16px;
-      background:linear-gradient(135deg,#7c3aed,#db2777);
-      color:white; border:none; border-radius:10px;
-      font-size:13px; font-weight:700; cursor:pointer;
-      box-shadow:0 4px 15px rgba(124,58,237,0.4);
-      transition:all 0.2s;
-    }
-    .submit-btn:hover { transform:translateY(-2px); box-shadow:0 8px 25px rgba(124,58,237,0.5); }
-    .clear-btn {
-      flex:1; padding:10px 16px;
-      background:linear-gradient(135deg,#64748b,#475569);
-      color:white; border:none; border-radius:10px;
-      font-size:13px; font-weight:700; cursor:pointer;
-      transition:all 0.2s;
-    }
-    .clear-btn:hover { transform:translateY(-2px); }
-
-    /* ===================== OUTPUT ===================== */
-    .output-title { font-weight:700; color:#1e293b; margin:10px 0 14px 0; text-align:center; font-size:18px; }
-    .output-scroll {
-      overflow-x:auto; border-radius:14px;
-      background:linear-gradient(180deg,#fafafa,#ffffff);
-      border:1px solid var(--card-border); padding:14px;
-      display:block; min-width:100%; box-shadow:var(--shadow);
-    }
-    .output-grid { display:grid; gap:2px; }
-    .output-grid div {
-      background:white; padding:10px; border:1px solid #e2e8f0;
-      border-radius:10px; min-width:150px; text-align:center;
-      word-break:break-word; box-shadow:0 2px 8px rgba(2,8,23,0.06);
-      font-size:14px;
-    }
-    .output-header {
-      position:sticky; top:0; z-index:2;
-      background:linear-gradient(180deg,#f8fafc,#eef2ff) !important;
-      font-weight:700; color:#ea580c !important;
-      border-color:#e2e8f0; text-transform:uppercase;
-      letter-spacing:0.4px; font-size:13px !important;
-    }
-    .output-grid img {
-      border-radius:8px; max-width:80px; max-height:65px;
-      object-fit:contain; cursor:zoom-in;
-      transition:transform 0.15s ease;
-    }
-    .output-grid img:hover { transform:scale(1.05); }
-    .output-grid a.file-link {
-      display:inline-flex; align-items:center; justify-content:center; gap:4px;
-      padding:6px 12px;
-      background:linear-gradient(135deg,#4285f4,#0d47a1,#4285f4);
-      background-size:200% 200%; animation:driveGradient 3s ease infinite;
-      color:white; border-radius:20px; font-weight:700; font-size:11px;
-      text-decoration:none; border:1px solid rgba(255,255,255,0.3);
-      box-shadow:0 3px 10px rgba(66,133,244,0.4);
-      transition:all 0.2s;
-    }
-    .output-grid a.file-link:hover { transform:translateY(-2px) scale(1.05); }
-
-    /* ===================== STATUS MESSAGES ===================== */
-    .status-msg {
-      padding:8px 12px; border-radius:8px; font-size:12px; font-weight:600;
-      text-align:center; margin-top:8px; animation:fadeIn 0.3s ease;
-    }
-    .status-success { background:#f0fdf4; border:1px solid #86efac; color:#166534; }
-    .status-error { background:#fef2f2; border:1px solid #fecaca; color:#dc2626; }
-    .status-loading { background:#f0f9ff; border:1px solid #7dd3fc; color:#0369a1; }
-
-    /* ===================== MY DATA ===================== */
-    .mydata-tabs { display:flex; gap:6px; margin-bottom:10px; }
-    .mydata-tab {
-      flex:1; padding:8px; border:none; border-radius:10px; cursor:pointer;
-      font-size:12px; font-weight:700; color:#64748b;
-      background:rgba(255,255,255,0.8); transition:all 0.2s;
-      position:relative;
-    }
-    .mydata-tab.active { background:linear-gradient(135deg,#7c3aed,#db2777); color:white; }
-    .unread-badge {
-      position:absolute; top:-4px; right:-4px;
-      background:#ef4444; color:white; border-radius:50%;
-      width:16px; height:16px; font-size:9px; font-weight:700;
-      display:flex; align-items:center; justify-content:center;
-    }
-    /* Stats Cards */
-    .stats-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:6px; margin-bottom:10px; }
-    .stat-card {
-      background:rgba(255,255,255,0.9); border-radius:10px; padding:10px 8px;
-      text-align:center; border:1px solid rgba(255,255,255,0.5);
-      box-shadow:0 4px 12px rgba(0,0,0,0.08); animation:countUp 0.5s ease;
-    }
-    .stat-icon { font-size:18px; margin-bottom:2px; }
-    .stat-number { font-size:20px; font-weight:800; color:#1e293b; }
-    .stat-label { font-size:7px; font-weight:600; color:#64748b; text-transform:uppercase; }
-    /* Personal Info */
-    .personal-card {
-      background:rgba(255,255,255,0.9); border-radius:12px; padding:12px;
-      border:1px solid rgba(255,255,255,0.5); margin-bottom:10px;
-      box-shadow:0 4px 12px rgba(0,0,0,0.08);
-    }
-    .personal-title { font-size:13px; font-weight:800; color:#1e293b; margin-bottom:8px; display:flex; align-items:center; gap:6px; }
-    .personal-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:6px; }
-    .personal-item { background:#f8fafc; border-radius:8px; padding:8px; border:1px solid #e2e8f0; }
-    .personal-item-label { font-size:9px; font-weight:700; color:#64748b; text-transform:uppercase; }
-    .personal-item-value { font-size:12px; font-weight:600; color:#1e293b; margin-top:2px; word-break:break-word; }
-    /* Inbox */
-    .inbox-stats { display:grid; grid-template-columns:repeat(4,1fr); gap:6px; margin-bottom:10px; }
-    .inbox-stat { background:rgba(255,255,255,0.9); border-radius:10px; padding:8px; text-align:center; box-shadow:0 2px 8px rgba(0,0,0,0.06); }
-    .inbox-stat-num { font-size:20px; font-weight:800; color:#1e293b; }
-    .inbox-stat-label { font-size:8px; color:#64748b; text-transform:uppercase; font-weight:600; }
-    .inbox-filter { display:flex; gap:4px; margin-bottom:10px; flex-wrap:wrap; }
-    .inbox-filter-btn { padding:5px 10px; border:1px solid #e2e8f0; border-radius:20px; font-size:11px; font-weight:600; cursor:pointer; background:white; color:#475569; transition:all 0.2s; }
-    .inbox-filter-btn.active { background:linear-gradient(135deg,#7c3aed,#db2777); color:white; border-color:transparent; }
-    .inbox-card {
-      background:white; border-radius:12px; padding:12px; margin-bottom:8px;
-      border:1px solid #e2e8f0; box-shadow:0 2px 8px rgba(0,0,0,0.06);
-      animation:fadeIn 0.3s ease;
-    }
-    .inbox-card-header { display:flex; align-items:center; gap:6px; margin-bottom:8px; flex-wrap:wrap; }
-    .priority-badge { padding:2px 8px; border-radius:10px; font-size:10px; font-weight:700; }
-    .priority-high { background:#fef2f2; color:#dc2626; }
-    .priority-medium { background:#fffbeb; color:#d97706; }
-    .priority-low { background:#f0fdf4; color:#16a34a; }
-    .type-badge { padding:2px 8px; border-radius:10px; font-size:10px; font-weight:700; background:#eff6ff; color:#2563eb; }
-    .status-badge { padding:2px 8px; border-radius:10px; font-size:10px; font-weight:700; }
-    .status-unread { background:#fef3c7; color:#d97706; }
-    .status-read { background:#f0fdf4; color:#16a34a; }
-    .status-done { background:#ede9fe; color:#7c3aed; }
-    .inbox-subject { font-size:14px; font-weight:700; color:#1e293b; margin-bottom:4px; }
-    .inbox-message { font-size:13px; color:#475569; margin-bottom:8px; }
-    .inbox-footer { display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:6px; }
-    .inbox-meta { font-size:11px; color:#94a3b8; }
-    .inbox-actions { display:flex; gap:6px; }
-    .inbox-action-btn { padding:5px 10px; border:none; border-radius:8px; font-size:11px; font-weight:600; cursor:pointer; transition:all 0.2s; }
-    .btn-read { background:#f0fdf4; color:#16a34a; }
-    .btn-done { background:#ede9fe; color:#7c3aed; }
-    .btn-open { background:linear-gradient(135deg,#4285f4,#0d47a1); color:white; text-decoration:none; display:inline-flex; align-items:center; gap:4px; }
-    .btn-noaccess { background:#f1f5f9; color:#94a3b8; cursor:not-allowed; }
-    /* History Table */
-    .history-table { width:100%; border-collapse:separate; border-spacing:2px; font-size:13px; }
-    .history-table th { background:linear-gradient(180deg,#f8fafc,#eef2ff); color:#ea580c; font-weight:700; padding:10px 12px; text-align:center; text-transform:uppercase; font-size:11px; letter-spacing:0.4px; border-radius:6px; position:sticky; top:0; z-index:2; }
-    .history-table td { background:white; padding:10px 12px; text-align:center; border:1px solid #e2e8f0; border-radius:6px; word-break:break-word; color:#1e293b; }
-    .history-table tr:hover td { background:#f8fafc; }
-    /* PDF Export */
-    .export-btn { padding:8px 14px; background:linear-gradient(135deg,#dc2626,#b91c1c); color:white; border:none; border-radius:10px; font-size:12px; font-weight:700; cursor:pointer; transition:all 0.2s; }
-    .export-btn:hover { transform:translateY(-1px); }
-
-    /* ===================== MORE TAB ===================== */
-    .apps-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(140px,1fr)); gap:12px; margin-top:10px; }
-    .app-card {
-      background:rgba(255,255,255,0.95); border-radius:14px; padding:16px 12px;
-      text-align:center; cursor:pointer; border:1px solid rgba(255,255,255,0.5);
-      box-shadow:0 4px 12px rgba(0,0,0,0.08); transition:all 0.2s;
-      animation:fadeIn 0.3s ease;
-    }
-    .app-card:hover { transform:translateY(-4px); box-shadow:0 12px 30px rgba(0,0,0,0.15); }
-    .app-card-icon { font-size:36px; margin-bottom:8px; }
-    .app-card-name { font-size:13px; font-weight:700; color:#1e293b; }
-    .app-card-desc { font-size:10px; color:#64748b; margin-top:4px; }
-    /* Embedded App */
-    .embedded-app-container { display:none; }
-    .embedded-header { display:flex; align-items:center; gap:8px; margin-bottom:10px; padding:10px; background:rgba(255,255,255,0.9); border-radius:10px; }
-    .back-btn { padding:6px 12px; background:linear-gradient(135deg,#7c3aed,#db2777); color:white; border:none; border-radius:8px; font-size:12px; font-weight:700; cursor:pointer; transition:all 0.2s; }
-    .back-btn:hover { transform:translateY(-1px); }
-    .embedded-app-title { font-size:14px; font-weight:700; color:#1e293b; }
-    .embedded-iframe { width:100%; height:calc(100vh - 200px); min-height:400px; border:1px solid #e2e8f0; border-radius:12px; box-shadow:var(--shadow); }
-
-    /* ===================== PASSWORD MODAL ===================== */
-    .modal-overlay { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); backdrop-filter:blur(4px); z-index:1000; align-items:center; justify-content:center; }
-    .modal-overlay.show { display:flex; }
-    .modal-card { background:white; border-radius:20px; padding:28px; width:90%; max-width:380px; box-shadow:0 25px 50px rgba(0,0,0,0.25); animation:slideUp 0.3s ease; }
-    .modal-title { font-size:18px; font-weight:800; color:#1e293b; margin-bottom:20px; text-align:center; }
-    .modal-field { margin-bottom:14px; }
-    .modal-field label { display:block; font-size:11px; font-weight:700; color:#475569; margin-bottom:5px; text-transform:uppercase; }
-    .modal-field input { width:100%; padding:12px 14px; border:2px solid #e2e8f0; border-radius:10px; font-size:14px; outline:none; transition:all 0.2s; }
-    .modal-field input:focus { border-color:#7c3aed; box-shadow:0 0 0 3px rgba(124,58,237,0.15); }
-    .modal-btns { display:flex; gap:8px; margin-top:18px; }
-    .modal-submit { flex:2; padding:12px; background:linear-gradient(135deg,#7c3aed,#db2777); color:white; border:none; border-radius:10px; font-size:14px; font-weight:700; cursor:pointer; }
-    .modal-cancel { flex:1; padding:12px; background:#f1f5f9; color:#475569; border:none; border-radius:10px; font-size:14px; font-weight:700; cursor:pointer; }
-    .modal-msg { text-align:center; font-size:12px; margin-top:10px; padding:8px; border-radius:8px; }
-
-    /* ===================== PRINT STYLES ===================== */
-    @media print {
-      .user-bar,.mode-toggle,.header-strip,.title-card,.btn-group,.export-btn,.mydata-tabs { display:none !important; }
-      .panel { box-shadow:none; border:1px solid #e2e8f0; }
-      body { background:white; }
-    }
-
-    /* ===================== MOBILE ===================== */
-    @media (max-width:640px) {
-      .page { padding:4px 6px 20px; }
-      .header-strip { height:45px; margin-bottom:4px; }
-      .user-bar { padding:3px 6px; }
-      .clock-day,.clock-date { font-size:9px; }
-      .clock-time { font-size:11px; }
-      .user-name { font-size:10px; max-width:55px; }
-      .level-badge { font-size:7px; }
-      .logout-btn { font-size:9px; padding:4px 8px; }
-      .pwd-btn,.refresh-btn { width:22px; height:22px; font-size:10px; }
-      .title-h1 { font-size:14px; }
-      .title-h2 { font-size:9px; }
-      .title-h3 { font-size:7px; }
-      .mode-btn { font-size:10px; padding:6px 4px; }
-      .stats-grid { grid-template-columns:repeat(4,1fr); gap:4px; }
-      .stat-card { padding:6px 4px; }
-      .stat-icon { font-size:14px; }
-      .stat-number { font-size:16px; }
-      .stat-label { font-size:6px; }
-      .personal-grid { grid-template-columns:repeat(2,1fr); }
-      .inbox-stats { grid-template-columns:repeat(2,1fr); gap:4px; }
-      .output-grid div { min-width:120px; font-size:13px; }
-      .output-header { font-size:12px !important; }
-      .history-table th { font-size:10px; padding:8px 8px; }
-      .history-table td { font-size:12px; padding:8px 8px; }
-      .apps-grid { grid-template-columns:repeat(2,1fr); }
+    @media (max-width:640px){
+      .page{padding:4px 6px 20px;}
+      .header-strip{height:45px;margin-bottom:4px;}
+      .user-bar{padding:3px 6px;}
+      .clock-day,.clock-date{font-size:9px;}
+      .clock-time{font-size:11px;}
+      .user-name{font-size:10px;max-width:55px;}
+      .level-badge{font-size:7px;}
+      .logout-btn{font-size:9px;padding:4px 8px;}
+      .pwd-btn,.refresh-btn{width:22px;height:22px;font-size:10px;}
+      .title-h1{font-size:14px;}
+      .title-h2{font-size:9px;}
+      .title-h3{font-size:7px;}
+      .mode-btn{font-size:10px;padding:6px 4px;}
+      .stats-grid{grid-template-columns:repeat(4,1fr);gap:4px;}
+      .stat-card{padding:6px 4px;}
+      .stat-icon{font-size:14px;}
+      .stat-number{font-size:16px;}
+      .stat-label{font-size:6px;}
+      .personal-grid{grid-template-columns:repeat(2,1fr);}
+      .inbox-stats{grid-template-columns:repeat(2,1fr);gap:4px;}
+      .output-grid div{min-width:120px;font-size:13px;}
+      .output-header{font-size:12px!important;}
+      .history-table th{font-size:10px;padding:8px;}
+      .history-table td{font-size:12px;padding:8px;}
+      .apps-grid{grid-template-columns:repeat(2,1fr);gap:8px;}
+      .app-card{padding:14px 10px;}
+      .app-card-icon{font-size:30px;}
+      .embedded-iframe{height:calc(100vh - 160px);}
     }
   </style>
 </head>
 <body>
 
-<!-- ===================== LOGIN PAGE ===================== -->
+<!-- LOGIN PAGE -->
 <div id="loginPage" class="login-page">
   <div class="login-card">
     <div class="login-logo">🔐</div>
@@ -573,7 +304,7 @@
   </div>
 </div>
 
-<!-- ===================== APP CONTAINER ===================== -->
+<!-- APP CONTAINER -->
 <div id="appContainer" class="app-container">
   <div class="page">
 
@@ -610,19 +341,20 @@
         <!-- Ravi you can change title text here -->
         <div class="title-h1">KKSO-KBGA DATA</div>
         <div class="title-h2" id="appSubtitle">A Cloud Based Data System</div>
+        <!-- Ravi you can change version here -->
         <div class="title-h3">© Created by Ravi Malhotra | v4.6.0</div>
       </div>
     </div>
 
     <!-- Mode Toggle -->
     <div class="mode-toggle">
-      <button class="mode-btn active" id="btnView" onclick="switchMode('view')">📋 View Data</button>
-      <button class="mode-btn" id="btnEntry" onclick="switchMode('entry')">✏️ Entry Data</button>
-      <button class="mode-btn" id="btnMyData" onclick="switchMode('mydata')">👤 My Data</button>
+      <button class="mode-btn active" id="btnView" onclick="switchMode('view')">📋 View</button>
+      <button class="mode-btn" id="btnEntry" onclick="switchMode('entry')">✏️ Entry</button>
+      <button class="mode-btn" id="btnMydata" onclick="switchMode('mydata')">👤 My Data</button>
       <button class="mode-btn" id="btnMore" onclick="switchMode('more')">📦 More</button>
     </div>
 
-    <!-- ===== VIEW MODE ===== -->
+    <!-- VIEW MODE -->
     <div id="viewMode" class="panel">
       <div class="panel-title">📋 Data Viewer</div>
       <div class="form-group">
@@ -645,7 +377,7 @@
       <div id="viewOutput"></div>
     </div>
 
-    <!-- ===== ENTRY MODE ===== -->
+    <!-- ENTRY MODE -->
     <div id="entryMode" class="panel" style="display:none;">
       <div class="panel-title">✏️ Data Entry Form</div>
       <div class="form-group">
@@ -672,8 +404,8 @@
       <div id="entryStatus"></div>
     </div>
 
-    <!-- ===== MY DATA MODE ===== -->
-    <div id="myDataMode" class="panel" style="display:none;">
+    <!-- MY DATA MODE -->
+    <div id="mydataMode" class="panel" style="display:none;">
       <div class="panel-title">👤 My Dashboard</div>
       <div class="mydata-tabs">
         <button class="mydata-tab active" id="tabEntryData" onclick="switchMyDataTab('entrydata')">📝 My Entry Data</button>
@@ -683,7 +415,7 @@
         </button>
       </div>
 
-      <!-- My Entry Data Sub-section -->
+      <!-- My Entry Data -->
       <div id="myEntryDataSection">
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;flex-wrap:wrap;gap:6px;">
           <button class="submit-btn" style="flex:none;padding:6px 12px;font-size:11px;" onclick="loadMyEntryData()">🔄 Refresh</button>
@@ -707,26 +439,21 @@
         <div id="myEntryStatus"></div>
       </div>
 
-      <!-- My Inbox Sub-section -->
+      <!-- My Inbox -->
       <div id="myInboxSection" style="display:none;">
         <button class="submit-btn" style="flex:none;padding:6px 12px;font-size:11px;margin-bottom:10px;" onclick="loadMyInbox()">🔄 Refresh</button>
-
         <!-- Personal Info Card (only in Inbox) -->
-        <div class="personal-card" id="inboxPersonalCard">
+        <div class="personal-card">
           <div class="personal-title">👤 Personal Information</div>
-          <div class="personal-grid" id="inboxPersonalGrid">
-            <div class="personal-item"><div class="personal-item-label">User ID</div><div class="personal-item-value" id="piUserId">—</div></div>
-            <div class="personal-item"><div class="personal-item-label">Access Level</div><div class="personal-item-value" id="piLevel">—</div></div>
-          </div>
+          <div class="personal-grid" id="inboxPersonalGrid"></div>
         </div>
-
         <div class="inbox-stats">
           <div class="inbox-stat"><div class="inbox-stat-num" id="inboxTotal">0</div><div class="inbox-stat-label">Total</div></div>
           <div class="inbox-stat"><div class="inbox-stat-num" id="inboxUnread">0</div><div class="inbox-stat-label">Unread</div></div>
           <div class="inbox-stat"><div class="inbox-stat-num" id="inboxTasks">0</div><div class="inbox-stat-label">Tasks</div></div>
           <div class="inbox-stat"><div class="inbox-stat-num" id="inboxHighPri">0</div><div class="inbox-stat-label">High Pri</div></div>
         </div>
-        <div class="inbox-filter" id="inboxFilter">
+        <div class="inbox-filter">
           <button class="inbox-filter-btn active" onclick="filterInbox('all',this)">All</button>
           <button class="inbox-filter-btn" onclick="filterInbox('task',this)">📋 Task</button>
           <button class="inbox-filter-btn" onclick="filterInbox('pdf',this)">📄 PDF</button>
@@ -738,17 +465,16 @@
       </div>
     </div>
 
-    <!-- ===== MORE MODE ===== -->
+    <!-- MORE MODE -->
     <div id="moreMode" class="panel" style="display:none;">
       <div class="panel-title">📦 More Applications</div>
-
       <!-- Apps Grid -->
       <div id="appsGridContainer">
-        <div id="appsStatus" class="status-msg status-loading">Loading apps...</div>
+        <div id="appsStatus" class="status-msg status-loading" style="display:none;">Loading apps...</div>
         <div class="apps-grid" id="appsGrid"></div>
+        <div id="appsNoMsg" class="no-apps-msg" style="display:none;">No apps available for your access level.</div>
       </div>
-
-      <!-- Embedded App Container -->
+      <!-- Embedded App -->
       <div class="embedded-app-container" id="embeddedAppContainer">
         <div class="embedded-header">
           <button class="back-btn" onclick="closeEmbeddedApp()">← Back to Apps</button>
@@ -758,10 +484,10 @@
       </div>
     </div>
 
-  </div><!-- end page -->
-</div><!-- end app-container -->
+  </div>
+</div>
 
-<!-- ===================== PASSWORD MODAL ===================== -->
+<!-- PASSWORD MODAL -->
 <div class="modal-overlay" id="passwordModal">
   <div class="modal-card">
     <div class="modal-title">🔑 Change Password</div>
@@ -788,40 +514,36 @@
 <script>
 // ===================== CONFIGURATION =====================
 // Ravi you can change all settings here
-let CONFIG = {
+const CONFIG = {
   SHEET_ID: "136Fq_Pchc_kPJwEoBUgfRKzDqnYUs730w3vMhnSO9HI",
   API_KEY: "AIzaSyAjBceUqA-G1ueMCsqevOiPEhb2Nk-pOhI",
   SHEET_NAME: "master",
-  APPS_SHEET_NAME: "apps", // Ravi you can change apps sheet name here
-  INBOX_SHEET_NAME: "inbox", // Ravi you can change inbox sheet name here
+  APPS_SHEET_NAME: "apps",       // Ravi you can change apps sheet name here
+  INBOX_SHEET_NAME: "inbox",     // Ravi you can change inbox sheet name here
   APPS_SCRIPT_URL: "https://script.google.com/macros/s/AKfycbzluFhsV2Ib6I-BK5OdFacx7hjK8nTZSRLlisBedPCr1-nGD5L6MDp85iJhv075odfa/exec",
-  VIEW_CONFIG_START_ROW: 1,   // Ravi you can change view config start row here
-  VIEW_CONFIG_END_ROW: 50,    // Ravi you can change view config end row here
-  ENTRY_CONFIG_START_ROW: 82, // Ravi you can change entry config start row here
-  ENTRY_CONFIG_END_ROW: 150,  // Ravi you can change entry config end row here
-  USER_START_ROW: 51,         // Ravi you can change user start row here
-  USER_END_ROW: 81,           // Ravi you can change user end row here
-  CREDENTIAL_CHECK_INTERVAL: 3600000 // Ravi you can change credential check interval here (1 hour)
+  VIEW_CONFIG_START_ROW: 1,      // Ravi you can change view config start row here
+  VIEW_CONFIG_END_ROW: 50,       // Ravi you can change view config end row here
+  ENTRY_CONFIG_START_ROW: 82,    // Ravi you can change entry config start row here
+  ENTRY_CONFIG_END_ROW: 150,     // Ravi you can change entry config end row here
+  USER_START_ROW: 51,            // Ravi you can change user start row here
+  USER_END_ROW: 81,              // Ravi you can change user end row here
+  CREDENTIAL_CHECK_INTERVAL: 3600000 // Ravi you can change this (1 hour = 3600000ms)
 };
 
 // Ravi you can change personal data labels here (maps to master sheet columns D-J)
 const PERSONAL_DATA_LABELS = ['Full Name','Designation','Department','Phone','Email','Address','Joining Date'];
 
-// ===================== APP VERSION =====================
-// Ravi you can change the app version here
-const APP_VERSION = "4.6.0";
-
 // ===================== STATE =====================
-let currentUser = "", currentPassword = "", currentLevel = "", currentUserRow = -1;
-let viewConfig = [], entryConfig = [], allEntryData = [], myInboxData = [];
-let viewState = { subject:"", subSubject:"", inputValues:{}, inputTitles:[], outputTitles:[], dataValues:[], dataFormulas:[], subjectRowIdxs:[], subSubjectEnabled:false, baseInputCol:2, dataSource:"" };
-let entryState = { subject:"", subSubject:"", subSubjectEnabled:false, inputTitles:[], dropdownCount:0, dropdownValues:{}, textValues:{}, dataValues:[], baseInputCol:2, dataSource:"" };
-let currentMyDataTab = "entrydata", currentInboxFilter = "all", credentialCheckInterval = null;
-let appsData = [], currentEmbeddedApp = null;
+let currentUser="", currentPassword="", currentLevel="", currentUserRow=-1;
+let viewConfig=[], entryConfig=[], allMyEntries=[], myInboxData=[];
+let viewState={subject:"",subSubject:"",inputValues:{},inputTitles:[],outputTitles:[],dataValues:[],dataFormulas:[],subjectRowIdxs:[],subSubjectEnabled:false,baseInputCol:2,dataSource:""};
+let entryState={subject:"",subSubject:"",subSubjectEnabled:false,inputTitles:[],dropdownCount:0,dropdownValues:{},textValues:{},dataValues:[],baseInputCol:2,dataSource:""};
+let currentMyDataTab="entrydata", currentInboxFilter="all", credentialCheckInterval=null;
+let appInitialized=false, currentEmbeddedApp=null;
 
-// ===================== FETCH HELPER =====================
+// ===================== FETCH =====================
 const fetchSheet = async (sheetName, range, options={}) => {
-  const params = new URLSearchParams({ key: CONFIG.API_KEY });
+  const params = new URLSearchParams({key: CONFIG.API_KEY});
   if (options.valueRenderOption) params.set("valueRenderOption", options.valueRenderOption);
   const url = `https://sheets.googleapis.com/v4/spreadsheets/${CONFIG.SHEET_ID}/values/${encodeURIComponent(sheetName)}!${encodeURIComponent(range)}?${params}`;
   const res = await fetch(url);
@@ -834,360 +556,335 @@ const fetchSheet = async (sheetName, range, options={}) => {
 };
 
 // ===================== HELPERS =====================
-function colToIndex(col) {
-  col = col.toUpperCase();
-  let result = 0;
-  for (let i = 0; i < col.length; i++) { result = result * 26 + (col.charCodeAt(i) - 64); }
-  return result - 1;
-}
-function isHttpUrl(s) { return typeof s === "string" && /^https?:\/\//i.test(s); }
-function driveToDirect(u) {
-  if (typeof u !== "string") return null;
-  let m = u.match(/drive\.google\.com\/file\/d\/([^/]+)/i);
-  if (m) return `https://drive.google.com/uc?export=view&id=${m[1]}`;
-  m = u.match(/drive\.google\.com\/open\?id=([^&]+)/i);
-  if (m) return `https://drive.google.com/uc?export=view&id=${m[1]}`;
-  m = u.match(/drive\.google\.com\/uc\?(?:export=\w+&)?id=([^&]+)/i);
-  if (m) return `https://drive.google.com/uc?export=view&id=${m[1]}`;
+function isHttpUrl(s){return typeof s==="string"&&/^https?:\/\//i.test(s);}
+function driveToDirect(u){
+  if(typeof u!=="string")return null;
+  let m=u.match(/drive\.google\.com\/file\/d\/([^/]+)/i);
+  if(m)return`https://drive.google.com/uc?export=view&id=${m[1]}`;
+  m=u.match(/drive\.google\.com\/open\?id=([^&]+)/i);
+  if(m)return`https://drive.google.com/uc?export=view&id=${m[1]}`;
   return u;
 }
-function extractImageUrl(v) {
-  if (typeof v !== "string") return null;
-  const fm = v.trim().match(/^=*\s*IMAGE\s*\(\s*"([^"]+)"/i);
-  if (fm) return driveToDirect(fm[1]);
-  if (isHttpUrl(v)) return driveToDirect(v);
+function extractImageUrl(v){
+  if(typeof v!=="string")return null;
+  const fm=v.trim().match(/^=*\s*IMAGE\s*\(\s*"([^"]+)"/i);
+  if(fm)return driveToDirect(fm[1]);
+  if(isHttpUrl(v))return driveToDirect(v);
   return null;
 }
-function getLevelCols() {
-  // Returns [sheetCol, hasSubCol] indices for current user level
-  if (currentLevel === "admin") return [27, 28]; // AB, AC
-  if (currentLevel === "supervisor") return [29, 30]; // AD, AE
-  return [31, 32]; // AF, AG
+function getLevelCols(){
+  if(currentLevel==="admin")return[27,28];
+  if(currentLevel==="supervisor")return[29,30];
+  return[31,32];
 }
 
 // ===================== CLOCK =====================
-function updateClock() {
-  const now = new Date();
-  document.getElementById("clockDay").textContent = now.toLocaleDateString(undefined, {weekday:'short'});
-  document.getElementById("clockDate").textContent = now.toLocaleDateString(undefined, {day:'2-digit', month:'short', year:'2-digit'});
-  document.getElementById("clockTime").textContent = now.toLocaleTimeString(undefined, {hour:'2-digit', minute:'2-digit', second:'2-digit'});
+function updateClock(){
+  const now=new Date();
+  document.getElementById("clockDay").textContent=now.toLocaleDateString(undefined,{weekday:'short'});
+  document.getElementById("clockDate").textContent=now.toLocaleDateString(undefined,{day:'2-digit',month:'short',year:'2-digit'});
+  document.getElementById("clockTime").textContent=now.toLocaleTimeString(undefined,{hour:'2-digit',minute:'2-digit',second:'2-digit'});
 }
 updateClock();
-setInterval(updateClock, 1000);
+setInterval(updateClock,1000);
 
 // ===================== LOGIN =====================
-async function handleLogin() {
-  const userId = document.getElementById("loginUser").value.trim();
-  const password = document.getElementById("loginPass").value.trim();
-  const errorEl = document.getElementById("loginError");
-  errorEl.style.display = "none";
-  if (!userId || !password) { showLoginError("Please enter User ID and Password."); return; }
-  try {
-    const range = `A${CONFIG.USER_START_ROW}:J${CONFIG.USER_END_ROW}`;
-    const rows = await fetchSheet(CONFIG.SHEET_NAME, range, {valueRenderOption:"FORMATTED_VALUE"});
-    let found = false;
-    for (let i = 0; i < rows.length; i++) {
-      const row = rows[i] || [];
-      const uid = String(row[0]||"").trim();
-      const pwd = String(row[1]||"").trim();
-      const lvl = String(row[2]||"").trim().toLowerCase();
-      if (uid === userId && pwd === password) {
-        found = true;
-        currentUser = uid; currentPassword = pwd; currentLevel = lvl;
-        currentUserRow = CONFIG.USER_START_ROW + i;
-        localStorage.setItem("kkso_user", uid);
-        localStorage.setItem("kkso_password", pwd);
-        localStorage.setItem("kkso_level", lvl);
-        localStorage.setItem("kkso_user_row", currentUserRow);
-        // Save personal info (D-J columns)
-        const personalData = [];
-        for (let j = 3; j <= 9; j++) personalData.push(String(row[j]||""));
-        localStorage.setItem("kkso_personal", JSON.stringify(personalData));
-        showApp();
-        break;
+async function handleLogin(){
+  const userId=document.getElementById("loginUser").value.trim();
+  const password=document.getElementById("loginPass").value.trim();
+  const errorEl=document.getElementById("loginError");
+  errorEl.style.display="none";
+  if(!userId||!password){showLoginError("Please enter User ID and Password.");return;}
+  try{
+    const rows=await fetchSheet(CONFIG.SHEET_NAME,`A${CONFIG.USER_START_ROW}:J${CONFIG.USER_END_ROW}`,{valueRenderOption:"FORMATTED_VALUE"});
+    let found=false;
+    for(let i=0;i<rows.length;i++){
+      const row=rows[i]||[];
+      const uid=String(row[0]||"").trim();
+      const pwd=String(row[1]||"").trim();
+      const lvl=String(row[2]||"").trim().toLowerCase();
+      if(uid===userId&&pwd===password){
+        found=true;
+        currentUser=uid;currentPassword=pwd;currentLevel=lvl;
+        currentUserRow=CONFIG.USER_START_ROW+i;
+        localStorage.setItem("kkso_user",uid);
+        localStorage.setItem("kkso_password",pwd);
+        localStorage.setItem("kkso_level",lvl);
+        localStorage.setItem("kkso_user_row",currentUserRow);
+        const personalData=[];
+        for(let j=3;j<=9;j++)personalData.push(String(row[j]||""));
+        localStorage.setItem("kkso_personal",JSON.stringify(personalData));
+        showApp();break;
       }
     }
-    if (!found) showLoginError("You are not registered. Please check your credentials.");
-  } catch(err) { showLoginError("Connection error: " + err.message); }
+    if(!found)showLoginError("You are not registered. Please check your credentials.");
+  }catch(err){showLoginError("Connection error: "+err.message);}
 }
-function showLoginError(msg) {
-  const el = document.getElementById("loginError");
-  el.textContent = msg; el.style.display = "block";
-  el.style.animation = "none"; setTimeout(()=>{ el.style.animation = "shake 0.5s ease"; }, 10);
+function showLoginError(msg){
+  const el=document.getElementById("loginError");
+  el.textContent=msg;el.style.display="block";
+  el.style.animation="none";setTimeout(()=>{el.style.animation="shake 0.5s ease";},10);
 }
-document.getElementById("loginPass").addEventListener("keypress", e => { if (e.key === "Enter") handleLogin(); });
-document.getElementById("loginUser").addEventListener("keypress", e => { if (e.key === "Enter") handleLogin(); });
+document.getElementById("loginPass").addEventListener("keypress",e=>{if(e.key==="Enter")handleLogin();});
+document.getElementById("loginUser").addEventListener("keypress",e=>{if(e.key==="Enter")handleLogin();});
 
 // ===================== SHOW APP =====================
-function showApp() {
-  document.getElementById("loginPage").style.display = "none";
-  const app = document.getElementById("appContainer");
-  app.style.display = "flex";
-  // Apply theme
-  document.body.className = "";
+function showApp(){
+  document.getElementById("loginPage").style.display="none";
+  document.getElementById("appContainer").style.display="flex";
+  document.body.className="";
   document.body.classList.add(`theme-${currentLevel}`);
-  // Update user bar
-  document.getElementById("userAvatar").textContent = currentUser.charAt(0).toUpperCase();
-  document.getElementById("userName").textContent = currentUser;
-  const levelIcons = {admin:"👑 Admin", supervisor:"🛡️ Supervisor", staff:"👤 Staff"};
-  document.getElementById("levelBadge").textContent = levelIcons[currentLevel] || currentLevel;
-  // Update subtitle
-  const levelNames = {admin:"Admin", supervisor:"Supervisor", staff:"Staff"};
-  document.getElementById("appSubtitle").textContent = `A Cloud Based Data System For ${levelNames[currentLevel]||currentLevel} Level`;
-  // Load personal info for inbox
+  document.getElementById("userAvatar").textContent=currentUser.charAt(0).toUpperCase();
+  document.getElementById("userName").textContent=currentUser;
+  const levelIcons={admin:"👑 Admin",supervisor:"🛡️ Supervisor",staff:"👤 Staff"};
+  document.getElementById("levelBadge").textContent=levelIcons[currentLevel]||currentLevel;
+  const levelNames={admin:"Admin",supervisor:"Supervisor",staff:"Staff"};
+  document.getElementById("appSubtitle").textContent=`A Cloud Based Data System For ${levelNames[currentLevel]||currentLevel} Level`;
   loadPersonalInfo();
-  // Init app
   initApp();
-  // Start credential check
   startCredentialCheck();
 }
 
-// Restore session
-window.addEventListener("load", () => {
-  const user = localStorage.getItem("kkso_user");
-  const pwd = localStorage.getItem("kkso_password");
-  const lvl = localStorage.getItem("kkso_level");
-  const row = localStorage.getItem("kkso_user_row");
-  if (user && pwd && lvl) {
-    currentUser = user; currentPassword = pwd; currentLevel = lvl;
-    currentUserRow = parseInt(row)||51;
+window.addEventListener("load",()=>{
+  const user=localStorage.getItem("kkso_user");
+  const pwd=localStorage.getItem("kkso_password");
+  const lvl=localStorage.getItem("kkso_level");
+  const row=localStorage.getItem("kkso_user_row");
+  if(user&&pwd&&lvl){
+    currentUser=user;currentPassword=pwd;currentLevel=lvl;
+    currentUserRow=parseInt(row)||51;
     showApp();
   }
 });
 
 // ===================== LOGOUT =====================
-function handleLogout() {
-  localStorage.removeItem("kkso_user"); localStorage.removeItem("kkso_password");
-  localStorage.removeItem("kkso_level"); localStorage.removeItem("kkso_user_row");
+function handleLogout(){
+  localStorage.removeItem("kkso_user");localStorage.removeItem("kkso_password");
+  localStorage.removeItem("kkso_level");localStorage.removeItem("kkso_user_row");
   localStorage.removeItem("kkso_personal");
-  currentUser = ""; currentPassword = ""; currentLevel = ""; currentUserRow = -1;
-  document.body.className = "";
-  if (credentialCheckInterval) { clearInterval(credentialCheckInterval); credentialCheckInterval = null; }
-  document.getElementById("appContainer").style.display = "none";
-  document.getElementById("loginPage").style.display = "flex";
-  document.getElementById("loginUser").value = "";
-  document.getElementById("loginPass").value = "";
-  document.getElementById("loginError").style.display = "none";
+  currentUser="";currentPassword="";currentLevel="";currentUserRow=-1;
+  appInitialized=false;
+  document.body.className="";
+  if(credentialCheckInterval){clearInterval(credentialCheckInterval);credentialCheckInterval=null;}
+  document.getElementById("appContainer").style.display="none";
+  document.getElementById("loginPage").style.display="flex";
+  document.getElementById("loginUser").value="";
+  document.getElementById("loginPass").value="";
+  document.getElementById("loginError").style.display="none";
+  // Reset selects
+  ["viewSubject","entrySubject"].forEach(id=>{
+    const el=document.getElementById(id);
+    if(el)el.innerHTML=`<option value="">-- Select Subject --</option>`;
+  });
 }
-window.handleLogout = handleLogout;
+window.handleLogout=handleLogout;
 
 // ===================== CREDENTIAL CHECK =====================
-function startCredentialCheck() {
-  if (credentialCheckInterval) clearInterval(credentialCheckInterval);
-  credentialCheckInterval = setInterval(async () => {
-    try {
-      if (!currentUser || !currentPassword) return;
-      const rows = await fetchSheet(CONFIG.SHEET_NAME, `A${CONFIG.USER_START_ROW}:B${CONFIG.USER_END_ROW}`, {valueRenderOption:"FORMATTED_VALUE"});
-      let valid = false;
-      for (const row of rows) {
-        if (String(row[0]||"").trim()===currentUser && String(row[1]||"").trim()===currentPassword) { valid=true; break; }
+function startCredentialCheck(){
+  if(credentialCheckInterval)clearInterval(credentialCheckInterval);
+  credentialCheckInterval=setInterval(async()=>{
+    try{
+      if(!currentUser||!currentPassword)return;
+      const rows=await fetchSheet(CONFIG.SHEET_NAME,`A${CONFIG.USER_START_ROW}:B${CONFIG.USER_END_ROW}`,{valueRenderOption:"FORMATTED_VALUE"});
+      let valid=false;
+      for(const row of rows){
+        if(String(row[0]||"").trim()===currentUser&&String(row[1]||"").trim()===currentPassword){valid=true;break;}
       }
-      if (!valid) { alert("Your credentials have been changed. You will be logged out."); handleLogout(); }
-    } catch(e) { /* Silently ignore all errors */ }
-  }, CONFIG.CREDENTIAL_CHECK_INTERVAL);
+      if(!valid){alert("Your credentials have been changed. You will be logged out.");handleLogout();}
+    }catch(e){/* Silently ignore all errors */}
+  },CONFIG.CREDENTIAL_CHECK_INTERVAL);
 }
 
 // ===================== PERSONAL INFO =====================
-function loadPersonalInfo() {
-  const personal = JSON.parse(localStorage.getItem("kkso_personal")||"[]");
-  document.getElementById("piUserId").textContent = currentUser;
-  const levelIcons = {admin:"👑 Admin", supervisor:"🛡️ Supervisor", staff:"👤 Staff"};
-  document.getElementById("piLevel").textContent = levelIcons[currentLevel]||currentLevel;
-  const grid = document.getElementById("inboxPersonalGrid");
-  // Keep first 2 items (User ID and Level), add personal data
-  let html = `<div class="personal-item"><div class="personal-item-label">User ID</div><div class="personal-item-value">${currentUser}</div></div>
-              <div class="personal-item"><div class="personal-item-label">Access Level</div><div class="personal-item-value">${levelIcons[currentLevel]||currentLevel}</div></div>`;
-  personal.forEach((val, i) => {
-    if (val) html += `<div class="personal-item"><div class="personal-item-label">${PERSONAL_DATA_LABELS[i]||'Info '+(i+1)}</div><div class="personal-item-value">${val}</div></div>`;
+function loadPersonalInfo(){
+  const personal=JSON.parse(localStorage.getItem("kkso_personal")||"[]");
+  const levelIcons={admin:"👑 Admin",supervisor:"🛡️ Supervisor",staff:"👤 Staff"};
+  const grid=document.getElementById("inboxPersonalGrid");
+  let html=`<div class="personal-item"><div class="personal-item-label">User ID</div><div class="personal-item-value">${currentUser}</div></div>
+            <div class="personal-item"><div class="personal-item-label">Access Level</div><div class="personal-item-value">${levelIcons[currentLevel]||currentLevel}</div></div>`;
+  personal.forEach((val,i)=>{
+    if(val)html+=`<div class="personal-item"><div class="personal-item-label">${PERSONAL_DATA_LABELS[i]||'Info '+(i+1)}</div><div class="personal-item-value">${val}</div></div>`;
   });
-  grid.innerHTML = html;
+  grid.innerHTML=html;
 }
 
 // ===================== INIT APP =====================
-let appInitialized = false;
-async function initApp() {
-  if (appInitialized) return;
-  appInitialized = true;
-  try {
-    const [viewEnd, entryEnd] = [CONFIG.VIEW_CONFIG_END_ROW, CONFIG.ENTRY_CONFIG_END_ROW];
-    const configData = await fetchSheet(CONFIG.SHEET_NAME, `A1:AG${entryEnd}`, {valueRenderOption:"FORMATTED_VALUE"});
-    viewConfig = configData.slice(CONFIG.VIEW_CONFIG_START_ROW-1, CONFIG.VIEW_CONFIG_END_ROW) || [];
-    entryConfig = configData.slice(CONFIG.ENTRY_CONFIG_START_ROW-1, CONFIG.ENTRY_CONFIG_END_ROW) || [];
-    const [sheetCol] = getLevelCols();
-    // Build view subjects
-    const viewSubjects = new Set();
-    viewConfig.forEach(row => {
-      const sub = String(row[0]||"").trim();
-      const sheet = String(row[sheetCol]||"").trim();
-      if (sub && sheet) viewSubjects.add(sub);
+async function initApp(){
+  if(appInitialized)return;
+  appInitialized=true;
+  try{
+    const configData=await fetchSheet(CONFIG.SHEET_NAME,`A1:AG${CONFIG.ENTRY_CONFIG_END_ROW}`,{valueRenderOption:"FORMATTED_VALUE"});
+    viewConfig=configData.slice(CONFIG.VIEW_CONFIG_START_ROW-1,CONFIG.VIEW_CONFIG_END_ROW)||[];
+    entryConfig=configData.slice(CONFIG.ENTRY_CONFIG_START_ROW-1,CONFIG.ENTRY_CONFIG_END_ROW)||[];
+    const[sheetCol]=getLevelCols();
+    // View subjects
+    const viewSubjects=new Set();
+    viewConfig.forEach(row=>{
+      const sub=String(row[0]||"").trim();
+      const sheet=String(row[sheetCol]||"").trim();
+      if(sub&&sheet)viewSubjects.add(sub);
     });
-    const viewSel = document.getElementById("viewSubject");
-    viewSel.innerHTML = '<option value="">-- Select Subject --</option>';
-    viewSubjects.forEach(s => { const o=document.createElement("option"); o.value=o.textContent=s; viewSel.appendChild(o); });
-    // Build entry subjects
-    const entrySubjects = new Set();
-    entryConfig.forEach(row => {
-      const sub = String(row[0]||"").trim();
-      const sheet = String(row[sheetCol]||"").trim();
-      if (sub && sheet) entrySubjects.add(sub);
+    const viewSel=document.getElementById("viewSubject");
+    viewSel.innerHTML='<option value="">-- Select Subject --</option>';
+    viewSubjects.forEach(s=>{const o=document.createElement("option");o.value=o.textContent=s;viewSel.appendChild(o);});
+    // Entry subjects
+    const entrySubjects=new Set();
+    entryConfig.forEach(row=>{
+      const sub=String(row[0]||"").trim();
+      const sheet=String(row[sheetCol]||"").trim();
+      if(sub&&sheet)entrySubjects.add(sub);
     });
-    const entrySel = document.getElementById("entrySubject");
-    entrySel.innerHTML = '<option value="">-- Select Subject --</option>';
-    entrySubjects.forEach(s => { const o=document.createElement("option"); o.value=o.textContent=s; entrySel.appendChild(o); });
-  } catch(err) { console.error("Init error:", err); }
+    const entrySel=document.getElementById("entrySubject");
+    entrySel.innerHTML='<option value="">-- Select Subject --</option>';
+    entrySubjects.forEach(s=>{const o=document.createElement("option");o.value=o.textContent=s;entrySel.appendChild(o);});
+  }catch(err){console.error("Init error:",err);}
 }
 
 // ===================== MODE SWITCHING =====================
-function switchMode(mode) {
-  ["view","entry","mydata","more"].forEach(m => {
-    document.getElementById(m==="view"?"viewMode":m==="entry"?"entryMode":m==="mydata"?"myDataMode":"moreMode").style.display = (m===mode?"block":"none");
-    document.getElementById("btn"+m.charAt(0).toUpperCase()+m.slice(1)).classList.toggle("active", m===mode);
+function switchMode(mode){
+  const modes=["view","entry","mydata","more"];
+  const modeEls={view:"viewMode",entry:"entryMode",mydata:"mydataMode",more:"moreMode"};
+  const btnEls={view:"btnView",entry:"btnEntry",mydata:"btnMydata",more:"btnMore"};
+  modes.forEach(m=>{
+    document.getElementById(modeEls[m]).style.display=(m===mode?"block":"none");
+    document.getElementById(btnEls[m]).classList.toggle("active",m===mode);
   });
-  if (mode==="mydata") { loadMyEntryData(); }
-  if (mode==="more") { loadApps(); }
+  if(mode==="mydata")loadMyEntryData();
+  if(mode==="more")loadApps();
 }
 
 // ===================== VIEW MODE =====================
-async function handleViewSubjectChange() {
-  const subject = document.getElementById("viewSubject").value.trim();
-  viewState = { subject, subSubject:"", inputValues:{}, inputTitles:[], outputTitles:[], dataValues:[], dataFormulas:[], subjectRowIdxs:[], subSubjectEnabled:false, baseInputCol:2, dataSource:"" };
-  document.getElementById("viewSubSubjectGroup").style.display = "none";
-  document.getElementById("viewDropdowns").innerHTML = "";
-  document.getElementById("viewOutput").innerHTML = "";
-  if (!subject) return;
-  const [sheetCol, hasSubCol] = getLevelCols();
-  const rows = viewConfig.filter(r => String(r[0]||"").trim()===subject && String(r[sheetCol]||"").trim());
-  if (!rows.length) return;
-  const firstRow = rows[0];
-  const hasSubject = String(firstRow[hasSubCol]||"").trim().toLowerCase() === "true";
-  if (hasSubject) {
-    const subSubs = new Set(rows.map(r => String(r[1]||"").trim()).filter(s=>s));
-    const sel = document.getElementById("viewSubSubject");
-    sel.innerHTML = '<option value="">-- Select Sub-Subject --</option>';
-    subSubs.forEach(s => { const o=document.createElement("option"); o.value=o.textContent=s; sel.appendChild(o); });
-    document.getElementById("viewSubSubjectGroup").style.display = "block";
-    viewState.subSubjectEnabled = true;
-  } else {
-    const rowIdx = viewConfig.indexOf(firstRow);
+async function handleViewSubjectChange(){
+  const subject=document.getElementById("viewSubject").value.trim();
+  viewState={subject,subSubject:"",inputValues:{},inputTitles:[],outputTitles:[],dataValues:[],dataFormulas:[],subjectRowIdxs:[],subSubjectEnabled:false,baseInputCol:2,dataSource:""};
+  document.getElementById("viewSubSubjectGroup").style.display="none";
+  document.getElementById("viewDropdowns").innerHTML="";
+  document.getElementById("viewOutput").innerHTML="";
+  if(!subject)return;
+  const[sheetCol,hasSubCol]=getLevelCols();
+  const rows=viewConfig.filter(r=>String(r[0]||"").trim()===subject&&String(r[sheetCol]||"").trim());
+  if(!rows.length)return;
+  const firstRow=rows[0];
+  const hasSubject=String(firstRow[hasSubCol]||"").trim().toLowerCase()==="true";
+  if(hasSubject){
+    const subSubs=new Set(rows.map(r=>String(r[1]||"").trim()).filter(s=>s));
+    const sel=document.getElementById("viewSubSubject");
+    sel.innerHTML='<option value="">-- Select Sub-Subject --</option>';
+    subSubs.forEach(s=>{const o=document.createElement("option");o.value=o.textContent=s;sel.appendChild(o);});
+    document.getElementById("viewSubSubjectGroup").style.display="block";
+    viewState.subSubjectEnabled=true;
+  }else{
+    const rowIdx=viewConfig.indexOf(firstRow);
     await applyViewConfig(rowIdx);
   }
 }
-async function handleViewSubSubjectChange() {
-  const subject = viewState.subject;
-  const subSubject = document.getElementById("viewSubSubject").value.trim();
-  viewState.subSubject = subSubject;
-  viewState.inputValues = {};
-  document.getElementById("viewDropdowns").innerHTML = "";
-  document.getElementById("viewOutput").innerHTML = "";
-  if (!subSubject) return;
-  const [sheetCol] = getLevelCols();
-  const rowIdx = viewConfig.findIndex(r => String(r[0]||"").trim()===subject && String(r[1]||"").trim()===subSubject && String(r[sheetCol]||"").trim());
-  if (rowIdx === -1) return;
+async function handleViewSubSubjectChange(){
+  const subject=viewState.subject;
+  const subSubject=document.getElementById("viewSubSubject").value.trim();
+  viewState.subSubject=subSubject;viewState.inputValues={};
+  document.getElementById("viewDropdowns").innerHTML="";
+  document.getElementById("viewOutput").innerHTML="";
+  if(!subSubject)return;
+  const[sheetCol]=getLevelCols();
+  const rowIdx=viewConfig.findIndex(r=>String(r[0]||"").trim()===subject&&String(r[1]||"").trim()===subSubject&&String(r[sheetCol]||"").trim());
+  if(rowIdx===-1)return;
   await applyViewConfig(rowIdx);
 }
-async function applyViewConfig(rowIdx) {
-  const [sheetCol, hasSubCol] = getLevelCols();
-  const cfgRow = viewConfig[rowIdx] || [];
-  const hasSubject = String(cfgRow[hasSubCol]||"").trim().toLowerCase() === "true";
-  viewState.subSubjectEnabled = hasSubject;
-  viewState.baseInputCol = hasSubject ? 2 : 1;
-  const inputCount = Math.min(parseInt(cfgRow[25]||"0",10)||0, 9);
-  const outputCount = Math.min(parseInt(cfgRow[26]||"0",10)||0, 15);
-  viewState.inputTitles = cfgRow.slice(viewState.baseInputCol, viewState.baseInputCol+inputCount).map(v=>String(v||""));
-  viewState.outputTitles = cfgRow.slice(10, 10+outputCount).map(v=>String(v||""));
-  const dataSheet = String(cfgRow[sheetCol]||"").trim();
-  if (!dataSheet) return;
-  viewState.dataSource = dataSheet;
-  try {
-    document.getElementById("viewOutput").innerHTML = '<div class="status-msg status-loading">Loading data...</div>';
-    const [vals, fmls] = await Promise.all([
-      fetchSheet(dataSheet, "A:Y", {valueRenderOption:"FORMATTED_VALUE"}),
-      fetchSheet(dataSheet, "A:Y", {valueRenderOption:"FORMULA"})
+async function applyViewConfig(rowIdx){
+  const[sheetCol,hasSubCol]=getLevelCols();
+  const cfgRow=viewConfig[rowIdx]||[];
+  const hasSubject=String(cfgRow[hasSubCol]||"").trim().toLowerCase()==="true";
+  viewState.subSubjectEnabled=hasSubject;
+  viewState.baseInputCol=hasSubject?2:1;
+  const inputCount=Math.min(parseInt(cfgRow[25]||"0",10)||0,9);
+  const outputCount=Math.min(parseInt(cfgRow[26]||"0",10)||0,15);
+  viewState.inputTitles=cfgRow.slice(viewState.baseInputCol,viewState.baseInputCol+inputCount).map(v=>String(v||""));
+  viewState.outputTitles=cfgRow.slice(10,10+outputCount).map(v=>String(v||""));
+  const dataSheet=String(cfgRow[sheetCol]||"").trim();
+  if(!dataSheet)return;
+  viewState.dataSource=dataSheet;
+  try{
+    document.getElementById("viewOutput").innerHTML='<div class="status-msg status-loading">Loading data...</div>';
+    const[vals,fmls]=await Promise.all([
+      fetchSheet(dataSheet,"A:Y",{valueRenderOption:"FORMATTED_VALUE"}),
+      fetchSheet(dataSheet,"A:Y",{valueRenderOption:"FORMULA"})
     ]);
-    viewState.dataValues = vals; viewState.dataFormulas = fmls;
-    viewState.subjectRowIdxs = [];
-    for (let i=0; i<vals.length; i++) {
-      const r = vals[i]||[];
-      const colA = String(r[0]||"").trim();
-      const colB = String(r[1]||"").trim();
-      if (colA !== viewState.subject) continue;
-      if (viewState.subSubjectEnabled && colB !== viewState.subSubject) continue;
+    viewState.dataValues=vals;viewState.dataFormulas=fmls;
+    viewState.subjectRowIdxs=[];
+    for(let i=0;i<vals.length;i++){
+      const r=vals[i]||[];
+      const colA=String(r[0]||"").trim();
+      const colB=String(r[1]||"").trim();
+      if(colA!==viewState.subject)continue;
+      if(viewState.subSubjectEnabled&&colB!==viewState.subSubject)continue;
       viewState.subjectRowIdxs.push(i);
     }
-    document.getElementById("viewOutput").innerHTML = "";
-    buildViewDropdowns();
-    checkViewOutput();
-  } catch(err) { document.getElementById("viewOutput").innerHTML = `<div class="status-msg status-error">Error: ${err.message}</div>`; }
+    document.getElementById("viewOutput").innerHTML="";
+    buildViewDropdowns();checkViewOutput();
+  }catch(err){document.getElementById("viewOutput").innerHTML=`<div class="status-msg status-error">Error: ${err.message}</div>`;}
 }
-function buildViewDropdowns() {
-  const container = document.getElementById("viewDropdowns");
-  container.innerHTML = "";
-  viewState.inputTitles.forEach((label, idx) => {
-    const div = document.createElement("div"); div.className = "form-group";
-    const lbl = document.createElement("label"); lbl.className = "form-label"; lbl.textContent = label;
-    const wrap = document.createElement("div"); wrap.className = "select-wrapper";
-    const sel = document.createElement("select");
-    sel.className = `colorful-select g${(idx%5)+2}`;
-    sel.innerHTML = `<option value="">Select ${label}</option>`;
-    // Get options
-    const baseCol = viewState.baseInputCol;
-    let idxs = viewState.subjectRowIdxs.slice();
-    for (let i=0; i<idx; i++) {
-      const k = viewState.inputTitles[i];
-      const v = viewState.inputValues[k];
-      if (v) { const col=baseCol+i; idxs=idxs.filter(ri=>String((viewState.dataValues[ri]||[])[col]||"")===v); }
+function buildViewDropdowns(){
+  const container=document.getElementById("viewDropdowns");
+  container.innerHTML="";
+  viewState.inputTitles.forEach((label,idx)=>{
+    const div=document.createElement("div");div.className="form-group";
+    const lbl=document.createElement("label");lbl.className="form-label";lbl.textContent=label;
+    const wrap=document.createElement("div");wrap.className="select-wrapper";
+    const sel=document.createElement("select");
+    sel.className=`colorful-select g${(idx%5)+2}`;
+    sel.innerHTML=`<option value="">Select ${label}</option>`;
+    const baseCol=viewState.baseInputCol;
+    let idxs=viewState.subjectRowIdxs.slice();
+    for(let i=0;i<idx;i++){
+      const k=viewState.inputTitles[i];const v=viewState.inputValues[k];
+      if(v){const col=baseCol+i;idxs=idxs.filter(ri=>String((viewState.dataValues[ri]||[])[col]||"")===v);}
     }
-    const targetCol = baseCol+idx;
-    const opts = new Set();
-    idxs.forEach(ri=>{ const v=String((viewState.dataValues[ri]||[])[targetCol]||""); if(v) opts.add(v); });
-    opts.forEach(v=>{ const o=document.createElement("option"); o.value=o.textContent=v; if(viewState.inputValues[label]===v) o.selected=true; sel.appendChild(o); });
-    sel.addEventListener("change", e => { viewState.inputValues[label]=e.target.value; buildViewDropdowns(); checkViewOutput(); });
-    wrap.appendChild(sel); div.appendChild(lbl); div.appendChild(wrap); container.appendChild(div);
+    const targetCol=baseCol+idx;
+    const opts=new Set();
+    idxs.forEach(ri=>{const v=String((viewState.dataValues[ri]||[])[targetCol]||"");if(v)opts.add(v);});
+    opts.forEach(v=>{const o=document.createElement("option");o.value=o.textContent=v;if(viewState.inputValues[label]===v)o.selected=true;sel.appendChild(o);});
+    sel.addEventListener("change",e=>{viewState.inputValues[label]=e.target.value;buildViewDropdowns();checkViewOutput();});
+    wrap.appendChild(sel);div.appendChild(lbl);div.appendChild(wrap);container.appendChild(div);
   });
 }
-function checkViewOutput() {
-  if (viewState.inputTitles.length > 0 && !viewState.inputTitles.every(k=>viewState.inputValues[k])) {
-    document.getElementById("viewOutput").innerHTML = ""; return;
+function checkViewOutput(){
+  if(viewState.inputTitles.length>0&&!viewState.inputTitles.every(k=>viewState.inputValues[k])){
+    document.getElementById("viewOutput").innerHTML="";return;
   }
-  const baseCol = viewState.baseInputCol;
-  let idxs = viewState.subjectRowIdxs.slice();
-  viewState.inputTitles.forEach((k,i) => {
-    const v = viewState.inputValues[k];
-    const col = baseCol+i;
-    idxs = idxs.filter(ri=>String((viewState.dataValues[ri]||[])[col]||"")===String(v));
+  const baseCol=viewState.baseInputCol;
+  let idxs=viewState.subjectRowIdxs.slice();
+  viewState.inputTitles.forEach((k,i)=>{
+    const v=viewState.inputValues[k];const col=baseCol+i;
+    idxs=idxs.filter(ri=>String((viewState.dataValues[ri]||[])[col]||"")===String(v));
   });
-  const outputs = idxs.map(ri => {
-    const rv = viewState.dataValues[ri]||[], rf = viewState.dataFormulas[ri]||[];
-    const cells = [];
-    for (let c=10; c<10+viewState.outputTitles.length; c++) cells.push({value:rv[c]??"",formula:rf[c]??""});
+  const outputs=idxs.map(ri=>{
+    const rv=viewState.dataValues[ri]||[],rf=viewState.dataFormulas[ri]||[];
+    const cells=[];
+    for(let c=10;c<10+viewState.outputTitles.length;c++)cells.push({value:rv[c]??"",formula:rf[c]??""});
     return cells;
   });
   renderViewOutput(outputs);
 }
-function renderViewOutput(dataCells) {
-  const out = document.getElementById("viewOutput");
-  out.innerHTML = "";
-  if (!dataCells.length) return;
-  const heading = document.createElement("div"); heading.className = "output-title"; heading.textContent = "Your Result"; out.appendChild(heading);
-  const scroll = document.createElement("div"); scroll.className = "output-scroll";
-  const colCount = viewState.outputTitles.length;
-  const gridStyle = `grid-template-columns:repeat(${colCount},minmax(150px,1fr));`;
-  const headerRow = document.createElement("div"); headerRow.className = "output-grid"; headerRow.style.cssText = gridStyle;
-  viewState.outputTitles.forEach(t => { const c=document.createElement("div"); c.textContent=t; c.className="output-header"; headerRow.appendChild(c); });
+function renderViewOutput(dataCells){
+  const out=document.getElementById("viewOutput");
+  out.innerHTML="";
+  if(!dataCells.length)return;
+  const heading=document.createElement("div");heading.className="output-title";heading.textContent="Your Result";out.appendChild(heading);
+  const scroll=document.createElement("div");scroll.className="output-scroll";
+  const colCount=viewState.outputTitles.length;
+  const gridStyle=`grid-template-columns:repeat(${colCount},minmax(150px,1fr));`;
+  const headerRow=document.createElement("div");headerRow.className="output-grid";headerRow.style.cssText=gridStyle;
+  viewState.outputTitles.forEach(t=>{const c=document.createElement("div");c.textContent=t;c.className="output-header";headerRow.appendChild(c);});
   scroll.appendChild(headerRow);
-  dataCells.forEach(row => {
-    const rowEl = document.createElement("div"); rowEl.className = "output-grid"; rowEl.style.cssText = gridStyle;
-    row.forEach(cellObj => {
-      const cell = document.createElement("div");
-      const maybeFormula = String(cellObj.formula||""), maybeValue = String(cellObj.value??"");
-      const imgUrl = extractImageUrl(maybeFormula)||extractImageUrl(maybeValue);
-      if (imgUrl) {
-        const img=document.createElement("img"); img.src=imgUrl; img.alt="Image"; img.loading="lazy";
-        img.addEventListener("click",()=>window.open(imgUrl,"_blank")); cell.appendChild(img);
-      } else if (isHttpUrl(maybeValue)) {
-        const a=document.createElement("a"); a.href=driveToDirect(maybeValue); a.target="_blank";
-        a.textContent="🖼 image"; a.className="file-link"; cell.appendChild(a);
-      } else { cell.textContent = maybeValue; }
+  dataCells.forEach(row=>{
+    const rowEl=document.createElement("div");rowEl.className="output-grid";rowEl.style.cssText=gridStyle;
+    row.forEach(cellObj=>{
+      const cell=document.createElement("div");
+      const maybeFormula=String(cellObj.formula||""),maybeValue=String(cellObj.value??"");
+      const imgUrl=extractImageUrl(maybeFormula)||extractImageUrl(maybeValue);
+      if(imgUrl){const img=document.createElement("img");img.src=imgUrl;img.alt="Image";img.loading="lazy";img.addEventListener("click",()=>window.open(imgUrl,"_blank"));cell.appendChild(img);}
+      else if(isHttpUrl(maybeValue)){const a=document.createElement("a");a.href=driveToDirect(maybeValue);a.target="_blank";a.textContent="🖼 image";a.className="file-link";cell.appendChild(a);}
+      else{cell.textContent=maybeValue;}
       rowEl.appendChild(cell);
     });
     scroll.appendChild(rowEl);
@@ -1196,358 +893,326 @@ function renderViewOutput(dataCells) {
 }
 
 // ===================== ENTRY MODE =====================
-async function handleEntrySubjectChange() {
-  const subject = document.getElementById("entrySubject").value.trim();
-  entryState = { subject, subSubject:"", subSubjectEnabled:false, inputTitles:[], dropdownCount:0, dropdownValues:{}, textValues:{}, dataValues:[], baseInputCol:2, dataSource:"" };
-  document.getElementById("entrySubSubjectGroup").style.display = "none";
-  document.getElementById("entryFields").innerHTML = "";
-  document.getElementById("entryStatus").innerHTML = "";
-  if (!subject) return;
-  const [sheetCol, hasSubCol] = getLevelCols();
-  const rows = entryConfig.filter(r => String(r[0]||"").trim()===subject && String(r[sheetCol]||"").trim());
-  if (!rows.length) return;
-  const firstRow = rows[0];
-  const hasSubject = String(firstRow[hasSubCol]||"").trim().toLowerCase() === "true";
-  if (hasSubject) {
-    const subSubs = new Set(rows.map(r=>String(r[1]||"").trim()).filter(s=>s));
-    const sel = document.getElementById("entrySubSubject");
-    sel.innerHTML = '<option value="">-- Select Sub-Subject --</option>';
-    subSubs.forEach(s=>{ const o=document.createElement("option"); o.value=o.textContent=s; sel.appendChild(o); });
-    document.getElementById("entrySubSubjectGroup").style.display = "block";
-    entryState.subSubjectEnabled = true;
-  } else {
-    const rowIdx = entryConfig.indexOf(firstRow);
+async function handleEntrySubjectChange(){
+  const subject=document.getElementById("entrySubject").value.trim();
+  entryState={subject,subSubject:"",subSubjectEnabled:false,inputTitles:[],dropdownCount:0,dropdownValues:{},textValues:{},dataValues:[],baseInputCol:2,dataSource:""};
+  document.getElementById("entrySubSubjectGroup").style.display="none";
+  document.getElementById("entryFields").innerHTML="";
+  document.getElementById("entryStatus").innerHTML="";
+  if(!subject)return;
+  const[sheetCol,hasSubCol]=getLevelCols();
+  const rows=entryConfig.filter(r=>String(r[0]||"").trim()===subject&&String(r[sheetCol]||"").trim());
+  if(!rows.length)return;
+  const firstRow=rows[0];
+  const hasSubject=String(firstRow[hasSubCol]||"").trim().toLowerCase()==="true";
+  if(hasSubject){
+    const subSubs=new Set(rows.map(r=>String(r[1]||"").trim()).filter(s=>s));
+    const sel=document.getElementById("entrySubSubject");
+    sel.innerHTML='<option value="">-- Select Sub-Subject --</option>';
+    subSubs.forEach(s=>{const o=document.createElement("option");o.value=o.textContent=s;sel.appendChild(o);});
+    document.getElementById("entrySubSubjectGroup").style.display="block";
+    entryState.subSubjectEnabled=true;
+  }else{
+    const rowIdx=entryConfig.indexOf(firstRow);
     await applyEntryConfig(rowIdx);
   }
 }
-async function handleEntrySubSubjectChange() {
-  const subject = entryState.subject;
-  const subSubject = document.getElementById("entrySubSubject").value.trim();
-  entryState.subSubject = subSubject;
-  entryState.dropdownValues = {}; entryState.textValues = {};
-  document.getElementById("entryFields").innerHTML = "";
-  document.getElementById("entryStatus").innerHTML = "";
-  if (!subSubject) return;
-  const [sheetCol] = getLevelCols();
-  const rowIdx = entryConfig.findIndex(r=>String(r[0]||"").trim()===subject&&String(r[1]||"").trim()===subSubject&&String(r[sheetCol]||"").trim());
-  if (rowIdx===-1) return;
+async function handleEntrySubSubjectChange(){
+  const subject=entryState.subject;
+  const subSubject=document.getElementById("entrySubSubject").value.trim();
+  entryState.subSubject=subSubject;entryState.dropdownValues={};entryState.textValues={};
+  document.getElementById("entryFields").innerHTML="";
+  document.getElementById("entryStatus").innerHTML="";
+  if(!subSubject)return;
+  const[sheetCol]=getLevelCols();
+  const rowIdx=entryConfig.findIndex(r=>String(r[0]||"").trim()===subject&&String(r[1]||"").trim()===subSubject&&String(r[sheetCol]||"").trim());
+  if(rowIdx===-1)return;
   await applyEntryConfig(rowIdx);
 }
-async function applyEntryConfig(rowIdx) {
-  const [sheetCol, hasSubCol] = getLevelCols();
-  const cfgRow = entryConfig[rowIdx] || [];
-  const hasSubject = String(cfgRow[hasSubCol]||"").trim().toLowerCase() === "true";
-  entryState.subSubjectEnabled = hasSubject;
-  entryState.baseInputCol = hasSubject ? 2 : 1;
-  const totalCount = Math.min(parseInt(cfgRow[25]||"0",10)||0, 9);
-  const dropCount = Math.min(parseInt(cfgRow[26]||"0",10)||0, totalCount);
-  entryState.inputTitles = cfgRow.slice(entryState.baseInputCol, entryState.baseInputCol+totalCount).map(v=>String(v||""));
-  entryState.dropdownCount = dropCount;
-  const dataSheet = String(cfgRow[sheetCol]||"").trim();
-  if (!dataSheet) return;
-  entryState.dataSource = dataSheet;
-  try {
-    const vals = await fetchSheet(dataSheet, "A:Y", {valueRenderOption:"FORMATTED_VALUE"});
-    entryState.dataValues = vals;
+async function applyEntryConfig(rowIdx){
+  const[sheetCol,hasSubCol]=getLevelCols();
+  const cfgRow=entryConfig[rowIdx]||[];
+  const hasSubject=String(cfgRow[hasSubCol]||"").trim().toLowerCase()==="true";
+  entryState.subSubjectEnabled=hasSubject;
+  entryState.baseInputCol=hasSubject?2:1;
+  const totalCount=Math.min(parseInt(cfgRow[25]||"0",10)||0,9);
+  const dropCount=Math.min(parseInt(cfgRow[26]||"0",10)||0,totalCount);
+  entryState.inputTitles=cfgRow.slice(entryState.baseInputCol,entryState.baseInputCol+totalCount).map(v=>String(v||""));
+  entryState.dropdownCount=dropCount;
+  const dataSheet=String(cfgRow[sheetCol]||"").trim();
+  if(!dataSheet)return;
+  entryState.dataSource=dataSheet;
+  try{
+    const vals=await fetchSheet(dataSheet,"A:Y",{valueRenderOption:"FORMATTED_VALUE"});
+    entryState.dataValues=vals;
     buildEntryFields();
-  } catch(err) { document.getElementById("entryStatus").innerHTML = `<div class="status-msg status-error">Error: ${err.message}</div>`; }
+  }catch(err){document.getElementById("entryStatus").innerHTML=`<div class="status-msg status-error">Error: ${err.message}</div>`;}
 }
-function buildEntryFields() {
-  const container = document.getElementById("entryFields");
-  container.innerHTML = "";
-  entryState.inputTitles.forEach((label, idx) => {
-    const div = document.createElement("div"); div.className = "form-group";
-    const lbl = document.createElement("label"); lbl.className = "form-label"; lbl.textContent = label;
+function buildEntryFields(){
+  const container=document.getElementById("entryFields");
+  container.innerHTML="";
+  entryState.inputTitles.forEach((label,idx)=>{
+    const div=document.createElement("div");div.className="form-group";
+    const lbl=document.createElement("label");lbl.className="form-label";lbl.textContent=label;
     div.appendChild(lbl);
-    if (idx < entryState.dropdownCount) {
-      const wrap = document.createElement("div"); wrap.className = "select-wrapper";
-      const sel = document.createElement("select");
-      sel.className = `colorful-select g${(idx%5)+2}`;
-      sel.innerHTML = `<option value="">Select ${label}</option>`;
-      // Get options cascaded
-      const baseCol = entryState.baseInputCol;
-      let idxs = entryState.dataValues.map((_,i)=>i).filter(i=>{
+    if(idx<entryState.dropdownCount){
+      const wrap=document.createElement("div");wrap.className="select-wrapper";
+      const sel=document.createElement("select");
+      sel.className=`colorful-select g${(idx%5)+2}`;
+      sel.innerHTML=`<option value="">Select ${label}</option>`;
+      const baseCol=entryState.baseInputCol;
+      let idxs=entryState.dataValues.map((_,i)=>i).filter(i=>{
         const r=entryState.dataValues[i]||[];
-        return String(r[0]||"").trim()===entryState.subject && (!entryState.subSubjectEnabled||String(r[1]||"").trim()===entryState.subSubject);
+        return String(r[0]||"").trim()===entryState.subject&&(!entryState.subSubjectEnabled||String(r[1]||"").trim()===entryState.subSubject);
       });
-      for (let i=0; i<idx; i++) {
-        const k=entryState.inputTitles[i]; const v=entryState.dropdownValues[k];
-        if (v) { const col=baseCol+i; idxs=idxs.filter(ri=>String((entryState.dataValues[ri]||[])[col]||"")===v); }
+      for(let i=0;i<idx;i++){
+        const k=entryState.inputTitles[i];const v=entryState.dropdownValues[k];
+        if(v){const col=baseCol+i;idxs=idxs.filter(ri=>String((entryState.dataValues[ri]||[])[col]||"")===v);}
       }
-      const targetCol = baseCol+idx;
-      const opts = new Set();
-      idxs.forEach(ri=>{ const v=String((entryState.dataValues[ri]||[])[targetCol]||""); if(v) opts.add(v); });
-      opts.forEach(v=>{ const o=document.createElement("option"); o.value=o.textContent=v; if(entryState.dropdownValues[label]===v) o.selected=true; sel.appendChild(o); });
-      sel.addEventListener("change", e=>{ entryState.dropdownValues[label]=e.target.value; buildEntryFields(); });
-      wrap.appendChild(sel); div.appendChild(wrap);
-    } else {
-      const inp = document.createElement("input"); inp.className = "text-input"; inp.type = "text";
-      inp.placeholder = `Enter ${label}`; inp.value = entryState.textValues[label]||"";
-      inp.addEventListener("input", e=>{ entryState.textValues[label]=e.target.value; });
+      const targetCol=baseCol+idx;
+      const opts=new Set();
+      idxs.forEach(ri=>{const v=String((entryState.dataValues[ri]||[])[targetCol]||"");if(v)opts.add(v);});
+      opts.forEach(v=>{const o=document.createElement("option");o.value=o.textContent=v;if(entryState.dropdownValues[label]===v)o.selected=true;sel.appendChild(o);});
+      sel.addEventListener("change",e=>{entryState.dropdownValues[label]=e.target.value;buildEntryFields();});
+      wrap.appendChild(sel);div.appendChild(wrap);
+    }else{
+      const inp=document.createElement("input");inp.className="text-input";inp.type="text";
+      inp.placeholder=`Enter ${label}`;inp.value=entryState.textValues[label]||"";
+      inp.addEventListener("input",e=>{entryState.textValues[label]=e.target.value;});
       div.appendChild(inp);
     }
     container.appendChild(div);
   });
 }
-async function handleEntrySubmit() {
-  if (!entryState.subject) { document.getElementById("entryStatus").innerHTML = '<div class="status-msg status-error">Please select a subject.</div>'; return; }
-  if (entryState.subSubjectEnabled && !entryState.subSubject) { document.getElementById("entryStatus").innerHTML = '<div class="status-msg status-error">Please select a sub-subject.</div>'; return; }
-  const allValues = [];
-  for (const label of entryState.inputTitles) {
-    const isDropdown = entryState.inputTitles.indexOf(label) < entryState.dropdownCount;
-    const val = isDropdown ? (entryState.dropdownValues[label]||"") : (entryState.textValues[label]||"");
-    if (!val) { document.getElementById("entryStatus").innerHTML = `<div class="status-msg status-error">Please fill in: ${label}</div>`; return; }
+async function handleEntrySubmit(){
+  if(!entryState.subject){document.getElementById("entryStatus").innerHTML='<div class="status-msg status-error">Please select a subject.</div>';return;}
+  if(entryState.subSubjectEnabled&&!entryState.subSubject){document.getElementById("entryStatus").innerHTML='<div class="status-msg status-error">Please select a sub-subject.</div>';return;}
+  const allValues=[];
+  for(const label of entryState.inputTitles){
+    const isDropdown=entryState.inputTitles.indexOf(label)<entryState.dropdownCount;
+    const val=isDropdown?(entryState.dropdownValues[label]||""):(entryState.textValues[label]||"");
+    if(!val){document.getElementById("entryStatus").innerHTML=`<div class="status-msg status-error">Please fill in: ${label}</div>`;return;}
     allValues.push(val);
   }
-  // Build data array: Subject [+ SubSubject] + inputs + padding + submitter + datetime + level
-  const dataArr = [entryState.subject];
-  if (entryState.subSubjectEnabled) dataArr.push(entryState.subSubject);
+  const dataArr=[entryState.subject];
+  if(entryState.subSubjectEnabled)dataArr.push(entryState.subSubject);
   dataArr.push(...allValues);
-  while (dataArr.length < 15) dataArr.push("");
-  const now = new Date();
-  const dateTime = now.toLocaleDateString('en-GB',{day:'2-digit',month:'2-digit',year:'2-digit'}).replace(/\//g,'/') + ', ' + now.toLocaleTimeString(undefined,{hour:'2-digit',minute:'2-digit',second:'2-digit'});
-  dataArr.push(currentUser, dateTime, currentLevel);
-  document.getElementById("entryStatus").innerHTML = '<div class="status-msg status-loading">Submitting...</div>';
-  try {
-    const payload = { spreadsheetId:CONFIG.SHEET_ID, sheetName:entryState.dataSource, data:dataArr };
-    const response = await fetch(CONFIG.APPS_SCRIPT_URL, { method:'POST', body:JSON.stringify(payload) });
+  while(dataArr.length<15)dataArr.push("");
+  const now=new Date();
+  const dateTime=now.toLocaleDateString('en-GB',{day:'2-digit',month:'2-digit',year:'2-digit'}).replace(/\//g,'/')+', '+now.toLocaleTimeString(undefined,{hour:'2-digit',minute:'2-digit',second:'2-digit'});
+  dataArr.push(currentUser,dateTime,currentLevel);
+  document.getElementById("entryStatus").innerHTML='<div class="status-msg status-loading">Submitting...</div>';
+  try{
+    const payload={spreadsheetId:CONFIG.SHEET_ID,sheetName:entryState.dataSource,data:dataArr};
+    await fetch(CONFIG.APPS_SCRIPT_URL,{method:'POST',body:JSON.stringify(payload)});
     // Ravi you can change the success message here
-    document.getElementById("entryStatus").innerHTML = '<div class="status-msg status-success">✅ Data submitted successfully</div>';
-    // Clear text inputs only
+    document.getElementById("entryStatus").innerHTML='<div class="status-msg status-success">✅ Data submitted successfully</div>';
     handleEntryClear();
-  } catch(err) {
-    document.getElementById("entryStatus").innerHTML = `<div class="status-msg status-error">Error: ${err.message}</div>`;
-  }
+  }catch(err){document.getElementById("entryStatus").innerHTML=`<div class="status-msg status-error">Error: ${err.message}</div>`;}
 }
-function handleEntryClear() {
-  // Clear only text inputs, keep dropdowns
-  entryState.textValues = {};
-  const inputs = document.getElementById("entryFields").querySelectorAll("input.text-input");
-  inputs.forEach(inp => { inp.value = ""; });
+function handleEntryClear(){
+  entryState.textValues={};
+  document.getElementById("entryFields").querySelectorAll("input.text-input").forEach(inp=>{inp.value="";});
 }
 
-// ===================== MY DATA MODE =====================
-function switchMyDataTab(tab) {
-  currentMyDataTab = tab;
-  document.getElementById("myEntryDataSection").style.display = tab==="entrydata"?"block":"none";
-  document.getElementById("myInboxSection").style.display = tab==="inbox"?"block":"none";
-  document.getElementById("tabEntryData").classList.toggle("active", tab==="entrydata");
-  document.getElementById("tabInbox").classList.toggle("active", tab==="inbox");
-  if (tab==="inbox") loadMyInbox();
+// ===================== MY DATA =====================
+function switchMyDataTab(tab){
+  currentMyDataTab=tab;
+  document.getElementById("myEntryDataSection").style.display=tab==="entrydata"?"block":"none";
+  document.getElementById("myInboxSection").style.display=tab==="inbox"?"block":"none";
+  document.getElementById("tabEntryData").classList.toggle("active",tab==="entrydata");
+  document.getElementById("tabInbox").classList.toggle("active",tab==="inbox");
+  if(tab==="inbox")loadMyInbox();
 }
 
 // ===================== MY ENTRY DATA =====================
-let allMyEntries = [];
-async function loadMyEntryData() {
-  document.getElementById("myEntryStatus").innerHTML = '<div class="status-msg status-loading">Loading your entries...</div>';
-  document.getElementById("myEntryTable").innerHTML = "";
-  allMyEntries = [];
-  try {
-    const [sheetCol] = getLevelCols();
-    const targetSheets = new Set();
-    // Collect target sheets from entry config for this user's level
-    entryConfig.forEach(row => {
-      const sheet = String(row[sheetCol]||"").trim();
-      if (sheet) targetSheets.add(sheet);
-    });
-    // Fetch all target sheets and find user's entries
-    const sheetSubjectMap = {}; // sheet -> {subject, subSubjectEnabled, inputTitles, dropdownCount}
-    entryConfig.forEach(row => {
-      const subject = String(row[0]||"").trim();
-      const sheet = String(row[sheetCol]||"").trim();
-      const [,hasSubCol] = getLevelCols();
-      const hasSubject = String(row[hasSubCol]||"").trim().toLowerCase()==="true";
-      const inputCount = Math.min(parseInt(row[25]||"0",10)||0,9);
-      const baseInputCol = hasSubject ? 2 : 1;
-      const inputTitles = row.slice(baseInputCol, baseInputCol+inputCount).map(v=>String(v||""));
-      if (subject && sheet) {
-        if (!sheetSubjectMap[sheet]) sheetSubjectMap[sheet] = [];
-        sheetSubjectMap[sheet].push({ subject, hasSubject, inputTitles, baseInputCol });
+async function loadMyEntryData(){
+  document.getElementById("myEntryStatus").innerHTML='<div class="status-msg status-loading">Loading your entries...</div>';
+  document.getElementById("myEntryTable").innerHTML="";
+  allMyEntries=[];
+  try{
+    const[sheetCol]=getLevelCols();
+    const targetSheets=new Set();
+    const sheetSubjectMap={};
+    entryConfig.forEach(row=>{
+      const subject=String(row[0]||"").trim();
+      const sheet=String(row[sheetCol]||"").trim();
+      const[,hasSubCol]=getLevelCols();
+      const hasSubject=String(row[hasSubCol]||"").trim().toLowerCase()==="true";
+      const inputCount=Math.min(parseInt(row[25]||"0",10)||0,9);
+      const baseInputCol=hasSubject?2:1;
+      const inputTitles=row.slice(baseInputCol,baseInputCol+inputCount).map(v=>String(v||""));
+      if(subject&&sheet){
+        targetSheets.add(sheet);
+        if(!sheetSubjectMap[sheet])sheetSubjectMap[sheet]=[];
+        sheetSubjectMap[sheet].push({subject,hasSubject,inputTitles,baseInputCol});
       }
     });
-    // Fetch each sheet and find rows where Column Z = currentUser
-    for (const sheetName of targetSheets) {
-      try {
-        const vals = await fetchSheet(sheetName, "K:AB", {valueRenderOption:"FORMATTED_VALUE"});
-        for (let i=0; i<vals.length; i++) {
-          const row = vals[i]||[];
-          // K=0, L=1, ..., Z=15, AA=16, AB=17 (relative to K)
-          const submitter = String(row[15]||"").trim(); // Column Z (index 15 from K)
-          if (submitter !== currentUser) continue;
-          const subject = String(row[0]||"").trim(); // Column K
-          const dateTime = String(row[16]||"").trim(); // Column AA
-          // Find matching config for this subject
-          const configs = sheetSubjectMap[sheetName]||[];
-          const cfg = configs.find(c=>c.subject===subject) || configs[0];
-          // Build entry data: columns L-Y = indices 1-14 from K
-          const inputData = [];
-          if (cfg) {
-            const baseOffset = cfg.hasSubject ? 2 : 1; // from K: L=1, M=2 etc
-            cfg.inputTitles.forEach((_,idx) => {
-              inputData.push(String(row[baseOffset+idx]||""));
-            });
-          } else {
-            for (let j=1; j<=13; j++) { if(row[j]) inputData.push(String(row[j]||"")); }
+    for(const sheetName of targetSheets){
+      try{
+        const vals=await fetchSheet(sheetName,"K:AB",{valueRenderOption:"FORMATTED_VALUE"});
+        for(let i=0;i<vals.length;i++){
+          const row=vals[i]||[];
+          const submitter=String(row[15]||"").trim();
+          if(submitter!==currentUser)continue;
+          const subject=String(row[0]||"").trim();
+          const dateTime=String(row[16]||"").trim();
+          const configs=sheetSubjectMap[sheetName]||[];
+          const cfg=configs.find(c=>c.subject===subject)||configs[0];
+          const inputData=[];
+          if(cfg){
+            const baseOffset=cfg.hasSubject?2:1;
+            cfg.inputTitles.forEach((_,idx)=>{inputData.push(String(row[baseOffset+idx]||""));});
+          }else{
+            for(let j=1;j<=13;j++){if(row[j])inputData.push(String(row[j]||""));}
           }
-          allMyEntries.push({ subject, subSubject: cfg?.hasSubject ? String(row[1]||"") : "", inputTitles: cfg?.inputTitles||[], inputData, dateTime, sheetName });
+          allMyEntries.push({subject,subSubject:cfg?.hasSubject?String(row[1]||""):"",inputTitles:cfg?.inputTitles||[],inputData,dateTime,sheetName});
         }
-      } catch(e) { /* skip failed sheet */ }
+      }catch(e){}
     }
-    // Update stats
-    const now = new Date();
-    const todayStr = now.toLocaleDateString('en-GB',{day:'2-digit',month:'2-digit',year:'2-digit'});
-    const weekAgo = new Date(now - 7*24*60*60*1000);
-    const monthAgo = new Date(now.getFullYear(), now.getMonth(), 1);
-    let todayCount=0, weekCount=0, monthCount=0;
-    allMyEntries.forEach(e => {
-      try {
-        const parts = e.dateTime.split(',')[0].split('/');
-        if (parts.length>=3) {
-          const entryDate = new Date(2000+parseInt(parts[2]), parseInt(parts[1])-1, parseInt(parts[0]));
-          if (e.dateTime.startsWith(todayStr)) todayCount++;
-          if (entryDate >= weekAgo) weekCount++;
-          if (entryDate >= monthAgo) monthCount++;
+    const now=new Date();
+    const todayStr=now.toLocaleDateString('en-GB',{day:'2-digit',month:'2-digit',year:'2-digit'});
+    const weekAgo=new Date(now-7*24*60*60*1000);
+    const monthAgo=new Date(now.getFullYear(),now.getMonth(),1);
+    let todayCount=0,weekCount=0,monthCount=0;
+    allMyEntries.forEach(e=>{
+      try{
+        const parts=e.dateTime.split(',')[0].split('/');
+        if(parts.length>=3){
+          const entryDate=new Date(2000+parseInt(parts[2]),parseInt(parts[1])-1,parseInt(parts[0]));
+          if(e.dateTime.startsWith(todayStr))todayCount++;
+          if(entryDate>=weekAgo)weekCount++;
+          if(entryDate>=monthAgo)monthCount++;
         }
-      } catch(ex) {}
+      }catch(ex){}
     });
-    document.getElementById("statTotal").textContent = allMyEntries.length;
-    document.getElementById("statToday").textContent = todayCount;
-    document.getElementById("statWeek").textContent = weekCount;
-    document.getElementById("statMonth").textContent = monthCount;
-    // Build subject filter
-    const subjectFilter = document.getElementById("myEntrySubjectFilter");
-    const subjects = new Set(allMyEntries.map(e=>e.subject));
-    subjectFilter.innerHTML = '<option value="">All Entries</option>';
-    subjects.forEach(s=>{ const o=document.createElement("option"); o.value=o.textContent=s; subjectFilter.appendChild(o); });
-    document.getElementById("myEntryStatus").innerHTML = "";
+    document.getElementById("statTotal").textContent=allMyEntries.length;
+    document.getElementById("statToday").textContent=todayCount;
+    document.getElementById("statWeek").textContent=weekCount;
+    document.getElementById("statMonth").textContent=monthCount;
+    const subjectFilter=document.getElementById("myEntrySubjectFilter");
+    const subjects=new Set(allMyEntries.map(e=>e.subject));
+    subjectFilter.innerHTML='<option value="">All Entries</option>';
+    subjects.forEach(s=>{const o=document.createElement("option");o.value=o.textContent=s;subjectFilter.appendChild(o);});
+    document.getElementById("myEntryStatus").innerHTML="";
     filterMyEntries();
-  } catch(err) {
-    document.getElementById("myEntryStatus").innerHTML = `<div class="status-msg status-error">Error: ${err.message}</div>`;
-  }
+  }catch(err){document.getElementById("myEntryStatus").innerHTML=`<div class="status-msg status-error">Error: ${err.message}</div>`;}
 }
-function filterMyEntries() {
-  const filterSubject = document.getElementById("myEntrySubjectFilter").value;
-  const filtered = filterSubject ? allMyEntries.filter(e=>e.subject===filterSubject) : allMyEntries;
+function filterMyEntries(){
+  const filterSubject=document.getElementById("myEntrySubjectFilter").value;
+  const filtered=filterSubject?allMyEntries.filter(e=>e.subject===filterSubject):allMyEntries;
   renderMyEntriesTable(filtered);
 }
-function renderMyEntriesTable(entries) {
-  const container = document.getElementById("myEntryTable");
-  if (!entries.length) { container.innerHTML = '<div class="status-msg status-loading">No entries found.</div>'; return; }
-  // Determine headers from first entry with matching subject (or all if no filter)
-  const sampleEntry = entries[0];
-  const hasSubSubject = sampleEntry.subSubject !== "";
-  const headers = ["SL", "Subject"];
-  if (hasSubSubject) headers.push("Sub-Subject");
+function renderMyEntriesTable(entries){
+  const container=document.getElementById("myEntryTable");
+  if(!entries.length){container.innerHTML='<div class="status-msg status-loading">No entries found.</div>';return;}
+  const sampleEntry=entries[0];
+  const hasSubSubject=sampleEntry.subSubject!=="";
+  const headers=["SL","Subject"];
+  if(hasSubSubject)headers.push("Sub-Subject");
   sampleEntry.inputTitles.forEach(t=>headers.push(t));
   headers.push("Date & Time");
-  let html = `<div class="output-scroll"><table class="history-table"><thead><tr>`;
-  headers.forEach(h=>{ html+=`<th>${h}</th>`; });
-  html += `</tr></thead><tbody>`;
-  entries.forEach((e,i) => {
-    html += `<tr><td>${i+1}</td><td>${e.subject}</td>`;
-    if (hasSubSubject) html += `<td>${e.subSubject||""}</td>`;
-    e.inputTitles.forEach((_,idx)=>{ html+=`<td>${e.inputData[idx]||""}</td>`; });
-    html += `<td>${e.dateTime}</td></tr>`;
+  let html=`<table class="history-table"><thead><tr>`;
+  headers.forEach(h=>{html+=`<th>${h}</th>`;});
+  html+=`</tr></thead><tbody>`;
+  entries.forEach((e,i)=>{
+    html+=`<tr><td>${i+1}</td><td>${e.subject}</td>`;
+    if(hasSubSubject)html+=`<td>${e.subSubject||""}</td>`;
+    e.inputTitles.forEach((_,idx)=>{html+=`<td>${e.inputData[idx]||""}</td>`;});
+    html+=`<td>${e.dateTime}</td></tr>`;
   });
-  html += `</tbody></table></div>`;
-  container.innerHTML = html;
+  html+=`</tbody></table>`;
+  container.innerHTML=html;
 }
-function exportMyDataPDF() {
-  const printWin = window.open('','_blank');
-  const filtered = allMyEntries;
-  const sampleEntry = filtered[0]||{inputTitles:[],subSubject:""};
-  const hasSubSubject = sampleEntry.subSubject!=="";
-  const headers = ["SL","Subject"];
-  if (hasSubSubject) headers.push("Sub-Subject");
+function exportMyDataPDF(){
+  const printWin=window.open('','_blank');
+  const filtered=allMyEntries;
+  const sampleEntry=filtered[0]||{inputTitles:[],subSubject:""};
+  const hasSubSubject=sampleEntry.subSubject!=="";
+  const headers=["SL","Subject"];
+  if(hasSubSubject)headers.push("Sub-Subject");
   sampleEntry.inputTitles.forEach(t=>headers.push(t));
   headers.push("Date & Time");
-  let tableHtml = `<table border="1" cellpadding="8" cellspacing="0" width="100%"><thead><tr style="background:#eef2ff;color:#ea580c;font-size:11px;text-transform:uppercase;">`;
-  headers.forEach(h=>{ tableHtml+=`<th>${h}</th>`; });
-  tableHtml += `</tr></thead><tbody>`;
+  let tableHtml=`<table border="1" cellpadding="8" cellspacing="0" width="100%"><thead><tr style="background:#eef2ff;color:#ea580c;font-size:11px;text-transform:uppercase;">`;
+  headers.forEach(h=>{tableHtml+=`<th>${h}</th>`;});
+  tableHtml+=`</tr></thead><tbody>`;
   filtered.forEach((e,i)=>{
     tableHtml+=`<tr><td>${i+1}</td><td>${e.subject}</td>`;
-    if (hasSubSubject) tableHtml+=`<td>${e.subSubject||""}</td>`;
-    e.inputTitles.forEach((_,idx)=>{ tableHtml+=`<td>${e.inputData[idx]||""}</td>`; });
+    if(hasSubSubject)tableHtml+=`<td>${e.subSubject||""}</td>`;
+    e.inputTitles.forEach((_,idx)=>{tableHtml+=`<td>${e.inputData[idx]||""}</td>`;});
     tableHtml+=`<td>${e.dateTime}</td></tr>`;
   });
-  tableHtml += `</tbody></table>`;
-  printWin.document.write(`<!DOCTYPE html><html><head><title>My Entry Data - ${currentUser}</title><style>body{font-family:Arial,sans-serif;padding:20px;}h2{color:#1e293b;}table{border-collapse:collapse;font-size:12px;}th,td{padding:8px;border:1px solid #e2e8f0;text-align:center;}</style></head><body><h2>My Entry Data - ${currentUser} (${currentLevel})</h2><p>Generated: ${new Date().toLocaleString()} | Total: ${filtered.length}</p>${tableHtml}</body></html>`);
-  printWin.document.close();
-  printWin.print();
+  tableHtml+=`</tbody></table>`;
+  printWin.document.write(`<!DOCTYPE html><html><head><title>My Entry Data - ${currentUser}</title><style>body{font-family:Arial,sans-serif;padding:20px;}table{border-collapse:collapse;font-size:12px;width:100%;}th,td{padding:8px;border:1px solid #e2e8f0;text-align:center;}</style></head><body><h2>My Entry Data - ${currentUser} (${currentLevel})</h2><p>Generated: ${new Date().toLocaleString()} | Total: ${filtered.length}</p>${tableHtml}</body></html>`);
+  printWin.document.close();printWin.print();
 }
 
 // ===================== MY INBOX =====================
-async function loadMyInbox() {
-  document.getElementById("inboxStatus").innerHTML = '<div class="status-msg status-loading">Loading inbox...</div>';
-  document.getElementById("inboxCards").innerHTML = "";
-  try {
-    const vals = await fetchSheet(CONFIG.INBOX_SHEET_NAME, "A:J", {valueRenderOption:"FORMATTED_VALUE"});
-    // Filter where Column A = currentUser, skip header row
-    const userMsgs = [];
-    for (let i=1; i<vals.length; i++) {
-      const row = vals[i]||[];
-      if (String(row[0]||"").trim()===currentUser) {
+async function loadMyInbox(){
+  document.getElementById("inboxStatus").innerHTML='<div class="status-msg status-loading">Loading inbox...</div>';
+  document.getElementById("inboxCards").innerHTML="";
+  try{
+    const vals=await fetchSheet(CONFIG.INBOX_SHEET_NAME,"A:J",{valueRenderOption:"FORMATTED_VALUE"});
+    const userMsgs=[];
+    for(let i=1;i<vals.length;i++){
+      const row=vals[i]||[];
+      if(String(row[0]||"").trim()===currentUser){
         userMsgs.push({
-          to:String(row[0]||""), from:String(row[1]||""), dateTime:String(row[2]||""),
-          type:String(row[3]||"message").toLowerCase(), subject:String(row[4]||""),
-          message:String(row[5]||""), link:String(row[6]||""),
-          status:String(row[7]||"unread").toLowerCase(), priority:String(row[8]||"low").toLowerCase(),
+          to:String(row[0]||""),from:String(row[1]||""),dateTime:String(row[2]||""),
+          type:String(row[3]||"message").toLowerCase(),subject:String(row[4]||""),
+          message:String(row[5]||""),link:String(row[6]||""),
+          status:String(row[7]||"unread").toLowerCase(),priority:String(row[8]||"low").toLowerCase(),
           email:String(row[9]||""),
-          actualRow: i+1 // 1-indexed actual row in sheet
+          actualRow:i+1
         });
       }
     }
-    myInboxData = userMsgs;
-    // Update stats
-    const unread = userMsgs.filter(m=>m.status==="unread").length;
-    const tasks = userMsgs.filter(m=>m.type==="task"&&m.status!=="done").length;
-    const highPri = userMsgs.filter(m=>m.priority==="high").length;
-    document.getElementById("inboxTotal").textContent = userMsgs.length;
-    document.getElementById("inboxUnread").textContent = unread;
-    document.getElementById("inboxTasks").textContent = tasks;
-    document.getElementById("inboxHighPri").textContent = highPri;
-    // Update unread badge
-    const badge = document.getElementById("unreadBadge");
-    if (unread > 0) { badge.textContent=unread; badge.style.display="flex"; }
-    else badge.style.display = "none";
-    document.getElementById("inboxStatus").innerHTML = "";
+    myInboxData=userMsgs;
+    const unread=userMsgs.filter(m=>m.status==="unread").length;
+    const tasks=userMsgs.filter(m=>m.type==="task"&&m.status!=="done").length;
+    const highPri=userMsgs.filter(m=>m.priority==="high").length;
+    document.getElementById("inboxTotal").textContent=userMsgs.length;
+    document.getElementById("inboxUnread").textContent=unread;
+    document.getElementById("inboxTasks").textContent=tasks;
+    document.getElementById("inboxHighPri").textContent=highPri;
+    const badge=document.getElementById("unreadBadge");
+    if(unread>0){badge.textContent=unread;badge.style.display="flex";}
+    else badge.style.display="none";
+    document.getElementById("inboxStatus").innerHTML="";
     renderInboxCards(myInboxData);
-  } catch(err) {
-    document.getElementById("inboxStatus").innerHTML = `<div class="status-msg status-error">Error: ${err.message}</div>`;
-  }
+  }catch(err){document.getElementById("inboxStatus").innerHTML=`<div class="status-msg status-error">Error: ${err.message}</div>`;}
 }
-function filterInbox(type, btn) {
-  currentInboxFilter = type;
+function filterInbox(type,btn){
+  currentInboxFilter=type;
   document.querySelectorAll(".inbox-filter-btn").forEach(b=>b.classList.remove("active"));
   btn.classList.add("active");
-  const filtered = type==="all" ? myInboxData : myInboxData.filter(m=>m.type===type);
+  const filtered=type==="all"?myInboxData:myInboxData.filter(m=>m.type===type);
   renderInboxCards(filtered);
 }
-function renderInboxCards(msgs) {
-  const container = document.getElementById("inboxCards");
-  if (!msgs.length) { container.innerHTML = '<div class="status-msg status-loading">No messages found.</div>'; return; }
-  container.innerHTML = "";
-  const personalEmail = JSON.parse(localStorage.getItem("kkso_personal")||"[]")[6]||"";
-  msgs.forEach(msg => {
-    const card = document.createElement("div"); card.className = "inbox-card";
-    const priClass = msg.priority==="high"?"priority-high":msg.priority==="medium"?"priority-medium":"priority-low";
-    const priIcon = msg.priority==="high"?"🔴":msg.priority==="medium"?"🟡":"🟢";
-    const typeIcons = {task:"📋",pdf:"📄",message:"💬",notice:"📢"};
-    const typeIcon = typeIcons[msg.type]||"📩";
-    const stClass = msg.status==="done"?"status-done":msg.status==="read"?"status-read":"status-unread";
-    const stText = msg.status==="done"?"✅ Done":msg.status==="read"?"👁 Read":"🔔 Unread";
-    // File access button
-    let fileBtn = "";
-    if (msg.link) {
-      const email = msg.email || personalEmail;
-      if (email) {
-        const openUrl = `${msg.link}${msg.link.includes('?')?'&':'?'}authuser=${encodeURIComponent(email)}`;
-        fileBtn = `<a href="${openUrl}" target="_blank" class="inbox-action-btn btn-open">📂 Open</a>`;
-      } else {
-        fileBtn = `<button class="inbox-action-btn btn-noaccess" onclick="alert('Email not provided. Cannot open file.')">🔒 No Access</button>`;
+function renderInboxCards(msgs){
+  const container=document.getElementById("inboxCards");
+  if(!msgs.length){container.innerHTML='<div class="status-msg status-loading">No messages found.</div>';return;}
+  container.innerHTML="";
+  const personalEmail=JSON.parse(localStorage.getItem("kkso_personal")||"[]")[6]||"";
+  msgs.forEach(msg=>{
+    const card=document.createElement("div");card.className="inbox-card";
+    const priClass=msg.priority==="high"?"priority-high":msg.priority==="medium"?"priority-medium":"priority-low";
+    const priIcon=msg.priority==="high"?"🔴":msg.priority==="medium"?"🟡":"🟢";
+    const typeIcons={task:"📋",pdf:"📄",message:"💬",notice:"📢"};
+    const typeIcon=typeIcons[msg.type]||"📩";
+    const stClass=msg.status==="done"?"status-done":msg.status==="read"?"status-read":"status-unread";
+    const stText=msg.status==="done"?"✅ Done":msg.status==="read"?"👁 Read":"🔔 Unread";
+    let fileBtn="";
+    if(msg.link){
+      const email=msg.email||personalEmail;
+      if(email){
+        const openUrl=`${msg.link}${msg.link.includes('?')?'&':'?'}authuser=${encodeURIComponent(email)}`;
+        fileBtn=`<a href="${openUrl}" target="_blank" class="inbox-action-btn btn-open">📂 Open</a>`;
+      }else{
+        fileBtn=`<button class="inbox-action-btn btn-noaccess" onclick="alert('Email not provided. Cannot open file.')">🔒 No Access</button>`;
       }
     }
-    card.innerHTML = `
+    card.innerHTML=`
       <div class="inbox-card-header">
         <span class="priority-badge ${priClass}">${priIcon} ${msg.priority.toUpperCase()}</span>
         <span class="type-badge">${typeIcon} ${msg.type.toUpperCase()}</span>
@@ -1566,115 +1231,114 @@ function renderInboxCards(msgs) {
     container.appendChild(card);
   });
 }
-async function updateInboxStatus(actualRow, status, btn) {
-  const originalText = btn.textContent;
-  btn.textContent = "...";
-  btn.disabled = true;
-  try {
-    const payload = { spreadsheetId:CONFIG.SHEET_ID, sheetName:CONFIG.INBOX_SHEET_NAME, action:"updateInboxStatus", row:actualRow, status:status };
-    fetch(CONFIG.APPS_SCRIPT_URL, { method:"POST", body:JSON.stringify(payload) });
-    // Update local data immediately
-    const item = myInboxData.find(m=>m.actualRow===actualRow);
-    if (item) item.status = status;
-    // Wait then reload
-    setTimeout(() => { loadMyInbox(); }, 1500);
-  } catch(err) {
-    btn.textContent = originalText;
-    btn.disabled = false;
-    alert("Failed to update status: " + err.message);
+async function updateInboxStatus(actualRow,status,btn){
+  const originalText=btn.textContent;
+  btn.textContent="...";btn.disabled=true;
+  try{
+    const payload={spreadsheetId:CONFIG.SHEET_ID,sheetName:CONFIG.INBOX_SHEET_NAME,action:"updateInboxStatus",row:actualRow,status:status};
+    fetch(CONFIG.APPS_SCRIPT_URL,{method:"POST",body:JSON.stringify(payload)});
+    const item=myInboxData.find(m=>m.actualRow===actualRow);
+    if(item)item.status=status;
+    setTimeout(()=>{loadMyInbox();},1500);
+  }catch(err){
+    btn.textContent=originalText;btn.disabled=false;
+    alert("Failed to update status: "+err.message);
   }
 }
 
-// ===================== MORE / APPS =====================
-async function loadApps() {
-  document.getElementById("appsStatus").textContent = "Loading apps...";
-  document.getElementById("appsStatus").style.display = "block";
-  document.getElementById("appsGrid").innerHTML = "";
-  document.getElementById("embeddedAppContainer").style.display = "none";
-  document.getElementById("appsGridContainer").style.display = "block";
-  try {
+// ===================== MORE TAB =====================
+async function loadApps(){
+  const appsGrid=document.getElementById("appsGrid");
+  const appsStatus=document.getElementById("appsStatus");
+  const appsNoMsg=document.getElementById("appsNoMsg");
+  appsGrid.innerHTML="";
+  appsStatus.style.display="block";
+  appsStatus.textContent="Loading apps...";
+  appsNoMsg.style.display="none";
+  document.getElementById("embeddedAppContainer").style.display="none";
+  document.getElementById("appsGridContainer").style.display="block";
+  try{
     // Ravi you can change the apps sheet name in CONFIG.APPS_SHEET_NAME
-    const vals = await fetchSheet(CONFIG.APPS_SHEET_NAME, "A:F", {valueRenderOption:"FORMATTED_VALUE"});
-    appsData = [];
-    // Skip header row (row 1)
-    for (let i=1; i<vals.length; i++) {
-      const row = vals[i]||[];
-      const appName = String(row[0]||"").trim();
-      const fileName = String(row[1]||"").trim();
-      const icon = String(row[2]||"📱").trim();
-      const adminAccess = String(row[3]||"false").trim().toLowerCase()==="true";
-      const supervisorAccess = String(row[4]||"false").trim().toLowerCase()==="true";
-      const staffAccess = String(row[5]||"false").trim().toLowerCase()==="true";
-      if (!appName || !fileName) continue;
-      // Check if current user level has access
-      let hasAccess = false;
-      if (currentLevel==="admin" && adminAccess) hasAccess = true;
-      if (currentLevel==="supervisor" && supervisorAccess) hasAccess = true;
-      if (currentLevel==="staff" && staffAccess) hasAccess = true;
-      if (hasAccess) appsData.push({ appName, fileName, icon });
+    // "apps" sheet structure: A=Name, B=FileName, C=Icon, D=AdminAccess, E=SupervisorAccess, F=StaffAccess
+    const vals=await fetchSheet(CONFIG.APPS_SHEET_NAME,"A:F",{valueRenderOption:"FORMATTED_VALUE"});
+    const userApps=[];
+    // Skip header row
+    for(let i=1;i<vals.length;i++){
+      const row=vals[i]||[];
+      const appName=String(row[0]||"").trim();
+      const fileName=String(row[1]||"").trim();
+      const icon=String(row[2]||"📱").trim();
+      const adminAccess=String(row[3]||"false").trim().toLowerCase()==="true";
+      const supervisorAccess=String(row[4]||"false").trim().toLowerCase()==="true";
+      const staffAccess=String(row[5]||"false").trim().toLowerCase()==="true";
+      if(!appName||!fileName)continue;
+      let hasAccess=false;
+      if(currentLevel==="admin"&&adminAccess)hasAccess=true;
+      if(currentLevel==="supervisor"&&supervisorAccess)hasAccess=true;
+      if(currentLevel==="staff"&&staffAccess)hasAccess=true;
+      if(hasAccess)userApps.push({appName,fileName,icon});
     }
-    if (!appsData.length) {
-      document.getElementById("appsStatus").textContent = "No apps available for your access level.";
+    appsStatus.style.display="none";
+    if(!userApps.length){
+      appsNoMsg.style.display="block";
       return;
     }
-    document.getElementById("appsStatus").style.display = "none";
-    const grid = document.getElementById("appsGrid");
-    appsData.forEach(app => {
-      const card = document.createElement("div"); card.className = "app-card";
-      card.innerHTML = `<div class="app-card-icon">${app.icon}</div><div class="app-card-name">${app.appName}</div>`;
-      card.onclick = () => openEmbeddedApp(app);
-      grid.appendChild(card);
+    userApps.forEach(app=>{
+      const card=document.createElement("div");
+      card.className="app-card";
+      card.innerHTML=`<span class="app-card-icon">${app.icon}</span><div class="app-card-name">${app.appName}</div>`;
+      card.onclick=()=>openEmbeddedApp(app);
+      appsGrid.appendChild(card);
     });
-  } catch(err) {
-    document.getElementById("appsStatus").textContent = `Error loading apps: ${err.message}`;
+  }catch(err){
+    appsStatus.textContent=`Error loading apps: ${err.message}`;
   }
 }
-function openEmbeddedApp(app) {
-  currentEmbeddedApp = app;
-  document.getElementById("appsGridContainer").style.display = "none";
-  document.getElementById("embeddedAppContainer").style.display = "block";
-  document.getElementById("embeddedAppTitle").textContent = app.icon + " " + app.appName;
-  // Ravi: The app file should be in the same GitHub repository
+function openEmbeddedApp(app){
+  currentEmbeddedApp=app;
+  document.getElementById("appsGridContainer").style.display="none";
+  document.getElementById("embeddedAppContainer").style.display="block";
+  document.getElementById("embeddedAppTitle").textContent=app.icon+" "+app.appName;
+  // Ravi: The app file should be uploaded to the same GitHub repository
   // It will load from the same directory as index.html
-  document.getElementById("embeddedAppFrame").src = app.fileName;
+  document.getElementById("embeddedAppFrame").src=app.fileName;
 }
-function closeEmbeddedApp() {
-  document.getElementById("embeddedAppFrame").src = "";
-  document.getElementById("embeddedAppContainer").style.display = "none";
-  document.getElementById("appsGridContainer").style.display = "block";
-  currentEmbeddedApp = null;
+function closeEmbeddedApp(){
+  document.getElementById("embeddedAppFrame").src="";
+  document.getElementById("embeddedAppContainer").style.display="none";
+  document.getElementById("appsGridContainer").style.display="block";
+  currentEmbeddedApp=null;
 }
 
 // ===================== PASSWORD CHANGE =====================
-function openPasswordModal() { document.getElementById("passwordModal").classList.add("show"); document.getElementById("pwdMsg").style.display="none"; }
-function closePasswordModal() { document.getElementById("passwordModal").classList.remove("show"); document.getElementById("currentPwd").value=""; document.getElementById("newPwd").value=""; document.getElementById("confirmPwd").value=""; }
-async function handlePasswordChange() {
-  const current = document.getElementById("currentPwd").value.trim();
-  const newPwd = document.getElementById("newPwd").value.trim();
-  const confirm = document.getElementById("confirmPwd").value.trim();
-  const msgEl = document.getElementById("pwdMsg");
-  if (!current||!newPwd||!confirm) { showPwdMsg("Please fill all fields.", "error"); return; }
-  if (current !== currentPassword) { showPwdMsg("Current password is incorrect.", "error"); return; }
-  if (newPwd !== confirm) { showPwdMsg("New passwords do not match.", "error"); return; }
-  if (newPwd.length < 4) { showPwdMsg("Password must be at least 4 characters.", "error"); return; }
-  if (newPwd === currentPassword) { showPwdMsg("New password must be different.", "error"); return; }
-  try {
-    const payload = { spreadsheetId:CONFIG.SHEET_ID, sheetName:CONFIG.SHEET_NAME, action:"changePassword", row:currentUserRow, newPassword:newPwd };
-    fetch(CONFIG.APPS_SCRIPT_URL, { method:"POST", body:JSON.stringify(payload) });
-    localStorage.setItem("kkso_password", newPwd);
-    currentPassword = newPwd;
+function openPasswordModal(){document.getElementById("passwordModal").classList.add("show");document.getElementById("pwdMsg").style.display="none";}
+function closePasswordModal(){document.getElementById("passwordModal").classList.remove("show");document.getElementById("currentPwd").value="";document.getElementById("newPwd").value="";document.getElementById("confirmPwd").value="";}
+async function handlePasswordChange(){
+  const current=document.getElementById("currentPwd").value.trim();
+  const newPwd=document.getElementById("newPwd").value.trim();
+  const confirm=document.getElementById("confirmPwd").value.trim();
+  if(!current||!newPwd||!confirm){showPwdMsg("Please fill all fields.","error");return;}
+  if(current!==currentPassword){showPwdMsg("Current password is incorrect.","error");return;}
+  if(newPwd!==confirm){showPwdMsg("New passwords do not match.","error");return;}
+  if(newPwd.length<4){showPwdMsg("Password must be at least 4 characters.","error");return;}
+  if(newPwd===currentPassword){showPwdMsg("New password must be different.","error");return;}
+  try{
+    const payload={spreadsheetId:CONFIG.SHEET_ID,sheetName:CONFIG.SHEET_NAME,action:"changePassword",row:currentUserRow,newPassword:newPwd};
+    fetch(CONFIG.APPS_SCRIPT_URL,{method:"POST",body:JSON.stringify(payload)});
+    localStorage.setItem("kkso_password",newPwd);
+    currentPassword=newPwd;
     // Ravi you can change the password change success message here
-    showPwdMsg("✅ Password changed! Logging out...", "success");
+    showPwdMsg("✅ Password changed! Logging out...","success");
     // Ravi you can change the logout delay here (2000 = 2 seconds)
-    setTimeout(() => { closePasswordModal(); handleLogout(); }, 2000);
-  } catch(err) { showPwdMsg("Error: " + err.message, "error"); }
+    setTimeout(()=>{closePasswordModal();handleLogout();},2000);
+  }catch(err){showPwdMsg("Error: "+err.message,"error");}
 }
-function showPwdMsg(msg, type) {
-  const el = document.getElementById("pwdMsg");
-  el.textContent = msg; el.style.display="block";
-  el.style.background = type==="success"?"#f0fdf4":"#fef2f2";
-  el.style.color = type==="success"?"#166534":"#dc2626";
-  el.style.border = type==="success"?"1px solid #86efac":"1px solid #fecaca";
+function showPwdMsg(msg,type){
+  const el=document.getElementById("pwdMsg");
+  el.textContent=msg;el.style.display="block";
+  el.style.background=type==="success"?"#f0fdf4":"#fef2f2";
+  el.style.color=type==="success"?"#166534":"#dc2626";
+  el.style.border=type==="success"?"1px solid #86efac":"1px solid #fecaca";
 }
 </script>
 </body>
