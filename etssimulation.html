@@ -1,0 +1,1097 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Kolkata Metro Orange Line — ETS Simulation</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: Arial, sans-serif;
+      background: #f4f6fa;
+      min-height: 100vh;
+      padding: 10px;
+    }
+
+    /* ── Header ── */
+    #header { text-align: center; margin-bottom: 10px; }
+    #header-box {
+      display: inline-block;
+      background: linear-gradient(135deg, #1a3a6b 0%, #1565c0 100%);
+      color: #fff;
+      padding: 10px 28px 8px;
+      border-radius: 10px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.18);
+    }
+    #header-box .title  { font-size:clamp(14px,3vw,22px); font-weight:900; letter-spacing:2px; display:block; }
+    #header-box .sub    { display:block; font-size:clamp(10px,2vw,13px); color:#aad4ff; font-weight:400; letter-spacing:1px; margin-top:2px; }
+    #header-box .credit { display:block; font-size:clamp(9px,1.5vw,10px); color:#90caf9; font-weight:400; margin-top:4px; letter-spacing:0.5px; }
+
+    /* ── Status bar ── */
+    #statusbar {
+      display:flex; align-items:center; flex-wrap:wrap;
+      gap:8px; background:#fff; border:1px solid #d0d7e8;
+      border-radius:8px; padding:8px 14px; margin-bottom:8px;
+      box-shadow:0 1px 4px rgba(0,0,0,0.06);
+    }
+    #statusbar .s-charged    { font-weight:700; font-size:clamp(11px,2vw,13px); color:#333; }
+    #statusbar .s-charged    span { color:#cc0000; }
+    #statusbar .s-discharged { font-weight:700; font-size:clamp(11px,2vw,13px); color:#333; }
+    #statusbar .s-discharged span { color:#00aa44; }
+    #last-ets {
+      background:#fff8e1; border:1px solid #ffa000;
+      border-radius:4px; padding:3px 10px;
+      font-weight:700; font-size:clamp(10px,2vw,13px); display:none;
+    }
+    #last-ets span { color:#cc0000; }
+
+    /* ── Button group ── */
+    .btn-group { display:flex; gap:6px; margin-left:auto; flex-wrap:wrap; }
+    .btn {
+      border:none; border-radius:6px; padding:7px 14px;
+      font-weight:700; font-size:clamp(10px,1.8vw,13px);
+      cursor:pointer; white-space:nowrap;
+      transition:background 0.15s, box-shadow 0.15s, transform 0.15s;
+    }
+    #btn-reset { background:#1565c0; color:#fff; box-shadow:0 1px 4px rgba(21,101,192,0.3); }
+    #btn-reset:hover { background:#0d47a1; }
+
+    #btn-n2 { background:#5c5c5c; color:#fff; border:2px solid transparent; }
+    #btn-n2:hover  { background:#4a148c; border-color:#ce93d8; }
+    #btn-n2.active { background:#6a1b9a; color:#fff; border-color:#ce93d8; transform:scale(1.04); box-shadow:0 0 0 3px #ce93d8,0 2px 8px rgba(106,27,154,0.5); }
+
+    #btn-n1 { background:#5c5c5c; color:#fff; border:2px solid transparent; }
+    #btn-n1:hover  { background:#bf360c; border-color:#ffab91; }
+    #btn-n1.active { background:#e65100; color:#fff; border-color:#ffab91; transform:scale(1.04); box-shadow:0 0 0 3px #ffccbc,0 2px 8px rgba(230,81,0,0.5); }
+
+    /* ── ETS indicator panel ── */
+    #ets-indicator {
+      display:none; align-items:center; flex-wrap:wrap; gap:6px;
+      background:#fff3e0; border:2px solid #e65100;
+      border-radius:8px; padding:8px 16px; margin-bottom:8px;
+      font-size:clamp(11px,2vw,14px); color:#bf360c;
+      box-shadow:0 2px 8px rgba(230,81,0,0.15);
+      animation: fadeIn 0.3s ease;
+    }
+    #ets-indicator .ets-label {
+      font-size:clamp(14px,3vw,20px); font-weight:900; color:#cc0000;
+      letter-spacing:2px; background:#fff; border:2px solid #cc0000;
+      border-radius:6px; padding:2px 14px; display:inline-block; margin:0 4px;
+    }
+    #ets-indicator .station-label { font-size:clamp(12px,2.5vw,16px); font-weight:700; color:#1a3a6b; }
+    #ets-indicator .mode-badge    { font-size:clamp(10px,1.8vw,12px); font-weight:700; border-radius:4px; padding:2px 10px; margin-left:4px; }
+    .mode-badge-n2 { background:#6a1b9a; color:#fff; }
+    .mode-badge-n1 { background:#e65100; color:#fff; }
+
+    @keyframes fadeIn { from{opacity:0;transform:translateY(-4px)} to{opacity:1;transform:none} }
+
+    /* ── Info bar ── */
+    #infobar {
+      background:#e3f2fd; border:1px solid #90caf9;
+      border-radius:6px; padding:7px 14px; margin-bottom:8px;
+      font-size:clamp(10px,1.8vw,12px); color:#0d47a1; line-height:1.6;
+    }
+
+    /* ── Legend ── */
+    #legend {
+      display:flex; flex-wrap:wrap; gap:10px 18px;
+      background:#fff; border:1px solid #d0d7e8;
+      border-radius:6px; padding:8px 14px; margin-bottom:10px;
+      font-size:clamp(10px,1.8vw,12px); box-shadow:0 1px 4px rgba(0,0,0,0.05);
+    }
+    .leg-item  { display:flex; align-items:center; gap:5px; white-space:nowrap; }
+    .leg-swatch{ display:inline-block; width:22px; height:13px; border-radius:2px; flex-shrink:0; }
+    .leg-stn-chg {
+      display:inline-block; width:34px; height:16px; border-radius:2px; flex-shrink:0;
+      background:#ffebee; border:2px solid #cc0000;
+    }
+    .leg-stn-dis {
+      display:inline-block; width:34px; height:16px; border-radius:2px; flex-shrink:0;
+      background:#e8f5e9; border:2px solid #2e7d32;
+    }
+    .leg-ets-normal {
+      display:inline-flex; align-items:center; justify-content:center;
+      width:38px; height:16px; border-radius:3px;
+      background:#ccffff; border:1px solid #008080;
+      font-size:8px; font-weight:700; color:#007070; flex-shrink:0;
+    }
+    .leg-ets-pressed {
+      display:inline-flex; align-items:center; justify-content:center;
+      width:38px; height:16px; border-radius:3px;
+      background:#ff2222; border:2px solid #880000;
+      font-size:8px; font-weight:700; color:#fff; flex-shrink:0;
+      box-shadow:0 0 4px rgba(255,0,0,0.5);
+    }
+    .leg-db-locked {
+      display:inline-flex; align-items:center; justify-content:center;
+      width:50px; height:16px; border-radius:3px;
+      background:#00aa44; border:2px dashed #005500;
+      font-size:8px; font-weight:700; color:#fff; flex-shrink:0;
+    }
+
+    /* ── SVG container ── */
+    #diagram-wrap {
+      background:white; padding:12px;
+      box-shadow:0 1px 8px rgba(0,0,0,0.1);
+      border-radius:8px; overflow-x:auto; overflow-y:auto;
+      margin-bottom:14px; -webkit-overflow-scrolling:touch; max-width:100%;
+    }
+    #diagram-wrap svg { display:block; }
+
+    #scroll-hint { display:none; text-align:center; font-size:11px; color:#888; margin-bottom:6px; }
+    @media (max-width:900px) { #scroll-hint { display:block; } }
+
+    .clickable { cursor:pointer; }
+
+    @keyframes etsPulse {
+      0%   { opacity:1; }
+      50%  { opacity:0.55; }
+      100% { opacity:1; }
+    }
+    .ets-active-anim { animation: etsPulse 0.8s ease-in-out infinite; }
+    .ets-locked-anim { opacity:0.45; cursor:not-allowed !important; }
+
+    /* ══════════════════════════════════════════
+       OPERATION LOG PANEL
+    ══════════════════════════════════════════ */
+    #op-log {
+      background:#fff;
+      border:2px solid #1565c0;
+      border-radius:10px;
+      margin-bottom:14px;
+      box-shadow:0 2px 10px rgba(21,101,192,0.13);
+      overflow:hidden;
+    }
+    #op-log-header {
+      background:linear-gradient(90deg,#1a3a6b,#1565c0);
+      color:#fff;
+      padding:9px 18px;
+      font-size:clamp(12px,2vw,15px);
+      font-weight:900;
+      letter-spacing:1px;
+      display:flex;
+      align-items:center;
+      gap:10px;
+    }
+    #op-log-header .log-icon { font-size:18px; }
+    #op-log-body { padding:14px 18px; }
+
+    #op-log-empty {
+      color:#aaa;
+      font-size:clamp(11px,1.8vw,13px);
+      text-align:center;
+      padding:10px 0 4px;
+      font-style:italic;
+    }
+
+    .log-grid {
+      display:grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap:12px;
+    }
+    @media(max-width:680px) {
+      .log-grid { grid-template-columns:1fr; }
+    }
+
+    .log-card {
+      border-radius:8px;
+      border:1.5px solid #d0d7e8;
+      overflow:hidden;
+    }
+    .log-card-head {
+      padding:6px 12px;
+      font-size:clamp(10px,1.6vw,12px);
+      font-weight:700;
+      letter-spacing:0.5px;
+      color:#fff;
+    }
+    .log-card-body {
+      padding:10px 12px;
+      font-size:clamp(11px,1.8vw,13px);
+      line-height:1.7;
+      background:#fafbfd;
+      min-height:56px;
+    }
+
+    .card-scheme .log-card-head  { background:#4a148c; }
+    .card-ets    .log-card-head  { background:#b71c1c; }
+    .card-brk    .log-card-head  { background:#1565c0; }
+
+    .brk-row {
+      display:flex;
+      align-items:flex-start;
+      gap:8px;
+      padding:4px 0;
+      border-bottom:1px solid #eee;
+      font-size:clamp(10px,1.7vw,12px);
+    }
+    .brk-row:last-child { border-bottom:none; }
+    .brk-stn {
+      font-weight:700;
+      color:#1a3a6b;
+      min-width:90px;
+      flex-shrink:0;
+    }
+    .brk-role {
+      font-size:10px;
+      font-style:normal;
+      font-weight:700;
+      margin-top:1px;
+    }
+    .brk-tags {
+      display:flex;
+      flex-wrap:wrap;
+      gap:4px;
+      align-items:flex-start;
+    }
+    .brk-tag {
+      display:inline-block;
+      background:#e53935;
+      color:#fff;
+      border-radius:4px;
+      padding:1px 7px;
+      font-size:10px;
+      font-weight:700;
+      letter-spacing:0.5px;
+    }
+    .brk-tag.db05   { background:#6a1b9a; }
+    .brk-tag.bcp    { background:#00838f; }
+    .brk-tag.remote { background:#e65100; }
+
+    /* ── Footer ── */
+    #footer { text-align:center; font-size:11px; color:#888; margin-top:4px; padding-bottom:10px; }
+
+    @media (max-width:600px) {
+      body { padding:6px; }
+      #header-box { padding:8px 14px 6px; }
+      #statusbar { padding:6px 10px; gap:6px; }
+      .btn { padding:5px 10px; }
+      #legend { gap:7px 12px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div id="header">
+  <div id="header-box">
+    <span class="title">🚇 Kolkata Metro Orange Line</span>
+    <span class="sub">Emergency Trip System (ETS) — Interactive Simulation</span>
+    <span class="credit">© Created by Ravi Malhotra</span>
+  </div>
+</div>
+
+<!-- STATUS BAR -->
+<div id="statusbar">
+  <div class="s-charged">⚡ CHARGED: <span id="cnt-charged">9</span> / 9</div>
+  <div class="s-discharged">✔ DISCHARGED: <span id="cnt-discharged">0</span> / 9</div>
+  <div id="last-ets">Last ETS: <span id="last-ets-text"></span></div>
+  <div class="btn-group">
+    <button id="btn-reset" class="btn" onclick="resetAll()">↺ RESET ALL</button>
+    <button id="btn-n2"    class="btn active" onclick="setMode('N2')">⚡ N±2 Logic</button>
+    <button id="btn-n1"    class="btn"        onclick="setMode('N1')">⚡ N±1 Logic</button>
+  </div>
+</div>
+
+<!-- ETS INDICATOR -->
+<div id="ets-indicator">
+  🚨 ETS TRIGGERED &nbsp;→&nbsp;
+  <span class="ets-label"     id="ets-ind-num">ETS-?</span>
+  &nbsp;pressed at station&nbsp;
+  <span class="station-label" id="ets-ind-stn">???</span>
+  &nbsp;<span class="mode-badge" id="ets-ind-mode">N±2 Active</span>
+</div>
+
+<!-- INFO BAR -->
+<div id="infobar">
+  <b>How to use:</b>&nbsp;
+  Select <b style="color:#6a1b9a">N±2 Logic</b> or <b style="color:#e65100">N±1 Logic</b> mode, then click any
+  <b style="color:#0277bd">ETS</b> box to trigger. Only <b>one ETS</b> can be pressed per operation —
+  click <b>↺ RESET ALL</b> to clear and press another.
+  Tripped breakers are <b style="color:#00aa44">LOCKED OPEN</b> (dashed border 🔒) until reset.
+  Station box: <b style="color:#cc0000">Light Red</b> = CHARGED · <b style="color:#2e7d32">Light Green</b> = DISCHARGED.
+</div>
+
+<!-- LEGEND -->
+<div id="legend">
+  <div class="leg-item"><span class="leg-swatch" style="background:#cc0000;border:1px solid #880000"></span>DB01–04 CLOSED (Live)</div>
+  <div class="leg-item"><span class="leg-swatch" style="background:#00aa44;border:1px solid #005500"></span>DB01–04 OPEN (Safe)</div>
+  <div class="leg-item"><span class="leg-swatch" style="background:#00aa44;border:1px solid #005500"></span>DB05 / BCP OPEN (default)</div>
+  <div class="leg-item"><span class="leg-swatch" style="background:#cc0000;border:1px solid #880000"></span>DB05 / BCP CLOSED (Live)</div>
+  <div class="leg-item"><span class="leg-db-locked">🔒 DB-XX</span>&nbsp;Tripped — Locked Open</div>
+  <div class="leg-item"><span class="leg-swatch" style="background:#dd0000"></span>3rd-Rail CHARGED</div>
+  <div class="leg-item"><span class="leg-swatch" style="background:#00bb44"></span>3rd-Rail DISCHARGED</div>
+  <div class="leg-item"><span class="leg-stn-chg"></span>Station Box CHARGED</div>
+  <div class="leg-item"><span class="leg-stn-dis"></span>Station Box DISCHARGED</div>
+  <div class="leg-item"><span class="leg-ets-normal">ETS-N</span>&nbsp;ETS Normal</div>
+  <div class="leg-item"><span class="leg-ets-pressed">ETS-N</span>&nbsp;ETS PRESSED</div>
+</div>
+
+<!-- SCROLL HINT -->
+<div id="scroll-hint">↔ Scroll / pinch-zoom to view full diagram</div>
+
+<!-- SVG DIAGRAM -->
+<div id="diagram-wrap">
+  <svg id="mainsvg" width="100" height="1000" style="min-height:320px; display:block;">
+    <defs>
+      <pattern id="nsHatch" width="8" height="8" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+        <line x1="0" y1="0" x2="0" y2="8" stroke="#ffcccc" stroke-width="4"/>
+      </pattern>
+      <filter id="ets-glow" x="-30%" y="-30%" width="160%" height="160%">
+        <feGaussianBlur in="SourceGraphic" stdDeviation="3" result="blur"/>
+        <feMerge>
+          <feMergeNode in="blur"/>
+          <feMergeNode in="SourceGraphic"/>
+        </feMerge>
+      </filter>
+    </defs>
+  </svg>
+</div>
+
+<!-- OPERATION LOG -->
+<div id="op-log">
+  <div id="op-log-header">
+    <span class="log-icon">📋</span>
+    OPERATION LOG — Tripped Breaker Report
+  </div>
+  <div id="op-log-body">
+    <div id="op-log-empty">
+      No operation recorded yet. Press any ETS button to begin simulation.
+    </div>
+    <div id="op-log-content" style="display:none;">
+      <div class="log-grid">
+        <div class="log-card card-scheme">
+          <div class="log-card-head">① OPERATED SCHEME</div>
+          <div class="log-card-body" id="log-scheme-body">—</div>
+        </div>
+        <div class="log-card card-ets">
+          <div class="log-card-head">② OPERATED ETS</div>
+          <div class="log-card-body" id="log-ets-body">—</div>
+        </div>
+        <div class="log-card card-brk">
+          <div class="log-card-head">③ OPERATED BREAKERS (per station)</div>
+          <div class="log-card-body" id="log-brk-body">—</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<div id="footer">
+  Kolkata Metro Orange Line &nbsp;·&nbsp; ETS Protection Simulation
+  &nbsp;&nbsp;<span style="color:#aaa">© Created by Ravi Malhotra</span>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════════════════════════════════
+//  STATION DEFINITIONS
+// ═══════════════════════════════════════════════════════════════════════════
+const STATION_DEFS = [
+  { id:201, label:'201-KKSO' },
+  { id:202, label:'202-KSJR' },
+  { id:203, label:'203-KJNN' },
+  { id:204, label:'204-KKSK' },
+  { id:205, label:'205-KHMD' },
+  { id:206, label:'206-KVIB' },
+  { id:207, label:'207-KRWT' },
+  { id:208, label:'208-KBST' },
+  { id:209, label:'209-KBGA' },
+];
+
+const ST_H    = 200;
+const GAP     = 150;
+const SLOT    = ST_H + GAP;
+const TOP_PAD = 80;
+const SVG_W   = 1000;
+
+// ═══════════════════════════════════════════════════════════════════════════
+//  STATE
+// ═══════════════════════════════════════════════════════════════════════════
+function makeBrk(closed) { return { closed, locked: false }; }
+
+function makeInitial() {
+  return STATION_DEFS.map(s => ({
+    id: s.id, label: s.label,
+    breakers: {
+      DB01:  makeBrk(true),
+      DB02:  makeBrk(true),
+      DB03:  makeBrk(true),
+      DB04:  makeBrk(true),
+      DB05:  makeBrk(false),   // default OPEN
+      BCP01: makeBrk(false),   // default OPEN
+      BCP02: makeBrk(false),   // default OPEN
+    }
+  }));
+}
+
+let stations    = makeInitial();
+let activeETS   = null;   // { stationId, etsNum }
+let etsFired    = false;  // locks further ETS presses after first
+let currentMode = 'N2';
+let lastOpLog   = null;
+
+const bc = b => b.closed;
+const bl = b => b.locked;
+
+// ═══════════════════════════════════════════════════════════════════════════
+//  MODE SWITCH
+// ═══════════════════════════════════════════════════════════════════════════
+function setMode(mode) {
+  currentMode = mode;
+  document.getElementById('btn-n2').classList.toggle('active', mode === 'N2');
+  document.getElementById('btn-n1').classList.toggle('active', mode === 'N1');
+  resetAll();
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+//  TRIP HELPERS
+// ═══════════════════════════════════════════════════════════════════════════
+function tripBreaker(st, key) {
+  st.breakers[key].closed = false;
+  st.breakers[key].locked = true;
+}
+
+/* Trip a list of keys at station index i.
+   Returns array of keys actually acted on (for log). */
+function doTrip(i, keys) {
+  if (i < 0 || i >= stations.length) return [];
+  const tripped = [];
+  keys.forEach(k => {
+    const b = stations[i].breakers[k];
+    if (!b.locked) {
+      tripBreaker(stations[i], k);
+      tripped.push(k);
+    }
+  });
+  return tripped;
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+//  TRIP LOGIC — N±2
+// ═══════════════════════════════════════════════════════════════════════════
+function applyTripN2(triggeredId, etsNum) {
+  const idx = stations.findIndex(s => s.id === triggeredId);
+  if (idx < 0) return;
+
+  const ALL = ['DB01','DB02','DB03','DB04','DB05','BCP01','BCP02'];
+  const N2  = ['DB01','DB02','DB05','BCP01','BCP02'];
+  const P2  = ['DB03','DB04','DB05','BCP01','BCP02'];
+
+  const logRows = [];
+
+  function record(i, keys, role) {
+    const tripped = doTrip(i, keys);
+    if (tripped.length > 0) {
+      logRows.push({ label: stations[i].label, role, keys: tripped });
+    }
+  }
+
+  record(idx,     ALL, 'N (Fault Station)');
+  record(idx - 1, ALL, 'N−1');
+  record(idx + 1, ALL, 'N+1');
+  record(idx - 2, N2,  'N−2 (Remote)');
+  record(idx + 2, P2,  'N+2 (Remote)');
+
+  lastOpLog = {
+    scheme: 'N±2 Protection Scheme',
+    ets:    `ETS-${etsNum}`,
+    stn:    STATION_DEFS.find(s => s.id === triggeredId).label,
+    dir:    null,
+    rows:   logRows
+  };
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+//  TRIP LOGIC — N±1
+//  ETS-1 / ETS-3 / ETS-5  → Down Line
+//    N station  : DB03, DB05, BCP01
+//    N-1 station: DB01, DB05, BCP01
+//
+//  ETS-2 / ETS-4 / ETS-6  → Up Line
+//    N station  : DB02, DB05, BCP02
+//    N+1 station: DB04, DB05, BCP02
+// ═══════════════════════════════════════════════════════════════════════════
+function applyTripN1(triggeredId, etsNum) {
+  const idx = stations.findIndex(s => s.id === triggeredId);
+  if (idx < 0) return;
+
+  const isDown = (etsNum === 1 || etsNum === 3 || etsNum === 5);
+  const logRows = [];
+
+  function record(i, keys, role) {
+    if (i < 0 || i >= stations.length) return;
+    const tripped = doTrip(i, keys);
+    if (tripped.length > 0) {
+      logRows.push({ label: stations[i].label, role, keys: tripped });
+    }
+  }
+
+  if (isDown) {
+    // ── Down Line ──────────────────────────────────────────────────────────
+    // N station  : DB03, DB05, BCP01
+    // N-1 station: DB01, DB05, BCP01
+    record(idx,     ['DB03', 'DB05', 'BCP01'], 'N (Down feeder)');
+    record(idx - 1, ['DB01', 'DB05', 'BCP01'], 'N−1');
+
+    lastOpLog = {
+      scheme: 'N±1 Protection Scheme',
+      ets:    `ETS-${etsNum}`,
+      stn:    STATION_DEFS.find(s => s.id === triggeredId).label,
+      dir:    'Down Line → DB03 & DB05 & BCP01 @ N  +  DB01 & DB05 & BCP01 @ N−1',
+      rows:   logRows
+    };
+  } else {
+    // ── Up Line ────────────────────────────────────────────────────────────
+    // N station  : DB02, DB05, BCP02
+    // N+1 station: DB04, DB05, BCP02
+    record(idx,     ['DB02', 'DB05', 'BCP02'], 'N (Up feeder)');
+    record(idx + 1, ['DB04', 'DB05', 'BCP02'], 'N+1');
+
+    lastOpLog = {
+      scheme: 'N±1 Protection Scheme',
+      ets:    `ETS-${etsNum}`,
+      stn:    STATION_DEFS.find(s => s.id === triggeredId).label,
+      dir:    'Up Line → DB02 & DB05 & BCP02 @ N  +  DB04 & DB05 & BCP02 @ N+1',
+      rows:   logRows
+    };
+  }
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+//  OPERATION LOG — update DOM
+// ═══════════════════════════════════════════════════════════════════════════
+function updateOpLog() {
+  const emptyEl   = document.getElementById('op-log-empty');
+  const contentEl = document.getElementById('op-log-content');
+
+  if (!lastOpLog) {
+    emptyEl.style.display   = 'block';
+    contentEl.style.display = 'none';
+    return;
+  }
+
+  emptyEl.style.display   = 'none';
+  contentEl.style.display = 'block';
+
+  // ── ① Scheme ────────────────────────────────────────────────────────────
+  const isN2   = lastOpLog.scheme.includes('N±2');
+  const schClr = isN2 ? '#6a1b9a' : '#e65100';
+  const schLbl = isN2 ? 'N±2' : 'N±1';
+  document.getElementById('log-scheme-body').innerHTML = `
+    <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+      <span style="
+        background:${schClr};color:#fff;
+        font-size:clamp(18px,3vw,24px);font-weight:900;
+        border-radius:8px;padding:4px 20px;letter-spacing:2px;
+      ">${schLbl}</span>
+      <span style="font-weight:700;color:#333;font-size:clamp(11px,1.8vw,13px);">
+        ${lastOpLog.scheme}
+      </span>
+    </div>
+    ${lastOpLog.dir
+      ? `<div style="margin-top:8px;font-size:clamp(10px,1.6vw,12px);
+                     color:#555;padding:4px 8px;background:#f3e5f5;
+                     border-radius:4px;border-left:3px solid ${schClr};">
+           📌 ${lastOpLog.dir}
+         </div>`
+      : ''}
+  `;
+
+  // ── ② ETS ───────────────────────────────────────────────────────────────
+  document.getElementById('log-ets-body').innerHTML = `
+    <div style="display:flex;flex-direction:column;gap:8px;">
+      <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+        <span style="
+          background:#cc0000;color:#fff;
+          font-size:clamp(16px,3vw,22px);font-weight:900;
+          border-radius:6px;padding:4px 18px;letter-spacing:2px;
+          box-shadow:0 0 10px rgba(200,0,0,0.4);
+        ">${lastOpLog.ets}</span>
+        <span style="font-weight:700;color:#1a3a6b;font-size:clamp(12px,2vw,15px);">
+          ${lastOpLog.stn}
+        </span>
+      </div>
+      <div style="font-size:clamp(10px,1.6vw,12px);color:#555;">
+        🔴 Triggered at station <b>${lastOpLog.stn}</b>
+      </div>
+    </div>
+  `;
+
+  // ── ③ Breakers ──────────────────────────────────────────────────────────
+  const brkBody = document.getElementById('log-brk-body');
+
+  if (!lastOpLog.rows || lastOpLog.rows.length === 0) {
+    brkBody.innerHTML =
+      '<span style="color:#aaa;font-style:italic;">No breakers tripped.</span>';
+    return;
+  }
+
+  const roleColour = {
+    'N (Fault Station)': '#b71c1c',
+    'N−1':               '#c62828',
+    'N+1':               '#c62828',
+    'N−2 (Remote)':      '#e65100',
+    'N+2 (Remote)':      '#e65100',
+    'N (Down feeder)':   '#ad1457',
+    'N (Up feeder)':     '#ad1457',
+  };
+
+  let html = '';
+  lastOpLog.rows.forEach(row => {
+    const rClr  = roleColour[row.role] || '#555';
+    const isRem = row.role.includes('Remote') || row.role.includes('feeder');
+    const tags  = row.keys.map(k => {
+      let cls = 'brk-tag';
+      if (k === 'DB05')              cls += ' db05';
+      else if (k.startsWith('BCP')) cls += ' bcp';
+      else if (isRem)                cls += ' remote';
+      return `<span class="${cls}">${k}</span>`;
+    }).join('');
+
+    html += `
+      <div class="brk-row">
+        <div class="brk-stn">
+          ${row.label}
+          <div class="brk-role" style="color:${rClr};">${row.role}</div>
+        </div>
+        <div class="brk-tags">${tags}</div>
+      </div>`;
+  });
+
+  brkBody.innerHTML = html;
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+//  RESET
+// ═══════════════════════════════════════════════════════════════════════════
+function resetAll() {
+  stations  = makeInitial();
+  activeETS = null;
+  etsFired  = false;
+  lastOpLog = null;
+  document.getElementById('last-ets').style.display      = 'none';
+  document.getElementById('ets-indicator').style.display = 'none';
+  updateOpLog();
+  render();
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+//  COLOURS & SVG HELPERS
+// ═══════════════════════════════════════════════════════════════════════════
+const C_CLOSED   = '#cc0000';
+const C_OPEN     = '#00aa44';
+const C_RAIL_CHG = '#dd0000';
+const C_RAIL_DIS = '#00bb44';
+
+const isCharged = brks =>
+  bc(brks.DB01) || bc(brks.DB02) || bc(brks.DB03) || bc(brks.DB04);
+
+const SVG_NS = 'http://www.w3.org/2000/svg';
+
+function el(tag, attrs, ...children) {
+  const e = document.createElementNS(SVG_NS, tag);
+  for (const [k, v] of Object.entries(attrs)) {
+    if (k === 'textContent') e.textContent = v;
+    else e.setAttribute(k, v);
+  }
+  children.forEach(c => c && e.appendChild(c));
+  return e;
+}
+const mkG    = (a={})              => el('g',        a);
+const mkRect = (x,y,w,h,a={})     => el('rect',     {x,y,width:w,height:h,...a});
+const mkLine = (x1,y1,x2,y2,a={}) => el('line',     {x1,y1,x2,y2,...a});
+const mkCirc = (cx,cy,r,a={})     => el('circle',   {cx,cy,r,...a});
+const mkText = (x,y,s,a={})       => el('text',     {x,y,textContent:s,...a});
+const mkPoly = (pts,a={})         => el('polyline', {points:pts,fill:'none',...a});
+
+const BLK = { stroke:'black', 'stroke-width':3, 'stroke-linecap':'square' };
+
+// Third-rail colour bar — offset outside the NS hatch zone
+function railBar(y1, y2, charged, side) {
+  const bx = side === 'L' ? 163 : 823;
+  const h  = Math.max(y2 - y1, 1);
+  return mkRect(bx, y1, 14, h, { fill: charged ? C_RAIL_CHG : C_RAIL_DIS });
+}
+
+// Inter-station rail segment (gap between modules)
+function buildInterSeg(y1, y2, lChg, rChg) {
+  const g = mkG();
+  g.appendChild(railBar(y1, y2, lChg, 'L'));
+  g.appendChild(railBar(y1, y2, rChg, 'R'));
+  g.appendChild(mkLine(200, y1, 200, y2, BLK));
+  g.appendChild(mkLine(800, y1, 800, y2, BLK));
+  return g;
+}
+
+// ─── DB box ───────────────────────────────────────────────────────────────
+function buildDBBox(lbl, brk, x, y, stId, key) {
+  const closed = bc(brk), locked = bl(brk);
+  const fill   = closed ? C_CLOSED : C_OPEN;
+  const stroke = closed ? '#880000' : '#005500';
+  const sw     = (locked && !closed) ? 2.5 : 2;
+  const dash   = (locked && !closed) ? '6,3' : null;
+
+  const g = mkG({ class: 'clickable' });
+  const r = mkRect(x, y, 55, 36, { fill, stroke, 'stroke-width':sw, rx:2 });
+  if (dash) r.setAttribute('stroke-dasharray', dash);
+  g.appendChild(r);
+
+  if (locked && !closed) {
+    g.appendChild(mkText(x+6, y+13, '🔒',
+      { 'font-size':9, 'dominant-baseline':'middle' }));
+  }
+  g.appendChild(mkText(x+27.5, y+18, lbl, {
+    fill:'#ffffff', 'font-size':10, 'font-weight':'bold',
+    'text-anchor':'middle', 'dominant-baseline':'middle',
+    'font-family':'Arial,sans-serif'
+  }));
+
+  g.addEventListener('click', () => {
+    const st = stations.find(s => s.id === stId);
+    if (!st) return;
+    const b = st.breakers[key];
+    if (b.locked) return;   // locked by ETS — cannot toggle
+    b.closed = !b.closed;
+    render();
+  });
+  return g;
+}
+
+// ─── BCP box ──────────────────────────────────────────────────────────────
+function buildBCPBox(lbl, brk, x, y, stId, key) {
+  const closed = bc(brk), locked = bl(brk);
+  const fill   = closed ? C_CLOSED : C_OPEN;
+  const stroke = closed ? '#880000' : '#005500';
+  const sw     = (locked && !closed) ? 2.5 : 2;
+  const dash   = (locked && !closed) ? '6,3' : null;
+
+  const g = mkG({ class: 'clickable' });
+  const r = mkRect(x, y, 58, 44, { fill, stroke, 'stroke-width':sw, rx:2 });
+  if (dash) r.setAttribute('stroke-dasharray', dash);
+  g.appendChild(r);
+
+  g.appendChild(mkText(x+29, y+22, lbl, {
+    fill:'#ffffff', 'font-size':10, 'font-weight':'bold',
+    'text-anchor':'middle', 'dominant-baseline':'middle',
+    'font-family':'Arial,sans-serif'
+  }));
+
+  g.addEventListener('click', () => {
+    const st = stations.find(s => s.id === stId);
+    if (!st) return;
+    const b = st.breakers[key];
+    if (b.locked) return;
+    b.closed = !b.closed;
+    render();
+  });
+  return g;
+}
+
+// ─── ETS box ──────────────────────────────────────────────────────────────
+function buildETSBox(lbl, x, y, rotDeg, active, stId, etsNum) {
+  const g  = mkG({ class: etsFired && !active ? 'ets-locked-anim' : 'clickable' });
+  const cx = x + 25, cy = y + 20;
+
+  if (active) {
+    // Glow ring
+    g.appendChild(mkRect(x-4, y-4, 58, 48, {
+      fill:'none', stroke:'#ff6600', 'stroke-width':3,
+      rx:6, opacity:0.85, filter:'url(#ets-glow)'
+    }));
+    // Red pulsing box
+    const rb = mkRect(x, y, 50, 40, {
+      fill:'#ff2222', stroke:'#880000', 'stroke-width':3,
+      rx:3, filter:'url(#ets-glow)'
+    });
+    rb.setAttribute('class','ets-active-anim');
+    g.appendChild(rb);
+    // Pointer arrow
+    const poly = rotDeg > 0
+      ? `${x-2},${cy-6} ${x-14},${cy} ${x-2},${cy+6}`
+      : `${x+52},${cy-6} ${x+64},${cy} ${x+52},${cy+6}`;
+    g.appendChild(el('polygon', {
+      points:poly, fill:'#ff2222', stroke:'#880000', 'stroke-width':1
+    }));
+  } else {
+    const opacity = etsFired ? '0.4' : '1';
+    g.appendChild(mkRect(x, y, 50, 40, {
+      fill:'#ccffff', stroke:'#008080', 'stroke-width':1, rx:3, opacity
+    }));
+  }
+
+  // Label text
+  g.appendChild(mkText(cx, cy, lbl, {
+    fill: active ? '#ffffff' : '#007070',
+    'font-size': active ? 12 : 11, 'font-weight':'bold',
+    'text-anchor':'middle', 'dominant-baseline':'middle',
+    'font-family':'Arial,sans-serif',
+    transform:`rotate(${rotDeg},${cx},${cy})`
+  }));
+
+  g.addEventListener('click', () => {
+    if (etsFired) return;   // one ETS per operation — block all others
+
+    etsFired  = true;
+    activeETS = { stationId: stId, etsNum };
+
+    if (currentMode === 'N2') applyTripN2(stId, etsNum);
+    else                       applyTripN1(stId, etsNum);
+
+    // Status bar badge
+    const le = document.getElementById('last-ets');
+    le.style.display = 'inline-block';
+    document.getElementById('last-ets-text').innerHTML =
+      `<b style="color:#cc0000">ETS-${etsNum}</b> at Station <b>${stId}</b>`;
+
+    // Top indicator panel
+    const ind = document.getElementById('ets-indicator');
+    ind.style.display = 'flex';
+    document.getElementById('ets-ind-num').textContent = `ETS-${etsNum}`;
+    document.getElementById('ets-ind-stn').textContent =
+      STATION_DEFS.find(s => s.id === stId).label;
+    const mb = document.getElementById('ets-ind-mode');
+    if (currentMode === 'N2') {
+      mb.textContent = 'N±2 Protection Active';
+      mb.className   = 'mode-badge mode-badge-n2';
+    } else {
+      const dir = (etsNum===1||etsNum===3||etsNum===5) ? 'Down → N−1' : 'Up → N+1';
+      mb.textContent = `N±1 Active — ${dir}`;
+      mb.className   = 'mode-badge mode-badge-n1';
+    }
+
+    updateOpLog();
+    render();
+  });
+
+  return g;
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+//  STATION MODULE
+// ═══════════════════════════════════════════════════════════════════════════
+function buildStation(station, i, db01Above, db02Above, db03Below, db04Below) {
+  const { id, label, breakers: brk } = station;
+  const absY = TOP_PAD + i * SLOT;
+
+  const charged      = isCharged(brk);
+  const stnBoxFill   = charged ? '#ffebee' : '#e8f5e9';
+  const stnBoxStroke = charged ? '#cc0000' : '#2e7d32';
+
+  const aN     = (activeETS && activeETS.stationId === id) ? activeETS.etsNum : null;
+  const etsAct = n => aN === n;
+
+  // Third-rail charge states for the two small segments
+  const lUpper = bc(brk.DB03) || db01Above;  // above NS, left  rail
+  const rUpper = bc(brk.DB04) || db02Above;  // above NS, right rail
+  const lLower = bc(brk.DB01) || db03Below;  // below NS, left  rail
+  const rLower = bc(brk.DB02) || db04Below;  // below NS, right rail
+
+  const g = mkG({ transform:`translate(0,${absY})` });
+
+  // ── Rail colour bars (below everything) ──────────────────────────────
+  g.appendChild(railBar(0,   55,  lUpper, 'L'));
+  g.appendChild(railBar(145, 200, lLower, 'L'));
+  g.appendChild(railBar(0,   55,  rUpper, 'R'));
+  g.appendChild(railBar(145, 200, rLower, 'R'));
+
+  // ── NS hatch zones ────────────────────────────────────────────────────
+  g.appendChild(mkRect(183, 0, 34, 200, { fill:'url(#nsHatch)', opacity:0.4 }));
+  g.appendChild(mkRect(783, 0, 34, 200, { fill:'url(#nsHatch)', opacity:0.4 }));
+
+  // ── Structural black rail lines ───────────────────────────────────────
+  g.appendChild(mkLine(200,  0, 200,  55, BLK));
+  g.appendChild(mkLine(200,145, 200, 200, BLK));
+  g.appendChild(mkLine(800,  0, 800,  55, BLK));
+  g.appendChild(mkLine(800,145, 800, 200, BLK));
+
+  // ── Station name box ──────────────────────────────────────────────────
+  g.appendChild(mkRect(400, 0, 200, 200, {
+    fill: stnBoxFill, stroke: stnBoxStroke, 'stroke-width':3
+  }));
+  g.appendChild(mkText(500, 100, label, {
+    fill:'#000000', 'font-size':26, 'font-weight':900,
+    'text-anchor':'middle', 'dominant-baseline':'middle',
+    'font-family':"'Courier New',Courier,monospace",
+    transform:'rotate(90,500,100)'
+  }));
+
+  // ── BCP1 (left) ───────────────────────────────────────────────────────
+  g.appendChild(buildBCPBox(`${id}BCP1`, brk.BCP01, 100, 78, id, 'BCP01'));
+  g.appendChild(mkPoly('200,0 129,0 129,78',      BLK));
+  g.appendChild(mkPoly('129,122 129,200 200,200', BLK));
+
+  // ── BCP2 (right) ──────────────────────────────────────────────────────
+  g.appendChild(buildBCPBox(`${id}BCP2`, brk.BCP02, 842, 78, id, 'BCP02'));
+  g.appendChild(mkPoly('800,0 871,0 871,78',      BLK));
+  g.appendChild(mkPoly('871,122 871,200 800,200', BLK));
+
+  // ── Left ETS (1, 3, 5) ────────────────────────────────────────────────
+  g.appendChild(buildETSBox('ETS-3', 400,  10,  90, etsAct(3), id, 3));
+  g.appendChild(buildETSBox('ETS-5', 400,  80,  90, etsAct(5), id, 5));
+  g.appendChild(buildETSBox('ETS-1', 400, 150,  90, etsAct(1), id, 1));
+  g.appendChild(mkLine(400,  30, 355,  30, BLK));
+  g.appendChild(mkLine(400, 100, 355, 100, BLK));
+  g.appendChild(mkLine(400, 170, 355, 170, BLK));
+
+  // ── Left DBs: DB03 / DB05 / DB01 ─────────────────────────────────────
+  g.appendChild(buildDBBox(`${id}DB03`, brk.DB03, 300,  12, id, 'DB03'));
+  g.appendChild(buildDBBox(`${id}DB05`, brk.DB05, 300,  82, id, 'DB05'));
+  g.appendChild(buildDBBox(`${id}DB01`, brk.DB01, 300, 152, id, 'DB01'));
+  g.appendChild(mkLine(280,  30, 200,  30, BLK));
+  g.appendChild(mkLine(280, 170, 200, 170, BLK));
+  g.appendChild(mkLine(280,  30, 280, 170, BLK));
+  g.appendChild(mkLine(300,  30, 280,  30, BLK));
+  g.appendChild(mkLine(300, 170, 280, 170, BLK));
+  g.appendChild(mkLine(300, 100, 280, 100, BLK));
+
+  // ── Right ETS (2, 4, 6) ───────────────────────────────────────────────
+  g.appendChild(buildETSBox('ETS-4', 550,  10, -90, etsAct(4), id, 4));
+  g.appendChild(buildETSBox('ETS-6', 550,  80, -90, etsAct(6), id, 6));
+  g.appendChild(buildETSBox('ETS-2', 550, 150, -90, etsAct(2), id, 2));
+  g.appendChild(mkLine(600,  30, 645,  30, BLK));
+  g.appendChild(mkLine(600, 100, 645, 100, BLK));
+  g.appendChild(mkLine(600, 170, 645, 170, BLK));
+
+  // ── Right DBs: DB04 / DB05 / DB02 ────────────────────────────────────
+  g.appendChild(buildDBBox(`${id}DB04`, brk.DB04, 645,  12, id, 'DB04'));
+  g.appendChild(buildDBBox(`${id}DB05`, brk.DB05, 645,  82, id, 'DB05'));
+  g.appendChild(buildDBBox(`${id}DB02`, brk.DB02, 645, 152, id, 'DB02'));
+  g.appendChild(mkLine(720,  30, 800,  30, BLK));
+  g.appendChild(mkLine(720, 170, 800, 170, BLK));
+  g.appendChild(mkLine(720,  30, 720, 170, BLK));
+  g.appendChild(mkLine(700,  30, 720,  30, BLK));
+  g.appendChild(mkLine(700, 170, 720, 170, BLK));
+  g.appendChild(mkLine(700, 100, 720, 100, BLK));
+
+  // ── NS gap dots & label ───────────────────────────────────────────────
+  function nsGroup(cx) {
+    g.appendChild(mkCirc(cx,  55, 6, { fill:'#fd0505' }));
+    g.appendChild(mkCirc(cx, 145, 6, { fill:'#fd0505' }));
+    g.appendChild(mkRect(cx-15, 82, 30, 36, {
+      rx:4, fill:'#fff0f0', stroke:'#cc0000', 'stroke-width':1.5
+    }));
+    g.appendChild(mkText(cx, 100, 'NS', {
+      fill:'#cc0000', 'font-size':13, 'font-weight':'bold',
+      'text-anchor':'middle', 'dominant-baseline':'middle',
+      'font-family':'Arial,sans-serif', 'letter-spacing':1
+    }));
+  }
+  nsGroup(200);
+  nsGroup(800);
+
+  // ── Junction dots ─────────────────────────────────────────────────────
+  [200, 800].forEach(cx => {
+    g.appendChild(mkCirc(cx,   0, 6, { fill:'#000' }));
+    g.appendChild(mkCirc(cx, 200, 6, { fill:'#000' }));
+    g.appendChild(mkCirc(cx,  30, 3, { fill:'gold', stroke:'black', 'stroke-width':0.5 }));
+    g.appendChild(mkCirc(cx, 170, 3, { fill:'gold', stroke:'black', 'stroke-width':0.5 }));
+  });
+  [280, 400].forEach(cx =>
+    [30, 100, 170].forEach(cy =>
+      g.appendChild(mkCirc(cx, cy, 3, { fill:'gold', stroke:'black', 'stroke-width':0.5 }))));
+  [720, 600].forEach(cx =>
+    [30, 100, 170].forEach(cy =>
+      g.appendChild(mkCirc(cx, cy, 3, { fill:'gold', stroke:'black', 'stroke-width':0.5 }))));
+
+  return g;
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+//  SIDE LABELS
+// ═══════════════════════════════════════════════════════════════════════════
+function buildSideLabels(totalH) {
+  const g   = mkG();
+  const mid = totalH / 2;
+  function sLbl(x, y, txt, rot) {
+    return mkText(x, y, txt, {
+      fill:'#cc00cc', 'font-size':16, 'font-weight':'bold',
+      'font-family':"'Comic Sans MS',cursive,sans-serif",
+      'text-anchor':'middle', 'dominant-baseline':'middle',
+      transform:`rotate(${rot},${x},${y})`
+    });
+  }
+  g.appendChild(sLbl(18, TOP_PAD + 80,         'KKSO END',  -90));
+  g.appendChild(sLbl(18, mid,                   'DOWN Line', -90));
+  g.appendChild(sLbl(18, totalH - TOP_PAD - 80, 'KBGA END',  -90));
+  g.appendChild(sLbl(982, TOP_PAD + 80,         'KKSO END',   90));
+  g.appendChild(sLbl(982, mid,                  'UP Line',    90));
+  g.appendChild(sLbl(982, totalH - TOP_PAD - 80,'KBGA END',   90));
+  return g;
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+//  RENDER
+// ═══════════════════════════════════════════════════════════════════════════
+function render() {
+  const n      = stations.length;
+  const totalH = TOP_PAD + n * SLOT - GAP + TOP_PAD;
+  const svg    = document.getElementById('mainsvg');
+
+  svg.setAttribute('width',   totalH);
+  svg.setAttribute('height',  SVG_W);
+  svg.setAttribute('viewBox', `0 0 ${totalH} ${SVG_W}`);
+  svg.style.minWidth = `${totalH}px`;
+  svg.style.height   = `${SVG_W}px`;
+
+  // Remove previous main group
+  const old = svg.querySelector('g.main-group');
+  if (old) svg.removeChild(old);
+
+  const mainG = mkG({
+    class: 'main-group',
+    transform: `translate(0,${SVG_W}) rotate(-90)`
+  });
+
+  // Side labels
+  mainG.appendChild(buildSideLabels(totalH));
+
+  // Top end-cap segment
+  mainG.appendChild(buildInterSeg(
+    0, TOP_PAD,
+    bc(stations[0].breakers.DB03),
+    bc(stations[0].breakers.DB04)
+  ));
+
+  const last = n - 1;
+
+  // Inter-station segments
+  for (let i = 0; i < last; i++) {
+    const y1   = TOP_PAD + i * SLOT + ST_H;
+    const y2   = TOP_PAD + (i + 1) * SLOT;
+    const lChg = bc(stations[i].breakers.DB01) || bc(stations[i+1].breakers.DB03);
+    const rChg = bc(stations[i].breakers.DB02) || bc(stations[i+1].breakers.DB04);
+    mainG.appendChild(buildInterSeg(y1, y2, lChg, rChg));
+  }
+
+  // Bottom end-cap segment
+  mainG.appendChild(buildInterSeg(
+    TOP_PAD + last * SLOT + ST_H,
+    totalH,
+    bc(stations[last].breakers.DB01),
+    bc(stations[last].breakers.DB02)
+  ));
+
+  // Station modules
+  for (let i = 0; i < n; i++) {
+    const db01Above = i > 0    ? bc(stations[i-1].breakers.DB01) : false;
+    const db02Above = i > 0    ? bc(stations[i-1].breakers.DB02) : false;
+    const db03Below = i < last ? bc(stations[i+1].breakers.DB03) : false;
+    const db04Below = i < last ? bc(stations[i+1].breakers.DB04) : false;
+    mainG.appendChild(buildStation(stations[i], i, db01Above, db02Above, db03Below, db04Below));
+  }
+
+  svg.appendChild(mainG);
+
+  // Status counts
+  const chg = stations.filter(s => isCharged(s.breakers)).length;
+  document.getElementById('cnt-charged').textContent    = chg;
+  document.getElementById('cnt-discharged').textContent = n - chg;
+}
+
+// Boot
+render();
+</script>
+</body>
+</html>
