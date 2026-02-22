@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ABB REF615 - Custom Layout</title>
+    <style>
+        :root {
+            --relay-bg: #e0e0e0;
+            --bezel-dark: #b8b8b8;
+            --lcd-bg: #e2e7da;
+            --btn-blue: #4a88cc;
+            --btn-green: #006b3f;
+            --btn-red: #c1272d;
+            --led-off: #444;
+            --led-ready: #b6ff00;
+            --led-remote: #ff9900;
+        }
+
+        body {
+            background-color: #2c2c2c;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            font-family: Arial, sans-serif;
+        }
+
+        .relay-case {
+            width: 580px;
+            background-color: var(--relay-bg);
+            border: 2px solid #888;
+            border-radius: 4px;
+            padding: 20px;
+            box-shadow: 0 30px 60px rgba(0,0,0,0.6);
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+
+        .top-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 15px;
+        }
+        .abb-logo { color: #ff0000; font-weight: bold; font-size: 32px; letter-spacing: -1px; }
+        .model-info { text-align: right; }
+        .model-name { font-size: 22px; font-weight: bold; color: #555; }
+        .version-tag { background: white; padding: 2px 8px; border: 1px solid #999; font-size: 11px; font-weight: bold; margin-top: 4px; }
+
+        .status-leds {
+            display: flex;
+            justify-content: center;
+            gap: 60px;
+            background: #d0d0d0;
+            padding: 5px;
+            border-bottom: 1px solid #999;
+            margin-bottom: 10px;
+            font-size: 11px;
+            font-weight: bold;
+            color: #333;
+        }
+        .led-group { display: flex; align-items: center; gap: 8px; }
+        .led-dot { width: 10px; height: 10px; border-radius: 50%; background: var(--led-off); box-shadow: inset 0 0 3px rgba(0,0,0,0.5); }
+        .led-dot.active-ready { background: var(--led-ready); box-shadow: 0 0 8px var(--led-ready); }
+
+        .display-section {
+            display: flex;
+            background-color: var(--bezel-dark);
+            padding: 10px;
+            border: 2px inset #fff;
+            gap: 10px;
+        }
+
+        .lcd-screen {
+            flex: 1.2;
+            background-color: var(--lcd-bg);
+            border: 2px solid #555;
+            height: 240px;
+            display: flex;
+            flex-direction: column;
+            font-family: 'Courier New', Courier, monospace;
+            position: relative;
+        }
+        .lcd-header {
+            border-bottom: 1px solid #333;
+            display: flex;
+            justify-content: space-between;
+            padding: 2px 5px;
+            font-size: 14px;
+            font-weight: bold;
+        }
+        .lcd-main {
+            flex-grow: 1;
+            padding: 5px;
+            font-size: 16px;
+            overflow: hidden;
+            position: relative;
+        }
+        .menu-item { padding: 1px 4px; }
+        .menu-item.selected { background-color: #333; color: var(--lcd-bg); }
+        .lcd-scroll-bar {
+            position: absolute;
+            right: 2px; top: 25px; bottom: 2px;
+            width: 10px; border: 1px solid #333;
+        }
+        .lcd-scroll-thumb {
+            position: absolute; width: 100%; height: 20px; background: #333;
+        }
+
+        .matrix-leds {
+            flex: 1;
+            background: white;
+            border: 1px solid #777;
+            padding: 5px;
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+        .matrix-row {
+            display: flex;
+            align-items: center;
+            font-size: 10px;
+            font-weight: bold;
+            height: 17px;
+            border-bottom: 1px solid #eee;
+        }
+        .matrix-dot { width: 10px; height: 10px; border-radius: 50%; background: #ccc; margin-right: 8px; }
+        .matrix-dot.on { background: #00ff00; box-shadow: 0 0 5px #00ff00; }
+
+        .keypad-section {
+            margin-top: 15px;
+            display: grid;
+            grid-template-columns: 70px 70px 70px 70px 70px 70px 70px 70px;
+            grid-template-rows: 55px 55px 55px;
+            gap: 5px;
+            justify-content: center;
+            padding: 10px;
+        }
+
+        .btn {
+            width: 60px; height: 50px;
+            border: 1px solid #888;
+            border-radius: 4px;
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-weight: bold;
+            color: white;
+            box-shadow: 2px 2px 2px rgba(0,0,0,0.3);
+            user-select: none;
+            z-index: 1;
+            background: var(--btn-blue);
+            font-size: 14px;
+        }
+        .btn:active { transform: translateY(2px); box-shadow: none; }
+
+        .btn-i {
+            background-color: var(--btn-green);
+            font-size: 28px;
+            width: 55px;
+            height: 55px;
+            border-radius: 6px;
+        }
+        .btn-o {
+            background-color: var(--btn-red);
+            font-size: 28px;
+            width: 55px;
+            height: 55px;
+            border-radius: 6px;
+        }
+
+        .btn-blue-nav { background-color: var(--btn-blue); }
+        .btn-icon { font-size: 20px; }
+
+        .cross-center {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 24px;
+            color: #999;
+            font-weight: bold;
+        }
+
+        .rj45-port {
+            width: 60px;
+            height: 55px;
+            background: #333;
+            border-radius: 5px;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            border: 4px solid #bbb;
+        }
+        .port-hole { width: 35px; height: 30px; background: #000; border-radius: 2px; }
+        .port-leds { display: flex; gap: 15px; margin-bottom: 3px; }
+        .port-led { width: 6px; height: 6px; border-radius: 50%; background: #555; }
+
+        .rl-btn { position: relative; }
+        .rl-status {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #444;
+        }
+        .rl-status.active { background: var(--led-remote); box-shadow: 0 0 8px var(--led-remote); }
+
+        .log-panel {
+            margin-top: 10px;
+            color: #555;
+            font-size: 12px;
+            font-family: monospace;
+            border-top: 1px solid #ccc;
+            padding-top: 5px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="relay-case">
+    <div class="top-bar">
+        <div class="abb-logo">ABB</div>
+        <div class="model-info">
+            <div class="model-name">REF615</div>
+            <div class="version-tag">PCM 600 2.10 ver</div>
+        </div>
+    </div>
+
+    <div class="status-leds">
+        <div class="led-group"><div class="led-dot active-ready"></div> Ready</div>
+        <div class="led-group"><div class="led-dot"></div> Start</div>
+        <div class="led-group"><div class="led-dot"></div> Trip</div>
+    </div>
+
+    <div class="display-section">
+        <div class="lcd-screen">
+            <div class="lcd-header">
+                <span id="lcd-title">REF615</span>
+                <span id="lcd-auth">!A</span>
+            </div>
+            <div class="lcd-main" id="lcd-content"></div>
+            <div class="lcd-scroll-bar">
+                <div class="lcd-scroll-thumb" id="scroll-thumb"></div>
+            </div>
+        </div>
+
+        <div class="matrix-leds">
+            <div class="matrix-row"><div class="matrix-dot on"></div> PROTECTION TRIP</div>
+            <div class="matrix-row"><div class="matrix-dot on"></div> CB GAS PR STATUS</div>
+            <div class="matrix-row"><div class="matrix-dot on"></div> BB GAS PR STATUS</div>
+            <div class="matrix-row"><div class="matrix-dot on"></div> CB SPRING STATUS</div>
+            <div class="matrix-row"><div class="matrix-dot on"></div> TRIP CKT 1 STATUS</div>
+            <div class="matrix-row"><div class="matrix-dot on"></div> TRIP CKT 2 STATUS</div>
+            <div class="matrix-row"><div class="matrix-dot"></div> 87L OPERATED</div>
+            <div class="matrix-row"><div class="matrix-dot"></div> SPARE</div>
+            <div class="matrix-row"><div class="matrix-dot"></div> SPARE</div>
+            <div class="matrix-row"><div class="matrix-dot"></div> SPARE</div>
+            <div class="matrix-row"><div class="matrix-dot"></div> SPARE</div>
+        </div>
+    </div>
+
+    <div class="keypad-section">
+        <!-- Column 1: I and O buttons -->
+        <button class="btn btn-i" style="grid-column:1;grid-row:1;" onclick="action('I')">I</button>
+        <button class="btn btn-o" style="grid-column:1;grid-row:3;" onclick="action('O')">O</button>
+
+        <!-- Column 2: ESC button -->
+        <button class="btn btn-blue-nav" style="grid-column:2;grid-row:1;" onclick="nav('ESC')">ESC</button>
+
+        <!-- Column 3: Left arrow -->
+        <button class="btn btn-blue-nav" style="grid-column:3;grid-row:2;" onclick="nav('LEFT')">◀</button>
+
+        <!-- Column 4: Up, + (center), Down -->
+        <button class="btn btn-blue-nav" style="grid-column:4;grid-row:1;" onclick="nav('UP')">▲</button>
+        <div class="cross-center" style="grid-column:4;grid-row:2;">+</div>
+        <button class="btn btn-blue-nav" style="grid-column:4;grid-row:3;" onclick="nav('DOWN')">▼</button>
+
+        <!-- Column 5: Right arrow -->
+        <button class="btn btn-blue-nav" style="grid-column:5;grid-row:2;" onclick="nav('RIGHT')">▶</button>
+
+        <!-- Column 6: Enter and Key -->
+        <button class="btn btn-blue-nav btn-icon" style="grid-column:6;grid-row:1;" onclick="nav('ENTER')">↵</button>
+        <button class="btn btn-blue-nav btn-icon" style="grid-column:6;grid-row:3;" onclick="action('KEY')">🔑</button>
+
+        <!-- Column 7: Clear, Event, R/L -->
+        <button class="btn btn-blue-nav" style="grid-column:7;grid-row:1;" onclick="action('CLEAR')">Clear</button>
+        <button class="btn btn-blue-nav btn-icon" style="grid-column:7;grid-row:2;" onclick="nav('MENU')">📄</button>
+        <button class="btn btn-blue-nav rl-btn" style="grid-column:7;grid-row:3;" onclick="nav('RL')">
+            R<br>L
+            <div id="rl-led" class="rl-status active"></div>
+        </button>
+
+        <!-- Column 8: RJ45 port and ? -->
+        <div class="rj45-port" style="grid-column:8;grid-row:1;">
+            <div class="port-leds">
+                <div class="port-led" style="background:#0f0"></div>
+                <div class="port-led"></div>
+            </div>
+            <div class="port-hole"></div>
+        </div>
+        <button class="btn btn-blue-nav btn-icon" style="grid-column:8;grid-row:3;" onclick="action('HELP')">?</button>
+    </div>
+
+    <div class="log-panel" id="log">System Log: Relay Booted. Mode: Remote.</div>
+</div>
+
+<script>
+    const menus = {
+        "REF615": [
+            "Control", "Events", "Measurements", "Disturbance records",
+            "Settings", "Configuration", "Monitoring", "Tests", "Information"
+        ],
+        "Settings": ["Protection", "Control", "General", "Monitoring"],
+        "Measurements": ["Currents", "Voltages", "Power", "Energy"],
+        "Control": ["Breaker 1", "Disconnectors", "Earthing Sw"]
+    };
+
+    let history = ["REF615"];
+    let cursor = 0;
+    let isRemote = true;
+
+    function render() {
+        const currentMenuKey = history[history.length - 1];
+        const items = menus[currentMenuKey];
+        const container = document.getElementById('lcd-content');
+        const title = document.getElementById('lcd-title');
+
+        title.innerText = currentMenuKey;
+        container.innerHTML = "";
+
+        items.forEach((item, idx) => {
+            const div = document.createElement('div');
+            div.className = "menu-item" + (idx === cursor ? " selected" : "");
+            div.innerText = item;
+            container.appendChild(div);
+        });
+
+        const thumb = document.getElementById('scroll-thumb');
+        thumb.style.top = (cursor * (100 / items.length)) + "%";
+    }
+
+    function nav(cmd) {
+        const items = menus[history[history.length - 1]];
+
+        if (cmd === 'UP') {
+            cursor = (cursor > 0) ? cursor - 1 : items.length - 1;
+        } else if (cmd === 'DOWN') {
+            cursor = (cursor < items.length - 1) ? cursor + 1 : 0;
+        } else if (cmd === 'LEFT') {
+            cursor = (cursor > 0) ? cursor - 1 : items.length - 1;
+        } else if (cmd === 'RIGHT') {
+            cursor = (cursor < items.length - 1) ? cursor + 1 : 0;
+        } else if (cmd === 'ENTER') {
+            const selected = items[cursor];
+            if (menus[selected]) {
+                history.push(selected);
+                cursor = 0;
+            } else {
+                writeLog("Function " + selected + " selected.");
+            }
+        } else if (cmd === 'ESC') {
+            if (history.length > 1) {
+                history.pop();
+                cursor = 0;
+            }
+        } else if (cmd === 'MENU') {
+            history = ["REF615"];
+            cursor = 0;
+        } else if (cmd === 'RL') {
+            isRemote = !isRemote;
+            document.getElementById('rl-led').classList.toggle('active', isRemote);
+            writeLog("Mode Changed: " + (isRemote ? "REMOTE" : "LOCAL"));
+            document.getElementById('lcd-auth').innerText = isRemote ? "!A" : "L";
+        }
+        render();
+    }
+
+    function action(type) {
+        if (type === 'I') {
+            if (isRemote) return writeLog("BLOCKED: Change to LOCAL mode to Close.");
+            writeLog("COMMAND: Close Breaker Sent.");
+        } else if (type === 'O') {
+            if (isRemote) return writeLog("BLOCKED: Change to LOCAL mode to Open.");
+            writeLog("COMMAND: Open Breaker Sent.");
+        } else {
+            writeLog("Button Pressed: " + type);
+        }
+    }
+
+    function writeLog(msg) {
+        const log = document.getElementById('log');
+        log.innerText = "System Log: " + msg;
+    }
+
+    render();
+</script>
+
+</body>
+</html>
