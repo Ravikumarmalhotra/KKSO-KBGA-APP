@@ -173,7 +173,8 @@ input[type="text"]:focus{box-shadow:0 0 0 3px var(--ring)}
 .more-app-card:hover::before{opacity:1}
 .more-app-card:hover{transform:translateY(-3px);box-shadow:0 8px 25px rgba(102,126,234,0.25);border-color:#a5b4fc}
 .more-app-card:active{transform:scale(0.97)}
-.more-app-icon{font-size:36px;margin-bottom:8px;display:block;line-height:1}
+.more-app-icon{font-size:36px;margin-bottom:8px;display:flex;align-items:center;justify-content:center;line-height:1;min-height:56px}
+.more-app-icon img{width:56px;height:56px;object-fit:contain;border-radius:10px;display:block;box-shadow:0 2px 8px rgba(0,0,0,0.1);background:#f8fafc;padding:2px}
 .more-app-name{font-size:12px;font-weight:800;color:var(--text);margin-bottom:4px;line-height:1.2}
 .more-app-desc{font-size:10px;color:var(--muted);line-height:1.3}
 .more-app-badge{position:absolute;top:8px;right:8px;background:linear-gradient(135deg,#667eea,#764ba2);color:white;font-size:8px;font-weight:700;padding:2px 6px;border-radius:6px}
@@ -198,6 +199,37 @@ input[type="text"]:focus{box-shadow:0 0 0 3px var(--ring)}
 .more-app-card.future:hover{transform:none;box-shadow:0 4px 12px rgba(0,0,0,0.07);border-color:var(--card-border)}
 .more-app-card.future::before{display:none}
 .more-access-denied{background:linear-gradient(135deg,#fef2f2,#fff);border:1px solid #fca5a5;border-radius:14px;padding:20px;text-align:center;color:#dc2626;font-size:13px;font-weight:700}
+
+/* ===== MORE: Breadcrumb Navigation ===== */
+.more-breadcrumb{display:flex;align-items:center;gap:6px;padding:10px 14px;background:rgba(255,255,255,0.95);backdrop-filter:blur(10px);border-radius:12px;margin-bottom:10px;font-size:12px;font-weight:600;flex-wrap:wrap;border:1px solid var(--card-border);box-shadow:0 2px 10px rgba(0,0,0,0.06);animation:fadeIn 0.25s ease}
+.more-breadcrumb-item{color:#667eea;cursor:pointer;transition:all 0.2s;padding:3px 8px;border-radius:6px;display:inline-flex;align-items:center;gap:4px}
+.more-breadcrumb-item:hover{color:#4f46e5;background:rgba(102,126,234,0.1);text-decoration:none}
+.more-breadcrumb-separator{color:#cbd5e1;font-size:14px;font-weight:400;user-select:none}
+.more-breadcrumb-current{color:var(--text);font-weight:800;padding:3px 8px;background:linear-gradient(135deg,#eef2ff,#e0e7ff);border-radius:6px;display:inline-flex;align-items:center;gap:4px}
+
+/* ===== MORE: Folder Cards ===== */
+.more-folder-card{background:var(--card);border:2px solid #e0e7ff;border-radius:16px;padding:18px 12px;text-align:center;cursor:pointer;transition:all 0.25s;box-shadow:0 4px 14px rgba(0,0,0,0.06);position:relative;overflow:hidden}
+.more-folder-card::before{content:'';position:absolute;top:0;left:0;right:0;height:4px;border-radius:16px 16px 0 0;background:linear-gradient(135deg,#667eea,#764ba2);transition:height 0.3s}
+.more-folder-card:hover{transform:translateY(-4px);box-shadow:0 10px 30px rgba(102,126,234,0.22);border-color:#a5b4fc}
+.more-folder-card:hover::before{height:6px}
+.more-folder-card:active{transform:scale(0.97)}
+.more-folder-icon{font-size:40px;margin-bottom:8px;display:block;line-height:1;filter:drop-shadow(0 2px 4px rgba(0,0,0,0.1))}
+.more-folder-name{font-size:13px;font-weight:800;color:var(--text);margin-bottom:6px;line-height:1.2}
+.more-folder-count{font-size:10px;color:var(--muted);background:linear-gradient(135deg,#f1f5f9,#e2e8f0);padding:3px 10px;border-radius:10px;display:inline-block;font-weight:600}
+.more-folder-card.locked{opacity:0.5;cursor:default;border-color:#e2e8f0}
+.more-folder-card.locked:hover{transform:none;box-shadow:0 4px 14px rgba(0,0,0,0.06);border-color:#e2e8f0}
+.more-folder-card.locked::before{background:#94a3b8}
+.more-folder-card.locked:hover::before{height:4px}
+.more-folder-card .more-app-badge{position:absolute;top:8px;right:8px;color:white;font-size:8px;font-weight:700;padding:2px 6px;border-radius:6px}
+
+/* ===== MORE: Section Dividers ===== */
+.more-section-divider{display:flex;align-items:center;gap:8px;font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:1px;padding:10px 0 8px;margin-bottom:8px;margin-top:4px}
+.more-section-divider::after{content:'';flex:1;height:1px;background:linear-gradient(to right,var(--card-border),transparent)}
+
+/* ===== MORE: Back button in content area ===== */
+.more-back-row{margin-bottom:10px}
+.more-back-btn{display:inline-flex;align-items:center;gap:6px;padding:8px 16px;background:rgba(255,255,255,0.92);border:1px solid var(--card-border);border-radius:10px;font-size:12px;font-weight:700;color:#667eea;cursor:pointer;transition:all 0.2s;box-shadow:0 2px 8px rgba(0,0,0,0.05)}
+.more-back-btn:hover{background:white;transform:translateY(-1px);box-shadow:0 4px 12px rgba(102,126,234,0.15);color:#4f46e5}
 
 /* ===== THEME: ADMIN ===== */
 body.theme-admin{background:linear-gradient(135deg,#667eea 0%,#764ba2 25%,#f093fb 50%,#5ee7df 75%,#667eea 100%);background-size:400% 400%;animation:gradientShift 12s ease infinite}
@@ -258,6 +290,12 @@ input[type="text"]{font-size:15px;padding:12px 14px}
 .more-apps-grid{grid-template-columns:repeat(2,1fr)}
 .app-embed-topbar{padding:6px 10px}
 .app-embed-title{font-size:11px}
+.more-breadcrumb{padding:8px 10px;font-size:11px;gap:4px}
+.more-folder-card{padding:14px 8px}
+.more-folder-icon{font-size:34px}
+.more-folder-name{font-size:12px}
+.more-app-icon{min-height:44px}
+.more-app-icon img{width:44px;height:44px}
 }
 </style>
 </head>
@@ -368,13 +406,14 @@ input[type="text"]{font-size:15px;padding:12px 14px}
 </div>
 </div>
 
-<!-- MORE MODE (Simulator hub) -->
+<!-- MORE MODE (Folder-based app hub) -->
 <div id="moreSection" style="display:none">
 <div class="more-section">
 <div class="more-header">
 <h2>📦 More Apps & Tools</h2>
-<p>Select an app or simulator below to launch it</p>
+<p id="moreHeaderDesc">Select a category below to explore</p>
 </div>
+<div id="moreBreadcrumb"></div>
 <div id="moreAppsContainer">
 <div class="more-loading">⏳ Loading apps...</div>
 </div>
@@ -536,7 +575,7 @@ function handleLogout(){
   localStorage.removeItem('kkso_user');localStorage.removeItem('kkso_password');
   localStorage.removeItem('kkso_level');localStorage.removeItem('kkso_row');
   currentUser='';currentPassword='';currentLevel='';currentUserRow=-1;currentUserPersonal=[];
-  appInitialized=false;moreAppsLoaded=false;
+  appInitialized=false;moreAppsLoaded=false;moreNavPath=[];moreClickActions=[];moreTree={};
   document.getElementById('appPage').style.display='none';
   document.getElementById('loginPage').style.display='flex';
   document.getElementById('loginUser').value='';document.getElementById('loginPass').value='';
@@ -546,6 +585,7 @@ function handleLogout(){
   document.getElementById('entrySubject').innerHTML='<option value="">-- Select Subject --</option>';
   document.getElementById('mySubjectFilter').innerHTML='<option value="">-- All Entries --</option>';
   document.getElementById('moreAppsContainer').innerHTML='<div class="more-loading">⏳ Loading apps...</div>';
+  document.getElementById('moreBreadcrumb').innerHTML='';
   closeEmbeddedApp();
 }
 
@@ -635,7 +675,7 @@ async function initApp(){
   }catch(e){console.error('Init error:',e)}
 }
 
-/* ===================== MORE / SIMULATOR ===================== */
+/* ===================== MORE / FOLDER-BASED APP HUB ===================== */
 
 /* Card gradient palettes for visual variety */
 const APP_CARD_GRADIENTS=[
@@ -649,72 +689,419 @@ const APP_CARD_GRADIENTS=[
   'linear-gradient(135deg,#a1c4fd,#c2e9fb)',
 ];
 
+/* Folder color palettes for top-bar stripe */
+const FOLDER_STRIPE_COLORS=[
+  'linear-gradient(135deg,#667eea,#764ba2)',
+  'linear-gradient(135deg,#f59e0b,#ef4444)',
+  'linear-gradient(135deg,#06b6d4,#3b82f6)',
+  'linear-gradient(135deg,#10b981,#059669)',
+  'linear-gradient(135deg,#ec4899,#8b5cf6)',
+  'linear-gradient(135deg,#f97316,#dc2626)',
+  'linear-gradient(135deg,#14b8a6,#0ea5e9)',
+  'linear-gradient(135deg,#8b5cf6,#6366f1)',
+];
+
+/*
+  "apps" sheet structure (A:H) — NO columns I/J needed:
+  A = Subject (folder name) — if blank, app shows directly in More root
+  B = Sub-Subject (sub-folder name) — if blank with A filled, app goes directly in subject folder
+  C = App display name
+  D = HTML file name (uploaded to GitHub)
+  E = Icon emoji OR image (supports IMAGE() formula, URLs, and plain emoji)
+  F = Admin can access? (true/false)
+  G = Supervisor can access? (true/false)
+  H = Staff can access? (true/false)
+
+  Condition 1: A filled + B filled → Subject folder > Sub-Subject folder > App
+  Condition 2: A filled + B blank  → Subject folder > App (no sub-subject)
+  Condition 3: A blank             → App shown directly in More root (no folder)
+*/
+
+/* More tab state */
+let moreNavPath=[];       /* [] = root, ['SubjName'] = inside subject, ['SubjName','SubSubjName'] = inside sub-subject */
+let moreClickActions=[];  /* safe click handler array to avoid inline string escaping issues */
+let moreTree={};          /* parsed tree: { subjectOrder, subjects, rootApps } */
+
+function handleMoreClick(idx){
+  if(moreClickActions[idx])moreClickActions[idx]();
+}
+
+/* Render icon: handle emoji text, IMAGE() formula, or URL in column E */
+function renderMoreIcon(iconVal,iconFormula){
+  /* Check formula for IMAGE() */
+  if(iconFormula){
+    var m=iconFormula.match(/=*\s*IMAGE\s*\(\s*"([^"]+)"/i);
+    if(m){
+      var imgUrl=driveDirect(m[1]);
+      return '<img src="'+imgUrl+'" loading="lazy" onerror="this.onerror=null;this.parentElement.innerHTML=\'📦\'">';
+    }
+  }
+  /* Check if value is a URL (image link or drive link) */
+  if(iconVal&&isUrl(iconVal)){
+    var imgUrl2=driveDirect(iconVal);
+    return '<img src="'+imgUrl2+'" loading="lazy" onerror="this.onerror=null;this.parentElement.innerHTML=\'📦\'">';
+  }
+  /* Check if value looks like a Google Sheets thumbnail URL (lh3/lh4/lh5 etc) */
+  if(iconVal&&/^https?:\/\/lh[0-9]+\.googleusercontent\.com/i.test(iconVal)){
+    return '<img src="'+iconVal+'" loading="lazy" onerror="this.onerror=null;this.parentElement.innerHTML=\'📦\'">';
+  }
+  /* Otherwise return as text (emoji) */
+  return iconVal||'📦';
+}
+
 async function loadMoreApps(){
   if(moreAppsLoaded)return;
   const container=document.getElementById('moreAppsContainer');
   container.innerHTML='<div class="more-loading">⏳ Loading apps list…</div>';
 
-  /* Try to fetch from "apps" sheet. Columns: A=Name B=File C=Icon D=Admin E=Supervisor F=Staff */
-  let appsData=[];
   try{
-    const rows=await fetchSheet(CONFIG.APPS_SHEET_NAME,'A:F');
-    /* Skip header row (row 0) */
+    /* Fetch both values and formulas to handle IMAGE() in icon column E */
+    const[rows,formulaRows]=await Promise.all([
+      fetchSheet(CONFIG.APPS_SHEET_NAME,'A:H'),
+      fetchSheetFormulas(CONFIG.APPS_SHEET_NAME,'A:H')
+    ]);
+
+    /* Build tree structure automatically from A and B columns */
+    moreTree={subjectOrder:[],subjects:{},rootApps:[]};
+
     for(let i=1;i<rows.length;i++){
       const row=rows[i]||[];
-      const name=String(row[0]||'').trim();
-      const file=String(row[1]||'').trim();
-      const icon=String(row[2]||'📦').trim();
-      const adminAccess=String(row[3]||'false').trim().toLowerCase()==='true';
-      const supervisorAccess=String(row[4]||'false').trim().toLowerCase()==='true';
-      const staffAccess=String(row[5]||'false').trim().toLowerCase()==='true';
-      if(!name||!file)continue;
-      appsData.push({name,file,icon,adminAccess,supervisorAccess,staffAccess});
+      const fRow=formulaRows[i]||[];
+      const subject=String(row[0]||'').trim();
+      const subSubject=String(row[1]||'').trim();
+      const appName=String(row[2]||'').trim();
+      const fileName=String(row[3]||'').trim();
+      const iconVal=String(row[4]||'').trim();
+      const iconFormula=String(fRow[4]||'').trim();
+      const adminAccess=String(row[5]||'false').trim().toLowerCase()==='true';
+      const supervisorAccess=String(row[6]||'false').trim().toLowerCase()==='true';
+      const staffAccess=String(row[7]||'false').trim().toLowerCase()==='true';
+
+      if(!appName&&!subject)continue; /* skip completely empty rows */
+
+      const access=currentLevel==='admin'?adminAccess:currentLevel==='supervisor'?supervisorAccess:staffAccess;
+      const app={name:appName,file:fileName,iconVal:iconVal,iconFormula:iconFormula,access:access};
+
+      /* Condition 3: A is blank → root level app (no folder) */
+      if(!subject){
+        if(appName)moreTree.rootApps.push(app);
+        continue;
+      }
+
+      /* Ensure subject folder exists */
+      if(!moreTree.subjects[subject]){
+        moreTree.subjectOrder.push(subject);
+        moreTree.subjects[subject]={subSubjectOrder:[],subSubjects:{},directApps:[]};
+      }
+      const subj=moreTree.subjects[subject];
+
+      /* Condition 2: A filled + B blank → app directly in subject folder */
+      if(!subSubject){
+        if(appName)subj.directApps.push(app);
+        continue;
+      }
+
+      /* Condition 1: A filled + B filled → app in sub-subject folder */
+      if(!subj.subSubjects[subSubject]){
+        subj.subSubjectOrder.push(subSubject);
+        subj.subSubjects[subSubject]={apps:[]};
+      }
+      if(appName)subj.subSubjects[subSubject].apps.push(app);
     }
+
+    moreNavPath=[];
+    renderMoreView();
+    moreAppsLoaded=true;
   }catch(e){
-    /* Sheet not found or error — fallback to hardcoded ETS SIMULATION */
-    console.warn('Could not load apps sheet, using fallback.',e);
-    appsData=[
-      {name:'ETS SIMULATION',file:'etssimulation.html',icon:'🎮',adminAccess:true,supervisorAccess:true,staffAccess:false}
-    ];
+    console.warn('Could not load apps sheet:',e);
+    container.innerHTML='<div class="more-empty"><p>⚠️ Error loading apps.<br>'+e.message+'</p></div>';
+  }
+}
+
+/* ===== Rendering ===== */
+
+function renderMoreView(){
+  renderMoreBreadcrumb();
+  const container=document.getElementById('moreAppsContainer');
+  const desc=document.getElementById('moreHeaderDesc');
+
+  if(moreNavPath.length===0){
+    desc.textContent='Select a category below to explore';
+    renderRootView(container);
+  }else if(moreNavPath.length===1){
+    desc.textContent=moreNavPath[0]+' — Browse apps & sub-folders';
+    renderSubjectView(container,moreNavPath[0]);
+  }else if(moreNavPath.length===2){
+    desc.textContent=moreNavPath[1]+' — Select an app to launch';
+    renderSubSubjectView(container,moreNavPath[0],moreNavPath[1]);
+  }
+}
+
+function renderMoreBreadcrumb(){
+  const bc=document.getElementById('moreBreadcrumb');
+  if(!bc)return;
+  if(moreNavPath.length===0){bc.innerHTML='';return}
+
+  moreClickActions=[];  /* reset */
+  let html='<div class="more-breadcrumb">';
+
+  /* Root "More" link */
+  const rootIdx=moreClickActions.length;
+  moreClickActions.push(()=>navigateMoreTo([]));
+  html+='<span class="more-breadcrumb-item" onclick="handleMoreClick('+rootIdx+')">📦 More</span>';
+
+  if(moreNavPath.length>=1){
+    html+='<span class="more-breadcrumb-separator">›</span>';
+    if(moreNavPath.length===1){
+      html+='<span class="more-breadcrumb-current">📁 '+moreNavPath[0]+'</span>';
+    }else{
+      const sIdx=moreClickActions.length;
+      moreClickActions.push(()=>navigateMoreTo([moreNavPath[0]]));
+      html+='<span class="more-breadcrumb-item" onclick="handleMoreClick('+sIdx+')">📁 '+moreNavPath[0]+'</span>';
+    }
   }
 
-  /* Filter by access level */
-  const accessKey=currentLevel==='admin'?'adminAccess':currentLevel==='supervisor'?'supervisorAccess':'staffAccess';
-  const accessible=appsData.filter(a=>a[accessKey]);
+  if(moreNavPath.length>=2){
+    html+='<span class="more-breadcrumb-separator">›</span>';
+    html+='<span class="more-breadcrumb-current">📂 '+moreNavPath[1]+'</span>';
+  }
 
-  if(appsData.length===0){
+  html+='</div>';
+  bc.innerHTML=html;
+}
+
+function navigateMoreTo(path){
+  moreNavPath=path;
+  renderMoreView();
+}
+
+/* --- Root: show subject folders + root apps (Condition 3) --- */
+function renderRootView(container){
+  const subjects=moreTree.subjectOrder;
+  const rootApps=moreTree.rootApps;
+
+  if(subjects.length===0&&rootApps.length===0){
     container.innerHTML='<div class="more-empty"><p>⚠️ No apps configured yet.<br>Add apps to the "apps" sheet in your spreadsheet.</p></div>';
     return;
   }
 
-  let html='<div class="more-apps-grid">';
-  appsData.forEach((app,idx)=>{
-    const canAccess=app[accessKey];
-    const gradBg=APP_CARD_GRADIENTS[idx%APP_CARD_GRADIENTS.length];
-    if(canAccess){
-      html+=`<div class="more-app-card" onclick="openEmbeddedApp('${app.name}','${app.file}')" title="Open ${app.name}">
-        <div class="more-app-badge" style="background:${gradBg}">LAUNCH</div>
-        <span class="more-app-icon">${app.icon}</span>
-        <div class="more-app-name">${app.name}</div>
-        <div class="more-app-desc">Tap to open</div>
-      </div>`;
-    }else{
-      html+=`<div class="more-app-card future" title="Access restricted">
-        <div class="more-app-badge" style="background:#94a3b8">LOCKED</div>
-        <span class="more-app-icon" style="filter:grayscale(1)">${app.icon}</span>
-        <div class="more-app-name" style="color:#94a3b8">${app.name}</div>
-        <div class="more-app-desc" style="color:#cbd5e1">No access</div>
-      </div>`;
-    }
-  });
-  html+='</div>';
+  moreClickActions=[];
+  let html='';
+  let anyAccessible=false;
 
-  if(accessible.length===0){
+  /* Subject folders */
+  if(subjects.length>0){
+    if(rootApps.length>0)html+='<div class="more-section-divider">📁 Categories</div>';
+    html+='<div class="more-apps-grid">';
+
+    subjects.forEach((sName,idx)=>{
+      const subj=moreTree.subjects[sName];
+      const totalItems=subj.subSubjectOrder.length+subj.directApps.length;
+      const stripe=FOLDER_STRIPE_COLORS[idx%FOLDER_STRIPE_COLORS.length];
+      /* Check if any app inside is accessible */
+      let folderAccess=subj.directApps.some(a=>a.access);
+      if(!folderAccess){
+        for(const ssN of subj.subSubjectOrder){
+          if(subj.subSubjects[ssN].apps.some(a=>a.access)){folderAccess=true;break}
+        }
+      }
+
+      if(folderAccess){
+        anyAccessible=true;
+        const ci=moreClickActions.length;
+        moreClickActions.push(()=>navigateMoreTo([sName]));
+        html+='<div class="more-folder-card" onclick="handleMoreClick('+ci+')">';
+        html+='<div class="more-app-badge" style="background:'+stripe+'">OPEN</div>';
+        html+='<span class="more-folder-icon">📁</span>';
+        html+='<div class="more-folder-name">'+sName+'</div>';
+        html+='<div class="more-folder-count">'+totalItems+' item'+(totalItems!==1?'s':'')+'</div>';
+        html+='</div>';
+      }else{
+        html+='<div class="more-folder-card locked">';
+        html+='<div class="more-app-badge" style="background:#94a3b8">🔒 LOCKED</div>';
+        html+='<span class="more-folder-icon" style="filter:grayscale(1)">📁</span>';
+        html+='<div class="more-folder-name" style="color:#94a3b8">'+sName+'</div>';
+        html+='<div class="more-folder-count" style="background:#f1f5f9;color:#94a3b8">No access</div>';
+        html+='</div>';
+      }
+    });
+
+    html+='</div>';
+  }
+
+  /* Root apps (Condition 3: A blank) */
+  if(rootApps.length>0){
+    if(subjects.length>0)html+='<div class="more-section-divider">📱 Apps</div>';
+    html+='<div class="more-apps-grid">';
+
+    rootApps.forEach((app,idx)=>{
+      const gradBg=APP_CARD_GRADIENTS[idx%APP_CARD_GRADIENTS.length];
+      const iconHtml=renderMoreIcon(app.iconVal,app.iconFormula,36);
+      if(app.access&&app.file){
+        anyAccessible=true;
+        const ci=moreClickActions.length;
+        moreClickActions.push(()=>openEmbeddedApp(app.name,app.file));
+        html+='<div class="more-app-card" onclick="handleMoreClick('+ci+')">';
+        html+='<div class="more-app-badge" style="background:'+gradBg+'">LAUNCH</div>';
+        html+='<span class="more-app-icon">'+iconHtml+'</span>';
+        html+='<div class="more-app-name">'+app.name+'</div>';
+        html+='<div class="more-app-desc">Tap to open</div>';
+        html+='</div>';
+      }else{
+        html+='<div class="more-app-card future">';
+        html+='<div class="more-app-badge" style="background:#94a3b8">LOCKED</div>';
+        html+='<span class="more-app-icon" style="filter:grayscale(1)">'+iconHtml+'</span>';
+        html+='<div class="more-app-name" style="color:#94a3b8">'+app.name+'</div>';
+        html+='<div class="more-app-desc" style="color:#cbd5e1">No access</div>';
+        html+='</div>';
+      }
+    });
+
+    html+='</div>';
+  }
+
+  if(!anyAccessible){
     html+='<div class="more-access-denied">🔒 No apps are available for your access level ('+currentLevel+'). Please contact Admin.</div>';
   }
 
   container.innerHTML=html;
-  moreAppsLoaded=true;
+}
+
+/* --- Subject view: show sub-subject folders + direct apps --- */
+function renderSubjectView(container,subjectName){
+  const subj=moreTree.subjects[subjectName];
+  if(!subj){container.innerHTML='<div class="more-empty"><p>❌ Subject not found</p></div>';return}
+
+  moreClickActions=[];
+  let html='';
+
+  /* Back button */
+  const backIdx=moreClickActions.length;
+  moreClickActions.push(()=>navigateMoreTo([]));
+  html+='<div class="more-back-row"><button class="more-back-btn" onclick="handleMoreClick('+backIdx+')">← Back to All Categories</button></div>';
+
+  const hasSubSubs=subj.subSubjectOrder.length>0;
+  const hasDirectApps=subj.directApps.length>0;
+
+  /* Sub-subject folders */
+  if(hasSubSubs){
+    if(hasDirectApps)html+='<div class="more-section-divider">📂 Sub-Folders</div>';
+    html+='<div class="more-apps-grid">';
+
+    subj.subSubjectOrder.forEach((ssName,idx)=>{
+      const ss=subj.subSubjects[ssName];
+      if(!ss)return;
+      const appCount=ss.apps.length;
+      const stripe=FOLDER_STRIPE_COLORS[(idx+2)%FOLDER_STRIPE_COLORS.length];
+      const anyAccess=ss.apps.some(a=>a.access);
+
+      if(anyAccess){
+        const ci=moreClickActions.length;
+        moreClickActions.push(()=>navigateMoreTo([subjectName,ssName]));
+        html+='<div class="more-folder-card" onclick="handleMoreClick('+ci+')">';
+        html+='<div class="more-app-badge" style="background:'+stripe+'">OPEN</div>';
+        html+='<span class="more-folder-icon">📂</span>';
+        html+='<div class="more-folder-name">'+ssName+'</div>';
+        html+='<div class="more-folder-count">'+appCount+' app'+(appCount!==1?'s':'')+'</div>';
+        html+='</div>';
+      }else{
+        html+='<div class="more-folder-card locked">';
+        html+='<div class="more-app-badge" style="background:#94a3b8">🔒 LOCKED</div>';
+        html+='<span class="more-folder-icon" style="filter:grayscale(1)">📂</span>';
+        html+='<div class="more-folder-name" style="color:#94a3b8">'+ssName+'</div>';
+        html+='<div class="more-folder-count" style="background:#f1f5f9;color:#94a3b8">No access</div>';
+        html+='</div>';
+      }
+    });
+
+    html+='</div>';
+  }
+
+  /* Direct apps under this subject (Condition 2) */
+  if(hasDirectApps){
+    if(hasSubSubs)html+='<div class="more-section-divider">📱 Apps</div>';
+    html+='<div class="more-apps-grid">';
+
+    subj.directApps.forEach((app,idx)=>{
+      const gradBg=APP_CARD_GRADIENTS[(idx+4)%APP_CARD_GRADIENTS.length];
+      const iconHtml=renderMoreIcon(app.iconVal,app.iconFormula,36);
+      if(app.access&&app.file){
+        const ci=moreClickActions.length;
+        moreClickActions.push(()=>openEmbeddedApp(app.name,app.file));
+        html+='<div class="more-app-card" onclick="handleMoreClick('+ci+')">';
+        html+='<div class="more-app-badge" style="background:'+gradBg+'">LAUNCH</div>';
+        html+='<span class="more-app-icon">'+iconHtml+'</span>';
+        html+='<div class="more-app-name">'+app.name+'</div>';
+        html+='<div class="more-app-desc">Tap to open</div>';
+        html+='</div>';
+      }else{
+        html+='<div class="more-app-card future">';
+        html+='<div class="more-app-badge" style="background:#94a3b8">LOCKED</div>';
+        html+='<span class="more-app-icon" style="filter:grayscale(1)">'+iconHtml+'</span>';
+        html+='<div class="more-app-name" style="color:#94a3b8">'+app.name+'</div>';
+        html+='<div class="more-app-desc" style="color:#cbd5e1">No access</div>';
+        html+='</div>';
+      }
+    });
+
+    html+='</div>';
+  }
+
+  if(!hasSubSubs&&!hasDirectApps){
+    html+='<div class="more-empty"><p>📭 This folder is empty.<br>No sub-folders or apps found.</p></div>';
+  }
+
+  container.innerHTML=html;
+}
+
+/* --- Sub-Subject view: show apps (Condition 1) --- */
+function renderSubSubjectView(container,subjectName,subSubjectName){
+  const subj=moreTree.subjects[subjectName];
+  const ss=subj?subj.subSubjects[subSubjectName]:null;
+
+  if(!ss){container.innerHTML='<div class="more-empty"><p>❌ Sub-folder not found</p></div>';return}
+
+  moreClickActions=[];
+  let html='';
+
+  /* Back button */
+  const backIdx=moreClickActions.length;
+  moreClickActions.push(()=>navigateMoreTo([subjectName]));
+  html+='<div class="more-back-row"><button class="more-back-btn" onclick="handleMoreClick('+backIdx+')">← Back to '+subjectName+'</button></div>';
+
+  if(ss.apps.length===0){
+    html+='<div class="more-empty"><p>📭 No apps in this folder yet.</p></div>';
+    container.innerHTML=html;
+    return;
+  }
+
+  html+='<div class="more-section-divider">📱 Apps</div>';
+  html+='<div class="more-apps-grid">';
+
+  ss.apps.forEach((app,idx)=>{
+    const gradBg=APP_CARD_GRADIENTS[idx%APP_CARD_GRADIENTS.length];
+    const iconHtml=renderMoreIcon(app.iconVal,app.iconFormula,36);
+    if(app.access&&app.file){
+      const ci=moreClickActions.length;
+      moreClickActions.push(()=>openEmbeddedApp(app.name,app.file));
+      html+='<div class="more-app-card" onclick="handleMoreClick('+ci+')">';
+      html+='<div class="more-app-badge" style="background:'+gradBg+'">LAUNCH</div>';
+      html+='<span class="more-app-icon">'+iconHtml+'</span>';
+      html+='<div class="more-app-name">'+app.name+'</div>';
+      html+='<div class="more-app-desc">Tap to open</div>';
+      html+='</div>';
+    }else{
+      html+='<div class="more-app-card future">';
+      html+='<div class="more-app-badge" style="background:#94a3b8">LOCKED</div>';
+      html+='<span class="more-app-icon" style="filter:grayscale(1)">'+iconHtml+'</span>';
+      html+='<div class="more-app-name" style="color:#94a3b8">'+app.name+'</div>';
+      html+='<div class="more-app-desc" style="color:#cbd5e1">No access</div>';
+      html+='</div>';
+    }
+  });
+
+  html+='</div>';
+  container.innerHTML=html;
 }
 
 /* ===================== EMBEDDED APP VIEWER ===================== */
