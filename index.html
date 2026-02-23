@@ -483,6 +483,10 @@ let CONFIG={
 let currentUser="",currentPassword="",currentLevel="",currentUserRow=-1,currentUserPersonal=[];
 let viewConfig=[],entryConfig=[],appInitialized=false,credentialCheckInterval=null;
 let moreAppsLoaded=false;
+let lastCredentialCheck=0;
+let moreNavPath=[];
+let moreClickActions=[];
+let moreTree={};
 
 /* ===================== HELPERS ===================== */
 async function fetchSheet(sheetName,range){
@@ -572,6 +576,8 @@ function showApp(){
 
 function handleLogout(){
   if(credentialCheckInterval)clearInterval(credentialCheckInterval);
+  document.removeEventListener('visibilitychange',onVisibilityCredCheck);
+  lastCredentialCheck=0;
   localStorage.removeItem('kkso_user');localStorage.removeItem('kkso_password');
   localStorage.removeItem('kkso_level');localStorage.removeItem('kkso_row');
   currentUser='';currentPassword='';currentLevel='';currentUserRow=-1;currentUserPersonal=[];
@@ -597,18 +603,44 @@ function handleLogout(){
 })();
 
 /* ===================== CREDENTIAL CHECK ===================== */
+/* Ravi: This checks every hour AND when tab becomes visible again (phone wake/tab switch) */
+
+async function doCredentialCheck(){
+  if(!currentUser||!currentPassword)return;
+  const now=Date.now();
+  /* Don't check more than once per 5 minutes to avoid API spam */
+  if(now-lastCredentialCheck<300000)return;
+  try{
+    const range=`A${CONFIG.USER_START_ROW}:B${CONFIG.USER_END_ROW}`;
+    const users=await fetchSheet(CONFIG.SHEET_NAME,range);
+    let valid=false;
+    for(const row of users){
+      if(row&&String(row[0]||'').trim()===currentUser&&String(row[1]||'').trim()===currentPassword){valid=true;break}
+    }
+    lastCredentialCheck=Date.now();
+    if(!valid){alert('Your credentials have been changed or removed. You will be logged out.');handleLogout()}
+  }catch(e){/* network error — skip, will retry next time */}
+}
+
 function startCredentialCheck(){
   if(credentialCheckInterval)clearInterval(credentialCheckInterval);
-  credentialCheckInterval=setInterval(async()=>{
-    if(!currentUser||!currentPassword)return;
-    try{
-      const range=`A${CONFIG.USER_START_ROW}:B${CONFIG.USER_END_ROW}`;
-      const users=await fetchSheet(CONFIG.SHEET_NAME,range);
-      let valid=false;
-      for(const row of users){if(row&&String(row[0]||'').trim()===currentUser&&String(row[1]||'').trim()===currentPassword){valid=true;break}}
-      if(!valid){alert('Your credentials have been changed. You will be logged out.');handleLogout()}
-    }catch(e){}
-  },CONFIG.CREDENTIAL_CHECK_INTERVAL);
+  lastCredentialCheck=Date.now(); /* mark login time as last check */
+
+  /* Regular interval check every hour */
+  credentialCheckInterval=setInterval(()=>{doCredentialCheck()},CONFIG.CREDENTIAL_CHECK_INTERVAL);
+
+  /* ALSO check when tab becomes visible again (handles mobile sleep/tab switch) */
+  document.removeEventListener('visibilitychange',onVisibilityCredCheck);
+  document.addEventListener('visibilitychange',onVisibilityCredCheck);
+}
+
+function onVisibilityCredCheck(){
+  if(document.visibilityState==='visible'&&currentUser){
+    /* If more than 1 hour passed since last check, check now */
+    if(Date.now()-lastCredentialCheck>=CONFIG.CREDENTIAL_CHECK_INTERVAL){
+      doCredentialCheck();
+    }
+  }
 }
 
 /* ===================== PASSWORD CHANGE ===================== */
@@ -717,10 +749,7 @@ const FOLDER_STRIPE_COLORS=[
   Condition 3: A blank             → App shown directly in More root (no folder)
 */
 
-/* More tab state */
-let moreNavPath=[];       /* [] = root, ['SubjName'] = inside subject, ['SubjName','SubSubjName'] = inside sub-subject */
-let moreClickActions=[];  /* safe click handler array to avoid inline string escaping issues */
-let moreTree={};          /* parsed tree: { subjectOrder, subjects, rootApps } */
+/* More tab state — moreNavPath, moreClickActions, moreTree declared in STATE section above */
 
 function handleMoreClick(idx){
   if(moreClickActions[idx])moreClickActions[idx]();
@@ -1509,7 +1538,13 @@ function renderMyEntries(filterSubject){
   container.innerHTML=html;
 }
 
-function exportPDF(){window.print()}
+function exportPDF(){
+  /* Switch to My Data entries view before printing */
+  switchMode('mydata');
+  switchMyData('entries');
+  /* Small delay to ensure DOM is ready then trigger print */
+  setTimeout(()=>{window.print()},300);
+}
 
 /* ===================== INBOX ===================== */
 let inboxData=[];
