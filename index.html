@@ -1544,27 +1544,21 @@ function renderMyEntries(filterSubject){
 }
 
 function exportPDF(){
-  /* Generate PDF using html2canvas + jsPDF — works on PC browsers AND Android APK WebView */
   if(!allMyEntries.length){alert('No entries to export.');return}
 
-  /* Build a clean HTML table for PDF capture */
-  var pdfDiv=document.createElement('div');
-  pdfDiv.id='pdfCaptureDiv';
-  pdfDiv.style.cssText='position:fixed;left:-9999px;top:0;width:1000px;background:white;padding:20px;font-family:Inter,sans-serif;z-index:-1;';
-
-  /* Header */
-  var hdr='<div style="text-align:center;margin-bottom:16px;">';
-  hdr+='<h2 style="font-size:20px;font-weight:900;color:#1e293b;margin:0 0 4px">KKSO-KBGA DATA — My Entries</h2>';
-  hdr+='<p style="font-size:12px;color:#64748b;margin:0">User: '+currentUser+' | Level: '+currentLevel+' | Exported: '+new Date().toLocaleString()+'</p>';
-  hdr+='<p style="font-size:11px;color:#64748b;margin:2px 0 0">Total: '+allMyEntries.length+' entries</p>';
-  hdr+='</div>';
-
-  /* Build table */
   var filterVal=document.getElementById('mySubjectFilter').value;
   var entries=allMyEntries;
   if(filterVal)entries=entries.filter(function(e){return e.subject===filterVal});
+  if(!entries.length){alert('No entries to export for selected filter.');return}
+
+  /* Get the export button and show progress */
+  var statusBtn=document.querySelector('#myEntriesSection .clear-btn');
+  var origText=statusBtn?statusBtn.innerHTML:'';
+  if(statusBtn){statusBtn.innerHTML='⏳ Generating PDF...';statusBtn.disabled=true;statusBtn.style.pointerEvents='none'}
 
   var lc=getLevelCols(currentLevel);
+
+  /* Build headers */
   var headers=['SL','Subject'];
   var useDetailed=false;
   var detCfg=null;
@@ -1583,151 +1577,207 @@ function exportPDF(){
   if(!useDetailed)headers.push('Data');
   headers.push('Date/Time');
 
-  var tbl='<table style="width:100%;border-collapse:collapse;font-size:12px;">';
-  tbl+='<thead><tr>';
-  headers.forEach(function(h){tbl+='<th style="background:#eef2ff;color:#ea580c;font-weight:700;padding:8px 6px;border:1px solid #e2e8f0;text-transform:uppercase;font-size:10px;white-space:nowrap;">'+h+'</th>'});
-  tbl+='</tr></thead><tbody>';
-
+  /* Build row data arrays */
+  var rowsData=[];
   entries.forEach(function(entry,idx){
-    var bg=idx%2===0?'#ffffff':'#f8fafc';
-    tbl+='<tr>';
-    tbl+='<td style="background:'+bg+';padding:6px;border:1px solid #f1f5f9;text-align:center;">'+(idx+1)+'</td>';
-    tbl+='<td style="background:'+bg+';padding:6px;border:1px solid #f1f5f9;text-align:center;">'+entry.subject+'</td>';
+    var rowArr=[];
+    rowArr.push(String(idx+1));
+    rowArr.push(entry.subject||'');
     if(useDetailed&&detCfg){
       var hs=String(detCfg[lc.subCol]||'').trim().toLowerCase()==='true';
       var ic=Math.max(0,parseInt(detCfg[25]||'0',10)||0);
-      if(hs)tbl+='<td style="background:'+bg+';padding:6px;border:1px solid #f1f5f9;text-align:center;">'+(entry.subSubject||'')+'</td>';
+      if(hs)rowArr.push(entry.subSubject||'');
       var ds=hs?2:1;
       for(var j=0;j<ic;j++){
-        tbl+='<td style="background:'+bg+';padding:6px;border:1px solid #f1f5f9;text-align:center;">'+String((entry.data||[])[ds+j]||'')+'</td>';
+        rowArr.push(String((entry.data||[])[ds+j]||''));
       }
     }else{
       var dataCols=[];
       for(var k=1;k<15;k++){var v=(entry.data||[])[k];if(v)dataCols.push(v)}
-      tbl+='<td style="background:'+bg+';padding:6px;border:1px solid #f1f5f9;text-align:center;">'+dataCols.join(', ')+'</td>';
+      rowArr.push(dataCols.join(', '));
     }
-    tbl+='<td style="background:'+bg+';padding:6px;border:1px solid #f1f5f9;text-align:center;white-space:nowrap;">'+String((entry.data||[])[16]||'')+'</td>';
-    tbl+='</tr>';
+    rowArr.push(String((entry.data||[])[16]||''));
+    rowsData.push(rowArr);
   });
 
-  tbl+='</tbody></table>';
+  /* Use jsPDF directly with text positioning — no html2canvas dependency */
+  try{
+    var pdf=new jspdf.jsPDF({orientation:'landscape',unit:'mm',format:'a4'});
+    var pageW=pdf.internal.pageSize.getWidth();
+    var pageH=pdf.internal.pageSize.getHeight();
+    var margin=10;
+    var usableW=pageW-margin*2;
+    var y=margin;
+    var lineH=6;
+    var headerH=8;
+    var fontSize=8;
+    var headerFontSize=9;
+    var titleFontSize=14;
+    var colCount=headers.length;
+    var colWidths=[];
 
-  /* Footer */
-  var ftr='<div style="text-align:center;margin-top:12px;font-size:9px;color:#94a3b8;">© Created by Ravi Malhotra | KKSO-KBGA DATA v'+APP_VERSION+'</div>';
+    /* Calculate column widths based on content */
+    var slW=12;
+    var dateW=38;
+    var remainW=usableW-slW-dateW;
 
-  pdfDiv.innerHTML=hdr+tbl+ftr;
-  document.body.appendChild(pdfDiv);
+    headers.forEach(function(h,ci){
+      if(ci===0){colWidths.push(slW)} /* SL column narrow */
+      else if(ci===headers.length-1){colWidths.push(dateW)} /* Date column fixed */
+      else{colWidths.push(remainW/(colCount-2))}
+    });
 
-  /* Show generating status */
-  var statusBtn=document.querySelector('[onclick="exportPDF()"]');
-  var origText=statusBtn?statusBtn.textContent:'';
-  if(statusBtn){statusBtn.textContent='⏳ Generating PDF...';statusBtn.disabled=true}
+    /* Title */
+    pdf.setFont('helvetica','bold');
+    pdf.setFontSize(titleFontSize);
+    pdf.setTextColor(30,41,59);
+    pdf.text('KKSO-KBGA DATA — My Entries',pageW/2,y,{align:'center'});
+    y+=7;
 
-  /* Use html2canvas to capture, then jsPDF to create PDF */
-  setTimeout(function(){
-    html2canvas(pdfDiv,{scale:2,useCORS:true,backgroundColor:'#ffffff',logging:false}).then(function(canvas){
-      var imgData=canvas.toDataURL('image/png');
-      var pdf=new jspdf.jsPDF({orientation:canvas.width>canvas.height?'l':'p',unit:'mm',format:'a4'});
-      var pageW=pdf.internal.pageSize.getWidth();
-      var pageH=pdf.internal.pageSize.getHeight();
-      var margin=8;
-      var imgW=pageW-margin*2;
-      var imgH=(canvas.height*imgW)/canvas.width;
+    /* Subtitle */
+    pdf.setFontSize(9);
+    pdf.setFont('helvetica','normal');
+    pdf.setTextColor(100,116,139);
+    pdf.text('User: '+currentUser+' | Level: '+currentLevel+' | Total: '+entries.length+' entries | Exported: '+new Date().toLocaleString(),pageW/2,y,{align:'center'});
+    y+=4;
+    if(filterVal){
+      pdf.text('Filter: '+filterVal,pageW/2,y,{align:'center'});
+      y+=4;
+    }
+    y+=3;
 
-      /* If content is taller than one page, split across pages */
-      if(imgH<=pageH-margin*2){
-        pdf.addImage(imgData,'PNG',margin,margin,imgW,imgH);
-      }else{
-        var totalPages=Math.ceil(imgH/(pageH-margin*2));
-        for(var p=0;p<totalPages;p++){
-          if(p>0)pdf.addPage();
-          var srcY=p*(pageH-margin*2)*(canvas.width/imgW);
-          var srcH=Math.min((pageH-margin*2)*(canvas.width/imgW),canvas.height-srcY);
-          var destH=srcH*(imgW/canvas.width);
-          var tempCanvas=document.createElement('canvas');
-          tempCanvas.width=canvas.width;
-          tempCanvas.height=srcH;
-          var tCtx=tempCanvas.getContext('2d');
-          tCtx.drawImage(canvas,0,srcY,canvas.width,srcH,0,0,canvas.width,srcH);
-          var sliceData=tempCanvas.toDataURL('image/png');
-          pdf.addImage(sliceData,'PNG',margin,margin,imgW,destH);
-        }
+    /* Function to draw table header row */
+    function drawTableHeader(){
+      var x=margin;
+      pdf.setFillColor(238,242,255);
+      pdf.rect(margin,y-1,usableW,headerH,'F');
+      pdf.setFont('helvetica','bold');
+      pdf.setFontSize(headerFontSize);
+      pdf.setTextColor(234,88,12);
+      headers.forEach(function(h,ci){
+        var cellX=x+1;
+        var cellW=colWidths[ci]-2;
+        var txt=h.length>Math.floor(cellW/2)?h.substring(0,Math.floor(cellW/2)-1)+'…':h;
+        pdf.text(txt,cellX,y+5);
+        /* Draw cell border */
+        pdf.setDrawColor(226,232,240);
+        pdf.rect(x,y-1,colWidths[ci],headerH);
+        x+=colWidths[ci];
+      });
+      y+=headerH;
+    }
+
+    /* Function to draw a data row */
+    function drawDataRow(rowArr,rowIndex){
+      var x=margin;
+      var bgColor=rowIndex%2===0?[255,255,255]:[248,250,252];
+      pdf.setFillColor(bgColor[0],bgColor[1],bgColor[2]);
+      pdf.rect(margin,y-1,usableW,lineH,'F');
+      pdf.setFont('helvetica','normal');
+      pdf.setFontSize(fontSize);
+      pdf.setTextColor(30,41,59);
+      rowArr.forEach(function(cellVal,ci){
+        var cellX=x+1;
+        var cellW=colWidths[ci]-2;
+        var maxChars=Math.floor(cellW*0.55);
+        var txt=String(cellVal);
+        if(txt.length>maxChars)txt=txt.substring(0,maxChars-1)+'…';
+        pdf.text(txt,cellX,y+3.5);
+        pdf.setDrawColor(241,245,249);
+        pdf.rect(x,y-1,colWidths[ci],lineH);
+        x+=colWidths[ci];
+      });
+      y+=lineH;
+    }
+
+    /* Function to check page break */
+    function checkPageBreak(){
+      if(y+lineH+5>pageH-margin){
+        /* Footer on current page */
+        pdf.setFontSize(7);
+        pdf.setTextColor(148,163,184);
+        pdf.text('© Created by Ravi Malhotra | KKSO-KBGA DATA v'+APP_VERSION,pageW/2,pageH-5,{align:'center'});
+        pdf.addPage();
+        y=margin;
+        drawTableHeader();
       }
+    }
 
-      var fileName='KKSO_Entries_'+currentUser+'_'+new Date().toISOString().slice(0,10)+'.pdf';
+    /* Draw initial header */
+    drawTableHeader();
 
-      /*
-        Cross-platform PDF download — works on PC browser + Android APK WebView:
-        Method 1: Blob + <a> download click (desktop browsers)
-        Method 2: Open data URI in new tab (Android WebView/APK fallback)
-        Method 3: jsPDF built-in save (last resort)
-      */
-      var downloadDone=false;
+    /* Draw all data rows */
+    rowsData.forEach(function(rowArr,ri){
+      checkPageBreak();
+      drawDataRow(rowArr,ri);
+    });
 
-      /* Method 1: Blob URL + invisible <a> click — works on PC Chrome/Firefox/Edge/Safari */
+    /* Footer on last page */
+    pdf.setFontSize(7);
+    pdf.setFont('helvetica','normal');
+    pdf.setTextColor(148,163,184);
+    pdf.text('© Created by Ravi Malhotra | KKSO-KBGA DATA v'+APP_VERSION,pageW/2,pageH-5,{align:'center'});
+
+    var fileName='KKSO_Entries_'+currentUser+'_'+new Date().toISOString().slice(0,10)+'.pdf';
+
+    /* Cross-platform save: try blob URL approach first (works in WebView/APK/desktop) */
+    try{
+      var pdfBlob=pdf.output('blob');
+      var blobUrl=URL.createObjectURL(pdfBlob);
+
+      /* Create a temporary link and click it */
+      var link=document.createElement('a');
+      link.href=blobUrl;
+      link.download=fileName;
+      link.style.display='none';
+      document.body.appendChild(link);
+
+      /* For mobile/WebView: try link click first */
+      link.click();
+
+      /* Cleanup after delay */
+      setTimeout(function(){
+        document.body.removeChild(link);
+        URL.revokeObjectURL(blobUrl);
+      },5000);
+
+      /* If link click didn't trigger download (some WebViews), open in new tab as fallback */
+      setTimeout(function(){
+        /* Check if still on same page (download didn't navigate away) — open blob in new window */
+        try{
+          var testOpen=window.open(blobUrl,'_blank');
+          if(!testOpen||testOpen.closed){
+            /* If popup blocked, try data URI approach */
+            var dataUri=pdf.output('datauristring');
+            window.open(dataUri,'_blank');
+          }
+        }catch(e3){/* ignore — first method likely worked */}
+      },1500);
+
+    }catch(e2){
+      /* Ultimate fallback: use jsPDF's built-in save */
       try{
-        var pdfBlob=pdf.output('blob');
-        var blobUrl=URL.createObjectURL(pdfBlob);
-        var dlLink=document.createElement('a');
-        dlLink.href=blobUrl;
-        dlLink.download=fileName;
-        dlLink.style.cssText='position:fixed;left:-9999px;top:-9999px;opacity:0;';
-        document.body.appendChild(dlLink);
-        dlLink.click();
-        downloadDone=true;
-        setTimeout(function(){try{document.body.removeChild(dlLink)}catch(x){}try{URL.revokeObjectURL(blobUrl)}catch(x){}},2000);
-      }catch(e1){downloadDone=false}
-
-      /* Method 2: For Android WebView/APK — blob <a> click may silently fail, so also open in new tab */
-      /* Detect Android WebView: userAgent has 'wv' or has 'Android' without 'Chrome/[version]' pattern */
-      var ua=navigator.userAgent||'';
-      var isAndroid=/Android/i.test(ua);
-      var isWebView=isAndroid&&(/wv\b/i.test(ua)||!/Chrome\/[0-9]+/i.test(ua));
-      /* Also treat standalone PWA / TWA as potential WebView */
-      if(isAndroid&&window.matchMedia&&window.matchMedia('(display-mode: standalone)').matches)isWebView=true;
-
-      if(isWebView||!downloadDone){
+        pdf.save(fileName);
+      }catch(e3){
+        /* Last resort: open as data URI */
         try{
           var dataUri=pdf.output('datauristring');
-          var newWin=window.open(dataUri,'_blank');
-          if(!newWin){
-            /* Popup blocked — show inline download link as fallback */
-            var pdfB64=pdf.output('datauristring');
-            var overlay=document.createElement('div');
-            overlay.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,0.8);z-index:9999;display:flex;align-items:center;justify-content:center;padding:20px;';
-            overlay.innerHTML='<div style="background:white;border-radius:16px;padding:24px;max-width:340px;width:100%;text-align:center;">'
-              +'<h3 style="margin:0 0 10px;font-size:16px;color:#1e293b;">📄 PDF Ready!</h3>'
-              +'<p style="font-size:12px;color:#64748b;margin:0 0 16px;">Tap the button below to open your PDF. Then use your phone\'s Share or Save option.</p>'
-              +'<a href="'+pdfB64+'" target="_blank" download="'+fileName+'" style="display:inline-block;padding:12px 24px;background:linear-gradient(135deg,#667eea,#764ba2);color:white;border-radius:10px;font-size:14px;font-weight:700;text-decoration:none;margin-bottom:10px;">📥 Open PDF</a>'
-              +'<br><button onclick="this.closest(\'div\').parentElement.remove()" style="margin-top:8px;padding:8px 20px;background:#f1f5f9;border:1px solid #e2e8f0;border-radius:8px;font-size:12px;font-weight:600;cursor:pointer;color:#64748b;">Close</button>'
-              +'</div>';
-            document.body.appendChild(overlay);
-          }
-          downloadDone=true;
-        }catch(e2){downloadDone=false}
+          window.open(dataUri,'_blank');
+        }catch(e4){
+          alert('PDF generated but could not be saved. Please try on desktop browser.');
+        }
       }
+    }
 
-      /* Method 3: jsPDF built-in save as last resort */
-      if(!downloadDone){
-        try{pdf.save(fileName)}catch(e3){alert('PDF was generated but could not be downloaded. Please try on a desktop browser.')}
-      }
+    /* Restore button */
+    if(statusBtn){statusBtn.innerHTML=origText;statusBtn.disabled=false;statusBtn.style.pointerEvents=''}
 
-      /* Cleanup */
-      try{document.body.removeChild(pdfDiv)}catch(x){}
-      if(statusBtn){statusBtn.textContent=origText;statusBtn.disabled=false}
-
-    }).catch(function(err){
-      console.error('PDF generation error:',err);
-      try{document.body.removeChild(pdfDiv)}catch(x){}
-      if(statusBtn){statusBtn.textContent=origText;statusBtn.disabled=false}
-      /* Final fallback: try window.print on PC, show error on mobile */
-      var isMobile=/Android|iPhone|iPad|iPod/i.test(navigator.userAgent||'');
-      if(!isMobile){try{window.print()}catch(e4){}}
-      else{alert('PDF generation failed: '+err.message)}
-    });
-  },200);
+  }catch(err){
+    console.error('PDF generation error:',err);
+    if(statusBtn){statusBtn.innerHTML=origText;statusBtn.disabled=false;statusBtn.style.pointerEvents=''}
+    alert('PDF generation failed: '+err.message);
+  }
 }
-
 /* ===================== INBOX ===================== */
 let inboxData=[];
 async function loadInbox(){
