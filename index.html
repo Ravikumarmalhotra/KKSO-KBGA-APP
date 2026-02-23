@@ -3,34 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>KKSO-KBGA-APP</title>
+    <title>Your Title</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
-</head>
-<body>
-    <!-- Your existing body content -->
-
     <script>
-        function exportPDF(){
-            try{
-                const element=document.getElementById('myEntriesTable');
-                if(!element||!element.innerHTML.trim()){
-                    alert('No data to export');
-                    return;
-                }
-                
-                const opt={
-                    margin:10,
-                    filename:'KKSO-KBGA-MyData.pdf',
-                    image:{type:'jpeg',quality:0.98},
-                    html2canvas:{scale:2},
-                    jsPDF:{orientation:'landscape',unit:'mm',format:'a4'}
-                };
-                
-                html2pdf().set(opt).from(element).save();
-            }catch(e){
-                alert('PDF export error: '+e.message);
-            }
+        function exportPDF() {
+            const element = document.getElementById('element-to-print');
+            html2pdf().from(element).save('document.pdf');
         }
     </script>
+</head>
+<body>
+    <div id="element-to-print">
+        <p>Your content here...</p>
+    </div>
+    <button onclick="exportPDF()">Export to PDF</button>
 </body>
 </html>
