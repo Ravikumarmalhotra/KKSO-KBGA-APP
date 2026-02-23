@@ -1542,74 +1542,137 @@ function renderMyEntries(filterSubject){
   html+='</tbody></table></div>';
   container.innerHTML=html;
 }
-/* ===== PRINT/PDF ===== */
-@media print{body{background:white!important;animation:none!important}.login-page,.user-bar,.mode-toggle,.header-strip,.mydata-toggle,.inbox-filters,.inbox-card-actions{display:none!important}.page{display:block!important;padding:10px}.panel{box-shadow:none;border:1px solid #ccc;page-break-inside:avoid}.title-card{background:#333!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}}
-  
-  
-  async function exportPDF(){
-  try{
-    const element=document.getElementById('myEntriesTable');
-    if(!element||!element.innerHTML.trim()){alert('❌ No data to export');return}
-    
-    const btn=event.target;
-    btn.disabled=true;
-    btn.textContent='📄 Generating PDF...';
-    
-    // Capture table as canvas
-    const canvas=await html2canvas(element,{
-      scale:2,
-      backgroundColor:'#ffffff',
-      allowTaint:true,
-      useCORS:true
-    });
-    
-    const imgData=canvas.toDataURL('image/png');
-    const pdf=new jspdf.jsPDF({
-      orientation:'landscape',
-      unit:'mm',
-      format:'a4'
-    });
-    
-    const pdfWidth=pdf.internal.pageSize.getWidth();
-    const pdfHeight=pdf.internal.pageSize.getHeight();
-    const imgWidth=pdfWidth-20;
-    const imgHeight=(canvas.height*imgWidth)/canvas.width;
-    
-    let heightLeft=imgHeight;
-    let position=10;
-    
-    // Add first page
-    pdf.addImage(imgData,'PNG',10,position,imgWidth,imgHeight);
-    heightLeft-=pdfHeight-20;
-    
-    // Add additional pages if needed
-    while(heightLeft>=0){
-      position=heightLeft-imgHeight;
-      pdf.addPage();
-      pdf.addImage(imgData,'PNG',10,position,imgWidth,imgHeight);
-      heightLeft-=pdfHeight-20;
-    }
-    
-    const timestamp=new Date().toISOString().split('T')[0];
-    pdf.save(`KKSO-KBGA-MyData-${currentUser}-${timestamp}.pdf`);
-    
-    btn.disabled=false;
-    btn.textContent='📄 Export PDF';
-  }catch(e){
-    alert('❌ PDF Export Error: '+e.message);
-    if(event.target){
-      event.target.disabled=false;
-      event.target.textContent='📄 Export PDF'
+
+function exportPDF(){
+  /* Generate PDF using html2canvas + jsPDF — works in APK WebView too */
+  if(!allMyEntries.length){alert('No entries to export.');return}
+
+  /* Build a clean HTML table for PDF capture */
+  var pdfDiv=document.createElement('div');
+  pdfDiv.id='pdfCaptureDiv';
+  pdfDiv.style.cssText='position:fixed;left:-9999px;top:0;width:1000px;background:white;padding:20px;font-family:Inter,sans-serif;z-index:-1;';
+
+  /* Header */
+  var hdr='<div style="text-align:center;margin-bottom:16px;">';
+  hdr+='<h2 style="font-size:20px;font-weight:900;color:#1e293b;margin:0 0 4px">KKSO-KBGA DATA — My Entries</h2>';
+  hdr+='<p style="font-size:12px;color:#64748b;margin:0">User: '+currentUser+' | Level: '+currentLevel+' | Exported: '+new Date().toLocaleString()+'</p>';
+  hdr+='<p style="font-size:11px;color:#64748b;margin:2px 0 0">Total: '+allMyEntries.length+' entries</p>';
+  hdr+='</div>';
+
+  /* Build table */
+  var filterVal=document.getElementById('mySubjectFilter').value;
+  var entries=allMyEntries;
+  if(filterVal)entries=entries.filter(function(e){return e.subject===filterVal});
+
+  var lc=getLevelCols(currentLevel);
+  var headers=['SL','Subject'];
+  var useDetailed=false;
+  var detCfg=null;
+
+  if(filterVal){
+    var cfgRow=entryConfig.find(function(r){return r&&String(r[0]||'').trim()===filterVal&&String(r[lc.sheetCol]||'').trim()});
+    if(cfgRow){
+      detCfg=cfgRow;useDetailed=true;
+      var hasSub=String(cfgRow[lc.subCol]||'').trim().toLowerCase()==='true';
+      var baseCol=hasSub?2:1;
+      var inputCount=Math.max(0,parseInt(cfgRow[25]||'0',10)||0);
+      if(hasSub)headers.push('Sub-Subject');
+      for(var i=0;i<inputCount;i++)headers.push(String(cfgRow[baseCol+i]||'Input '+(i+1)));
     }
   }
+  if(!useDetailed)headers.push('Data');
+  headers.push('Date/Time');
+
+  var tbl='<table style="width:100%;border-collapse:collapse;font-size:12px;">';
+  tbl+='<thead><tr>';
+  headers.forEach(function(h){tbl+='<th style="background:#eef2ff;color:#ea580c;font-weight:700;padding:8px 6px;border:1px solid #e2e8f0;text-transform:uppercase;font-size:10px;white-space:nowrap;">'+h+'</th>'});
+  tbl+='</tr></thead><tbody>';
+
+  entries.forEach(function(entry,idx){
+    var bg=idx%2===0?'#ffffff':'#f8fafc';
+    tbl+='<tr>';
+    tbl+='<td style="background:'+bg+';padding:6px;border:1px solid #f1f5f9;text-align:center;">'+(idx+1)+'</td>';
+    tbl+='<td style="background:'+bg+';padding:6px;border:1px solid #f1f5f9;text-align:center;">'+entry.subject+'</td>';
+    if(useDetailed&&detCfg){
+      var hs=String(detCfg[lc.subCol]||'').trim().toLowerCase()==='true';
+      var ic=Math.max(0,parseInt(detCfg[25]||'0',10)||0);
+      if(hs)tbl+='<td style="background:'+bg+';padding:6px;border:1px solid #f1f5f9;text-align:center;">'+(entry.subSubject||'')+'</td>';
+      var ds=hs?2:1;
+      for(var j=0;j<ic;j++){
+        tbl+='<td style="background:'+bg+';padding:6px;border:1px solid #f1f5f9;text-align:center;">'+String((entry.data||[])[ds+j]||'')+'</td>';
+      }
+    }else{
+      var dataCols=[];
+      for(var k=1;k<15;k++){var v=(entry.data||[])[k];if(v)dataCols.push(v)}
+      tbl+='<td style="background:'+bg+';padding:6px;border:1px solid #f1f5f9;text-align:center;">'+dataCols.join(', ')+'</td>';
+    }
+    tbl+='<td style="background:'+bg+';padding:6px;border:1px solid #f1f5f9;text-align:center;white-space:nowrap;">'+String((entry.data||[])[16]||'')+'</td>';
+    tbl+='</tr>';
+  });
+
+  tbl+='</tbody></table>';
+
+  /* Footer */
+  var ftr='<div style="text-align:center;margin-top:12px;font-size:9px;color:#94a3b8;">© Created by Ravi Malhotra | KKSO-KBGA DATA v'+APP_VERSION+'</div>';
+
+  pdfDiv.innerHTML=hdr+tbl+ftr;
+  document.body.appendChild(pdfDiv);
+
+  /* Show generating status */
+  var statusBtn=document.querySelector('[onclick="exportPDF()"]');
+  var origText=statusBtn?statusBtn.textContent:'';
+  if(statusBtn){statusBtn.textContent='⏳ Generating PDF...';statusBtn.disabled=true}
+
+  /* Use html2canvas to capture, then jsPDF to save */
+  setTimeout(function(){
+    html2canvas(pdfDiv,{scale:2,useCORS:true,backgroundColor:'#ffffff',logging:false}).then(function(canvas){
+      var imgData=canvas.toDataURL('image/png');
+      var pdf=new jspdf.jsPDF({orientation:canvas.width>canvas.height?'l':'p',unit:'mm',format:'a4'});
+      var pageW=pdf.internal.pageSize.getWidth();
+      var pageH=pdf.internal.pageSize.getHeight();
+      var margin=8;
+      var usableW=pageW-margin*2;
+      var imgW=usableW;
+      var imgH=(canvas.height*imgW)/canvas.width;
+
+      /* If content is taller than one page, split across pages */
+      if(imgH<=pageH-margin*2){
+        pdf.addImage(imgData,'PNG',margin,margin,imgW,imgH);
+      }else{
+        var totalPages=Math.ceil(imgH/(pageH-margin*2));
+        for(var p=0;p<totalPages;p++){
+          if(p>0)pdf.addPage();
+          var srcY=p*(pageH-margin*2)*(canvas.width/imgW);
+          var srcH=Math.min((pageH-margin*2)*(canvas.width/imgW),canvas.height-srcY);
+          var destH=srcH*(imgW/canvas.width);
+
+          /* Create a temp canvas for this page slice */
+          var tempCanvas=document.createElement('canvas');
+          tempCanvas.width=canvas.width;
+          tempCanvas.height=srcH;
+          var tCtx=tempCanvas.getContext('2d');
+          tCtx.drawImage(canvas,0,srcY,canvas.width,srcH,0,0,canvas.width,srcH);
+          var sliceData=tempCanvas.toDataURL('image/png');
+          pdf.addImage(sliceData,'PNG',margin,margin,imgW,destH);
+        }
+      }
+
+      var fileName='KKSO_Entries_'+currentUser+'_'+new Date().toISOString().slice(0,10)+'.pdf';
+      pdf.save(fileName);
+
+      /* Cleanup */
+      document.body.removeChild(pdfDiv);
+      if(statusBtn){statusBtn.textContent=origText;statusBtn.disabled=false}
+    }).catch(function(err){
+      console.error('PDF generation error:',err);
+      document.body.removeChild(pdfDiv);
+      if(statusBtn){statusBtn.textContent=origText;statusBtn.disabled=false}
+      /* Fallback to window.print for browsers that support it */
+      try{window.print()}catch(e2){alert('PDF generation failed: '+err.message)}
+    });
+  },200);
 }
 
-
- 
-   
- 
-   
-    
 /* ===================== INBOX ===================== */
 let inboxData=[];
 async function loadInbox(){
