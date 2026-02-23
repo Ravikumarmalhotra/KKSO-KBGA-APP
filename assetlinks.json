@@ -1,8 +1,0 @@
-[{
-      "relation": ["delegate_permission/common.handle_all_urls"],
-      "target": {
-        "namespace": "android_app",
-        "package_name": "com.ravikumar.kksokbga",
-        "sha256_cert_fingerprints": ["6C:DA:CD:78:63:40:08:05:EB:B8:48:DF:A7:FC:8C:1F:0B:F2:E5:74:87:87:F5:EB:F0:AE:3C:14:82:25:5A:53"]
-      }
-    }]
