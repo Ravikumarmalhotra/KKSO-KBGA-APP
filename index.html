@@ -8,8 +8,6 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap" rel="stylesheet">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <style>
 :root{--text:#0f172a;--muted:#475569;--card:rgba(255,255,255,0.92);--card-border:#e2e8f0;--shadow:0 10px 30px rgba(2,8,23,0.08);--ring:rgba(79,70,229,0.35);--g1:linear-gradient(135deg,#e0f2fe,#fef3c7);--g2:linear-gradient(135deg,#fce7f3,#cffafe);--g3:linear-gradient(135deg,#e9d5ff,#d1fae5);--g4:linear-gradient(135deg,#f3e8ff,#e0f2fe);--g5:linear-gradient(135deg,#fee2e2,#dbeafe);--g6:linear-gradient(135deg,#ffedd5,#ede9fe)}
 *{box-sizing:border-box;margin:0;padding:0}
@@ -626,23 +624,20 @@ async function doCredentialCheck(){
 
 function startCredentialCheck(){
   if(credentialCheckInterval)clearInterval(credentialCheckInterval);
-  lastCredentialCheck=0; /* force immediate check on first visibility or interval */
-
-  /* Do an immediate credential check (with small delay so UI loads first) */
-  setTimeout(()=>{doCredentialCheck()},3000);
+  lastCredentialCheck=Date.now(); /* mark login time as last check */
 
   /* Regular interval check every hour */
   credentialCheckInterval=setInterval(()=>{doCredentialCheck()},CONFIG.CREDENTIAL_CHECK_INTERVAL);
 
-  /* ALSO check when tab/app becomes visible again (handles mobile sleep/tab switch/APK resume) */
+  /* ALSO check when tab becomes visible again (handles mobile sleep/tab switch) */
   document.removeEventListener('visibilitychange',onVisibilityCredCheck);
   document.addEventListener('visibilitychange',onVisibilityCredCheck);
 }
 
 function onVisibilityCredCheck(){
   if(document.visibilityState==='visible'&&currentUser){
-    /* Check immediately when app becomes visible — if more than 5 min since last check */
-    if(Date.now()-lastCredentialCheck>=300000){
+    /* If more than 1 hour passed since last check, check now */
+    if(Date.now()-lastCredentialCheck>=CONFIG.CREDENTIAL_CHECK_INTERVAL){
       doCredentialCheck();
     }
   }
@@ -1544,133 +1539,11 @@ function renderMyEntries(filterSubject){
 }
 
 function exportPDF(){
-  /* Generate PDF using html2canvas + jsPDF — works in APK WebView too */
-  if(!allMyEntries.length){alert('No entries to export.');return}
-
-  /* Build a clean HTML table for PDF capture */
-  var pdfDiv=document.createElement('div');
-  pdfDiv.id='pdfCaptureDiv';
-  pdfDiv.style.cssText='position:fixed;left:-9999px;top:0;width:1000px;background:white;padding:20px;font-family:Inter,sans-serif;z-index:-1;';
-
-  /* Header */
-  var hdr='<div style="text-align:center;margin-bottom:16px;">';
-  hdr+='<h2 style="font-size:20px;font-weight:900;color:#1e293b;margin:0 0 4px">KKSO-KBGA DATA — My Entries</h2>';
-  hdr+='<p style="font-size:12px;color:#64748b;margin:0">User: '+currentUser+' | Level: '+currentLevel+' | Exported: '+new Date().toLocaleString()+'</p>';
-  hdr+='<p style="font-size:11px;color:#64748b;margin:2px 0 0">Total: '+allMyEntries.length+' entries</p>';
-  hdr+='</div>';
-
-  /* Build table */
-  var filterVal=document.getElementById('mySubjectFilter').value;
-  var entries=allMyEntries;
-  if(filterVal)entries=entries.filter(function(e){return e.subject===filterVal});
-
-  var lc=getLevelCols(currentLevel);
-  var headers=['SL','Subject'];
-  var useDetailed=false;
-  var detCfg=null;
-
-  if(filterVal){
-    var cfgRow=entryConfig.find(function(r){return r&&String(r[0]||'').trim()===filterVal&&String(r[lc.sheetCol]||'').trim()});
-    if(cfgRow){
-      detCfg=cfgRow;useDetailed=true;
-      var hasSub=String(cfgRow[lc.subCol]||'').trim().toLowerCase()==='true';
-      var baseCol=hasSub?2:1;
-      var inputCount=Math.max(0,parseInt(cfgRow[25]||'0',10)||0);
-      if(hasSub)headers.push('Sub-Subject');
-      for(var i=0;i<inputCount;i++)headers.push(String(cfgRow[baseCol+i]||'Input '+(i+1)));
-    }
-  }
-  if(!useDetailed)headers.push('Data');
-  headers.push('Date/Time');
-
-  var tbl='<table style="width:100%;border-collapse:collapse;font-size:12px;">';
-  tbl+='<thead><tr>';
-  headers.forEach(function(h){tbl+='<th style="background:#eef2ff;color:#ea580c;font-weight:700;padding:8px 6px;border:1px solid #e2e8f0;text-transform:uppercase;font-size:10px;white-space:nowrap;">'+h+'</th>'});
-  tbl+='</tr></thead><tbody>';
-
-  entries.forEach(function(entry,idx){
-    var bg=idx%2===0?'#ffffff':'#f8fafc';
-    tbl+='<tr>';
-    tbl+='<td style="background:'+bg+';padding:6px;border:1px solid #f1f5f9;text-align:center;">'+(idx+1)+'</td>';
-    tbl+='<td style="background:'+bg+';padding:6px;border:1px solid #f1f5f9;text-align:center;">'+entry.subject+'</td>';
-    if(useDetailed&&detCfg){
-      var hs=String(detCfg[lc.subCol]||'').trim().toLowerCase()==='true';
-      var ic=Math.max(0,parseInt(detCfg[25]||'0',10)||0);
-      if(hs)tbl+='<td style="background:'+bg+';padding:6px;border:1px solid #f1f5f9;text-align:center;">'+(entry.subSubject||'')+'</td>';
-      var ds=hs?2:1;
-      for(var j=0;j<ic;j++){
-        tbl+='<td style="background:'+bg+';padding:6px;border:1px solid #f1f5f9;text-align:center;">'+String((entry.data||[])[ds+j]||'')+'</td>';
-      }
-    }else{
-      var dataCols=[];
-      for(var k=1;k<15;k++){var v=(entry.data||[])[k];if(v)dataCols.push(v)}
-      tbl+='<td style="background:'+bg+';padding:6px;border:1px solid #f1f5f9;text-align:center;">'+dataCols.join(', ')+'</td>';
-    }
-    tbl+='<td style="background:'+bg+';padding:6px;border:1px solid #f1f5f9;text-align:center;white-space:nowrap;">'+String((entry.data||[])[16]||'')+'</td>';
-    tbl+='</tr>';
-  });
-
-  tbl+='</tbody></table>';
-
-  /* Footer */
-  var ftr='<div style="text-align:center;margin-top:12px;font-size:9px;color:#94a3b8;">© Created by Ravi Malhotra | KKSO-KBGA DATA v'+APP_VERSION+'</div>';
-
-  pdfDiv.innerHTML=hdr+tbl+ftr;
-  document.body.appendChild(pdfDiv);
-
-  /* Show generating status */
-  var statusBtn=document.querySelector('[onclick="exportPDF()"]');
-  var origText=statusBtn?statusBtn.textContent:'';
-  if(statusBtn){statusBtn.textContent='⏳ Generating PDF...';statusBtn.disabled=true}
-
-  /* Use html2canvas to capture, then jsPDF to save */
-  setTimeout(function(){
-    html2canvas(pdfDiv,{scale:2,useCORS:true,backgroundColor:'#ffffff',logging:false}).then(function(canvas){
-      var imgData=canvas.toDataURL('image/png');
-      var pdf=new jspdf.jsPDF({orientation:canvas.width>canvas.height?'l':'p',unit:'mm',format:'a4'});
-      var pageW=pdf.internal.pageSize.getWidth();
-      var pageH=pdf.internal.pageSize.getHeight();
-      var margin=8;
-      var usableW=pageW-margin*2;
-      var imgW=usableW;
-      var imgH=(canvas.height*imgW)/canvas.width;
-
-      /* If content is taller than one page, split across pages */
-      if(imgH<=pageH-margin*2){
-        pdf.addImage(imgData,'PNG',margin,margin,imgW,imgH);
-      }else{
-        var totalPages=Math.ceil(imgH/(pageH-margin*2));
-        for(var p=0;p<totalPages;p++){
-          if(p>0)pdf.addPage();
-          var srcY=p*(pageH-margin*2)*(canvas.width/imgW);
-          var srcH=Math.min((pageH-margin*2)*(canvas.width/imgW),canvas.height-srcY);
-          var destH=srcH*(imgW/canvas.width);
-
-          /* Create a temp canvas for this page slice */
-          var tempCanvas=document.createElement('canvas');
-          tempCanvas.width=canvas.width;
-          tempCanvas.height=srcH;
-          var tCtx=tempCanvas.getContext('2d');
-          tCtx.drawImage(canvas,0,srcY,canvas.width,srcH,0,0,canvas.width,srcH);
-          var sliceData=tempCanvas.toDataURL('image/png');
-          pdf.addImage(sliceData,'PNG',margin,margin,imgW,destH);
-        }
-      }
-
-      var fileName='KKSO_Entries_'+currentUser+'_'+new Date().toISOString().slice(0,10)+'.pdf';
-      pdf.save(fileName);
-
-      /* Cleanup */
-      document.body.removeChild(pdfDiv);
-      if(statusBtn){statusBtn.textContent=origText;statusBtn.disabled=false}
-    }).catch(function(err){
-      console.error('PDF generation error:',err);
-      document.body.removeChild(pdfDiv);
-      if(statusBtn){statusBtn.textContent=origText;statusBtn.disabled=false}
-      /* Fallback to window.print for browsers that support it */
-      try{window.print()}catch(e2){alert('PDF generation failed: '+err.message)}
-    });
-  },200);
+  /* Switch to My Data entries view before printing */
+  switchMode('mydata');
+  switchMyData('entries');
+  /* Small delay to ensure DOM is ready then trigger print */
+  setTimeout(()=>{window.print()},300);
 }
 
 /* ===================== INBOX ===================== */
