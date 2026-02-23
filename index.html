@@ -1542,7 +1542,11 @@ function renderMyEntries(filterSubject){
   html+='</tbody></table></div>';
   container.innerHTML=html;
 }
-function exportPDF(){window.print()}
+/* ===== PRINT/PDF ===== */
+@media print{body{background:white!important;animation:none!important}.login-page,.user-bar,.mode-toggle,.header-strip,.mydata-toggle,.inbox-filters,.inbox-card-actions{display:none!important}.page{display:block!important;padding:10px}.panel{box-shadow:none;border:1px solid #ccc;page-break-inside:avoid}.title-card{background:#333!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}}
+  
+  
+  function exportPDF(){window.print()}
 
 
  
