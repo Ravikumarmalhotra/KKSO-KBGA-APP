@@ -1,6 +1,32 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+  <head>
+    <!-- ✅ ADD THESE LINES -->
+    <link rel="manifest" href="/KKSO-KBGA-APP/manifest.json">
+    <meta name="theme-color" content="#000000">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="apple-mobile-web-app-title" content="KKSO KBGA">
+    <link rel="apple-touch-icon" href="/KKSO-KBGA-APP/icon-192.png">
+
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', function() {
+                navigator.serviceWorker.register('/KKSO-KBGA-APP/sw.js')
+                .then(function(registration) {
+                    console.log('SW registered successfully');
+                })
+                .catch(function(error) {
+                    console.log('SW registration failed:', error);
+                });
+            });
+        }
+    </script>
+    <!-- ✅ END OF NEW LINES -->
+
+    <!-- YOUR EXISTING CODE BELOW -->
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
 <!-- Ravi you can change the browser tab title here -->
