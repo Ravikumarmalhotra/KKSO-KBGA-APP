@@ -1,27 +1,36 @@
-function startCredentialCheck() {
-    // Immediate credential check
-    if (!isUserLoggedIn()) {
-        handleError('User is not logged in.');
-        return;
-    }
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KKSO-KBGA-APP</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+</head>
+<body>
+    <!-- Your existing body content -->
 
-    // Perform credential checks
-    const credentials = getCredentials();
-    if (!credentials) {
-        handleError('No credentials found.');
-        return;
-    }
-
-    validateCredentials(credentials)
-        .then(() => {
-            console.log('Credentials validated successfully.');
-        })
-        .catch(error => {
-            handleError('Credential validation failed: ' + error.message);
-        });
-}
-
-function handleError(message) {
-    console.error(message);
-    alert(message); // Show an alert to the user
-}
+    <script>
+        function exportPDF(){
+            try{
+                const element=document.getElementById('myEntriesTable');
+                if(!element||!element.innerHTML.trim()){
+                    alert('No data to export');
+                    return;
+                }
+                
+                const opt={
+                    margin:10,
+                    filename:'KKSO-KBGA-MyData.pdf',
+                    image:{type:'jpeg',quality:0.98},
+                    html2canvas:{scale:2},
+                    jsPDF:{orientation:'landscape',unit:'mm',format:'a4'}
+                };
+                
+                html2pdf().set(opt).from(element).save();
+            }catch(e){
+                alert('PDF export error: '+e.message);
+            }
+        }
+    </script>
+</body>
+</html>
