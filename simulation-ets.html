@@ -150,6 +150,8 @@
       100% { opacity:1; }
     }
     .ets-active-anim { animation: etsPulse 0.8s ease-in-out infinite; }
+
+    /* ── ETS Locked overlay ── */
     .ets-locked-anim { opacity:0.45; cursor:not-allowed !important; }
 
     /* ══════════════════════════════════════════
@@ -185,6 +187,7 @@
       font-style:italic;
     }
 
+    /* Three-column log grid */
     .log-grid {
       display:grid;
       grid-template-columns: 1fr 1fr 1fr;
@@ -255,8 +258,8 @@
       font-weight:700;
       letter-spacing:0.5px;
     }
-    .brk-tag.db05   { background:#6a1b9a; }
-    .brk-tag.bcp    { background:#00838f; }
+    .brk-tag.db05  { background:#6a1b9a; }
+    .brk-tag.bcp   { background:#00838f; }
     .brk-tag.remote { background:#e65100; }
 
     /* ── Footer ── */
@@ -317,7 +320,7 @@
 <div id="legend">
   <div class="leg-item"><span class="leg-swatch" style="background:#cc0000;border:1px solid #880000"></span>DB01–04 CLOSED (Live)</div>
   <div class="leg-item"><span class="leg-swatch" style="background:#00aa44;border:1px solid #005500"></span>DB01–04 OPEN (Safe)</div>
-  <div class="leg-item"><span class="leg-swatch" style="background:#00aa44;border:1px solid #005500"></span>DB05 / BCP OPEN (default)</div>
+  <div class="leg-item"><span class="leg-swatch" style="background:#00aa44;border:1px solid #005500"></span>DB05 / BCP OPEN default</div>
   <div class="leg-item"><span class="leg-swatch" style="background:#cc0000;border:1px solid #880000"></span>DB05 / BCP CLOSED (Live)</div>
   <div class="leg-item"><span class="leg-db-locked">🔒 DB-XX</span>&nbsp;Tripped — Locked Open</div>
   <div class="leg-item"><span class="leg-swatch" style="background:#dd0000"></span>3rd-Rail CHARGED</div>
@@ -356,9 +359,11 @@
     OPERATION LOG — Tripped Breaker Report
   </div>
   <div id="op-log-body">
+    <!-- empty state -->
     <div id="op-log-empty">
       No operation recorded yet. Press any ETS button to begin simulation.
     </div>
+    <!-- filled state — hidden until ETS pressed -->
     <div id="op-log-content" style="display:none;">
       <div class="log-grid">
         <div class="log-card card-scheme">
@@ -428,9 +433,9 @@ function makeInitial() {
 
 let stations    = makeInitial();
 let activeETS   = null;   // { stationId, etsNum }
-let etsFired    = false;  // locks further ETS presses after first
+let etsFired    = false;  // true after first ETS press — blocks further presses
 let currentMode = 'N2';
-let lastOpLog   = null;
+let lastOpLog   = null;   // filled after ETS press
 
 const bc = b => b.closed;
 const bl = b => b.locked;
@@ -454,12 +459,13 @@ function tripBreaker(st, key) {
 }
 
 /* Trip a list of keys at station index i.
-   Returns array of keys actually acted on (for log). */
+   Returns array of keys actually tripped (for log). */
 function doTrip(i, keys) {
   if (i < 0 || i >= stations.length) return [];
   const tripped = [];
   keys.forEach(k => {
     const b = stations[i].breakers[k];
+    // trip whether open or closed — lock it open
     if (!b.locked) {
       tripBreaker(stations[i], k);
       tripped.push(k);
@@ -505,13 +511,6 @@ function applyTripN2(triggeredId, etsNum) {
 
 // ═══════════════════════════════════════════════════════════════════════════
 //  TRIP LOGIC — N±1
-//  ETS-1 / ETS-3 / ETS-5  → Down Line
-//    N station  : DB03, DB05, BCP01
-//    N-1 station: DB01, DB05, BCP01
-//
-//  ETS-2 / ETS-4 / ETS-6  → Up Line
-//    N station  : DB02, DB05, BCP02
-//    N+1 station: DB04, DB05, BCP02
 // ═══════════════════════════════════════════════════════════════════════════
 function applyTripN1(triggeredId, etsNum) {
   const idx = stations.findIndex(s => s.id === triggeredId);
@@ -521,7 +520,6 @@ function applyTripN1(triggeredId, etsNum) {
   const logRows = [];
 
   function record(i, keys, role) {
-    if (i < 0 || i >= stations.length) return;
     const tripped = doTrip(i, keys);
     if (tripped.length > 0) {
       logRows.push({ label: stations[i].label, role, keys: tripped });
@@ -529,31 +527,25 @@ function applyTripN1(triggeredId, etsNum) {
   }
 
   if (isDown) {
-    // ── Down Line ──────────────────────────────────────────────────────────
-    // N station  : DB03, DB05, BCP01
-    // N-1 station: DB01, DB05, BCP01
-    record(idx,     ['DB03', 'DB05', 'BCP01'], 'N (Down feeder)');
-    record(idx - 1, ['DB01', 'DB05', 'BCP01'], 'N−1');
-
+    // Down line: trip DB03@N + DB01@N-1
+    record(idx,     ['DB03'], 'N (Down feeder)');
+    record(idx - 1, ['DB01'], 'N−1');
     lastOpLog = {
       scheme: 'N±1 Protection Scheme',
       ets:    `ETS-${etsNum}`,
       stn:    STATION_DEFS.find(s => s.id === triggeredId).label,
-      dir:    'Down Line → DB03 & DB05 & BCP01 @ N  +  DB01 & DB05 & BCP01 @ N−1',
+      dir:    'Down Line → Trips DB03 @ N  +  DB01 @ N−1',
       rows:   logRows
     };
   } else {
-    // ── Up Line ────────────────────────────────────────────────────────────
-    // N station  : DB02, DB05, BCP02
-    // N+1 station: DB04, DB05, BCP02
-    record(idx,     ['DB02', 'DB05', 'BCP02'], 'N (Up feeder)');
-    record(idx + 1, ['DB04', 'DB05', 'BCP02'], 'N+1');
-
+    // Up line: trip DB02@N + DB04@N+1
+    record(idx,     ['DB02'], 'N (Up feeder)');
+    record(idx + 1, ['DB04'], 'N+1');
     lastOpLog = {
       scheme: 'N±1 Protection Scheme',
       ets:    `ETS-${etsNum}`,
       stn:    STATION_DEFS.find(s => s.id === triggeredId).label,
-      dir:    'Up Line → DB02 & DB05 & BCP02 @ N  +  DB04 & DB05 & BCP02 @ N+1',
+      dir:    'Up Line → Trips DB02 @ N  +  DB04 @ N+1',
       rows:   logRows
     };
   }
@@ -572,6 +564,7 @@ function updateOpLog() {
     return;
   }
 
+  // Show content, hide empty
   emptyEl.style.display   = 'none';
   contentEl.style.display = 'block';
 
@@ -646,7 +639,7 @@ function updateOpLog() {
       let cls = 'brk-tag';
       if (k === 'DB05')              cls += ' db05';
       else if (k.startsWith('BCP')) cls += ' bcp';
-      else if (isRem)                cls += ' remote';
+      else if (isRem)               cls += ' remote';
       return `<span class="${cls}">${k}</span>`;
     }).join('');
 
@@ -678,7 +671,7 @@ function resetAll() {
 }
 
 // ═══════════════════════════════════════════════════════════════════════════
-//  COLOURS & SVG HELPERS
+//  COLOURS & HELPERS
 // ═══════════════════════════════════════════════════════════════════════════
 const C_CLOSED   = '#cc0000';
 const C_OPEN     = '#00aa44';
@@ -708,14 +701,14 @@ const mkPoly = (pts,a={})         => el('polyline', {points:pts,fill:'none',...a
 
 const BLK = { stroke:'black', 'stroke-width':3, 'stroke-linecap':'square' };
 
-// Third-rail colour bar — offset outside the NS hatch zone
+// Rail colour bars — drawn beside the structural line, outside NS hatch zone
 function railBar(y1, y2, charged, side) {
   const bx = side === 'L' ? 163 : 823;
   const h  = Math.max(y2 - y1, 1);
   return mkRect(bx, y1, 14, h, { fill: charged ? C_RAIL_CHG : C_RAIL_DIS });
 }
 
-// Inter-station rail segment (gap between modules)
+// Inter-station segment (big gap between modules)
 function buildInterSeg(y1, y2, lChg, rChg) {
   const g = mkG();
   g.appendChild(railBar(y1, y2, lChg, 'L'));
@@ -752,7 +745,7 @@ function buildDBBox(lbl, brk, x, y, stId, key) {
     const st = stations.find(s => s.id === stId);
     if (!st) return;
     const b = st.breakers[key];
-    if (b.locked) return;   // locked by ETS — cannot toggle
+    if (b.locked) return;         // locked by ETS — cannot toggle
     b.closed = !b.closed;
     render();
   });
@@ -815,6 +808,7 @@ function buildETSBox(lbl, x, y, rotDeg, active, stId, etsNum) {
       points:poly, fill:'#ff2222', stroke:'#880000', 'stroke-width':1
     }));
   } else {
+    // Normal cyan box (dimmed if etsFired)
     const opacity = etsFired ? '0.4' : '1';
     g.appendChild(mkRect(x, y, 50, 40, {
       fill:'#ccffff', stroke:'#008080', 'stroke-width':1, rx:3, opacity
@@ -831,15 +825,17 @@ function buildETSBox(lbl, x, y, rotDeg, active, stId, etsNum) {
   }));
 
   g.addEventListener('click', () => {
-    if (etsFired) return;   // one ETS per operation — block all others
+    // Block if another ETS already fired
+    if (etsFired) return;
 
     etsFired  = true;
     activeETS = { stationId: stId, etsNum };
 
+    // Apply trip logic
     if (currentMode === 'N2') applyTripN2(stId, etsNum);
     else                       applyTripN1(stId, etsNum);
 
-    // Status bar badge
+    // Status bar last-ETS badge
     const le = document.getElementById('last-ets');
     le.style.display = 'inline-block';
     document.getElementById('last-ets-text').innerHTML =
@@ -861,6 +857,7 @@ function buildETSBox(lbl, x, y, rotDeg, active, stId, etsNum) {
       mb.className   = 'mode-badge mode-badge-n1';
     }
 
+    // Update log BEFORE render so DOM is ready
     updateOpLog();
     render();
   });
@@ -879,18 +876,19 @@ function buildStation(station, i, db01Above, db02Above, db03Below, db04Below) {
   const stnBoxFill   = charged ? '#ffebee' : '#e8f5e9';
   const stnBoxStroke = charged ? '#cc0000' : '#2e7d32';
 
+  // Which ETS at THIS station is active
   const aN     = (activeETS && activeETS.stationId === id) ? activeETS.etsNum : null;
   const etsAct = n => aN === n;
 
-  // Third-rail charge states for the two small segments
-  const lUpper = bc(brk.DB03) || db01Above;  // above NS, left  rail
-  const rUpper = bc(brk.DB04) || db02Above;  // above NS, right rail
-  const lLower = bc(brk.DB01) || db03Below;  // below NS, left  rail
-  const rLower = bc(brk.DB02) || db04Below;  // below NS, right rail
+  // Third-rail segment charge states
+  const lUpper = bc(brk.DB03) || db01Above;  // above NS, left
+  const rUpper = bc(brk.DB04) || db02Above;  // above NS, right
+  const lLower = bc(brk.DB01) || db03Below;  // below NS, left
+  const rLower = bc(brk.DB02) || db04Below;  // below NS, right
 
   const g = mkG({ transform:`translate(0,${absY})` });
 
-  // ── Rail colour bars (below everything) ──────────────────────────────
+  // ── Rail colour bars (drawn first, below everything) ──────────────────
   g.appendChild(railBar(0,   55,  lUpper, 'L'));
   g.appendChild(railBar(145, 200, lLower, 'L'));
   g.appendChild(railBar(0,   55,  rUpper, 'R'));
@@ -927,15 +925,15 @@ function buildStation(station, i, db01Above, db02Above, db03Below, db04Below) {
   g.appendChild(mkPoly('800,0 871,0 871,78',      BLK));
   g.appendChild(mkPoly('871,122 871,200 800,200', BLK));
 
-  // ── Left ETS (1, 3, 5) ────────────────────────────────────────────────
-  g.appendChild(buildETSBox('ETS-3', 400,  10,  90, etsAct(3), id, 3));
+  // ── Left ETS (1,3,5) ──────────────────────────────────────────────────
+  g.appendChild(buildETSBox('ETS-1', 400,  10,  90, etsAct(3), id, 3));
   g.appendChild(buildETSBox('ETS-5', 400,  80,  90, etsAct(5), id, 5));
-  g.appendChild(buildETSBox('ETS-1', 400, 150,  90, etsAct(1), id, 1));
+  g.appendChild(buildETSBox('ETS-3', 400, 150,  90, etsAct(1), id, 1));
   g.appendChild(mkLine(400,  30, 355,  30, BLK));
   g.appendChild(mkLine(400, 100, 355, 100, BLK));
   g.appendChild(mkLine(400, 170, 355, 170, BLK));
 
-  // ── Left DBs: DB03 / DB05 / DB01 ─────────────────────────────────────
+  // ── Left DBs: DB03 / DB05 / DB01 ────────────────────────────────────
   g.appendChild(buildDBBox(`${id}DB03`, brk.DB03, 300,  12, id, 'DB03'));
   g.appendChild(buildDBBox(`${id}DB05`, brk.DB05, 300,  82, id, 'DB05'));
   g.appendChild(buildDBBox(`${id}DB01`, brk.DB01, 300, 152, id, 'DB01'));
@@ -946,15 +944,15 @@ function buildStation(station, i, db01Above, db02Above, db03Below, db04Below) {
   g.appendChild(mkLine(300, 170, 280, 170, BLK));
   g.appendChild(mkLine(300, 100, 280, 100, BLK));
 
-  // ── Right ETS (2, 4, 6) ───────────────────────────────────────────────
-  g.appendChild(buildETSBox('ETS-4', 550,  10, -90, etsAct(4), id, 4));
+  // ── Right ETS (2,4,6) ─────────────────────────────────────────────────
+  g.appendChild(buildETSBox('ETS-2', 550,  10, -90, etsAct(4), id, 4));
   g.appendChild(buildETSBox('ETS-6', 550,  80, -90, etsAct(6), id, 6));
-  g.appendChild(buildETSBox('ETS-2', 550, 150, -90, etsAct(2), id, 2));
+  g.appendChild(buildETSBox('ETS-4', 550, 150, -90, etsAct(2), id, 2));
   g.appendChild(mkLine(600,  30, 645,  30, BLK));
   g.appendChild(mkLine(600, 100, 645, 100, BLK));
   g.appendChild(mkLine(600, 170, 645, 170, BLK));
 
-  // ── Right DBs: DB04 / DB05 / DB02 ────────────────────────────────────
+  // ── Right DBs: DB04 / DB05 / DB02 ───────────────────────────────────
   g.appendChild(buildDBBox(`${id}DB04`, brk.DB04, 645,  12, id, 'DB04'));
   g.appendChild(buildDBBox(`${id}DB05`, brk.DB05, 645,  82, id, 'DB05'));
   g.appendChild(buildDBBox(`${id}DB02`, brk.DB02, 645, 152, id, 'DB02'));
