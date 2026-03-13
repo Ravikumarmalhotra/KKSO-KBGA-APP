@@ -1,0 +1,734 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🔋 Battery Date Checker</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        *{margin:0;padding:0;box-sizing:border-box}
+
+        body{
+            font-family:'Poppins',sans-serif;
+            min-height:100vh;
+            background:linear-gradient(135deg,#0a0a1a 0%,#121235 40%,#1a0a2e 70%,#0a0a1a 100%);
+            color:#fff;
+            overflow-x:hidden;
+        }
+
+        /* Floating Particles */
+        .particles{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:0}
+        .particle{
+            position:absolute;
+            border-radius:50%;
+            animation:floatUp linear infinite;
+            opacity:0;
+        }
+        @keyframes floatUp{
+            0%{transform:translateY(110vh) scale(0);opacity:0}
+            10%{opacity:1}
+            90%{opacity:.6}
+            100%{transform:translateY(-10vh) scale(1);opacity:0}
+        }
+
+        /* Glowing orbs */
+        .orb{
+            position:fixed;
+            border-radius:50%;
+            filter:blur(80px);
+            opacity:.15;
+            z-index:0;
+            animation:orbFloat 8s ease-in-out infinite alternate;
+        }
+        .orb-1{width:400px;height:400px;background:#e74c3c;top:-100px;left:-100px;animation-delay:0s}
+        .orb-2{width:350px;height:350px;background:#2ecc71;bottom:-100px;right:-100px;animation-delay:2s}
+        .orb-3{width:300px;height:300px;background:#3498db;top:50%;left:50%;transform:translate(-50%,-50%);animation-delay:4s}
+        @keyframes orbFloat{
+            0%{transform:translate(0,0) scale(1)}
+            100%{transform:translate(30px,-30px) scale(1.1)}
+        }
+
+        .wrapper{position:relative;z-index:1;max-width:1100px;margin:0 auto;padding:40px 20px}
+
+        /* Header */
+        header{text-align:center;margin-bottom:50px}
+
+        .header-battery{
+            display:inline-flex;
+            align-items:center;
+            margin-bottom:20px;
+            position:relative;
+        }
+        .h-batt-body{
+            width:80px;height:40px;
+            border:3px solid rgba(255,255,255,.8);
+            border-radius:8px;
+            padding:4px;
+            position:relative;
+            overflow:hidden;
+        }
+        .h-batt-fill{
+            height:100%;
+            border-radius:4px;
+            background:linear-gradient(90deg,#2ecc71,#27ae60);
+            animation:headerCharge 3s ease-in-out infinite;
+        }
+        @keyframes headerCharge{
+            0%{width:15%;background:linear-gradient(90deg,#e74c3c,#c0392b)}
+            50%{width:90%;background:linear-gradient(90deg,#2ecc71,#27ae60)}
+            100%{width:15%;background:linear-gradient(90deg,#e74c3c,#c0392b)}
+        }
+        .h-batt-cap{
+            width:8px;height:18px;
+            background:rgba(255,255,255,.8);
+            border-radius:0 4px 4px 0;
+            margin-left:3px;
+        }
+        .h-batt-bolt{
+            position:absolute;
+            top:50%;left:50%;
+            transform:translate(-50%,-50%);
+            font-size:18px;
+            filter:drop-shadow(0 0 6px rgba(255,255,0,.8));
+            animation:boltPulse 1.5s ease-in-out infinite;
+        }
+        @keyframes boltPulse{
+            0%,100%{opacity:1;transform:translate(-50%,-50%) scale(1)}
+            50%{opacity:.5;transform:translate(-50%,-50%) scale(.8)}
+        }
+
+        header h1{
+            font-size:2.8em;font-weight:800;
+            background:linear-gradient(135deg,#fff 0%,#a8d8ff 50%,#fff 100%);
+            -webkit-background-clip:text;
+            -webkit-text-fill-color:transparent;
+            background-clip:text;
+            line-height:1.2;
+            margin-bottom:8px;
+        }
+        header h1 span{
+            background:linear-gradient(135deg,#f1c40f,#e67e22);
+            -webkit-background-clip:text;
+            -webkit-text-fill-color:transparent;
+            background-clip:text;
+        }
+        header p{color:rgba(255,255,255,.5);font-size:1.05em;font-weight:300}
+
+        /* Cards Container */
+        .cards-container{
+            display:grid;
+            grid-template-columns:repeat(auto-fit,minmax(400px,1fr));
+            gap:30px;
+            margin-bottom:50px;
+        }
+
+        /* Card */
+        .card{
+            background:rgba(255,255,255,.04);
+            backdrop-filter:blur(20px);
+            -webkit-backdrop-filter:blur(20px);
+            border:1px solid rgba(255,255,255,.08);
+            border-radius:28px;
+            padding:40px 35px;
+            position:relative;
+            overflow:hidden;
+            transition:all .4s cubic-bezier(.175,.885,.32,1.275);
+        }
+        .card::before{
+            content:'';position:absolute;top:0;left:0;right:0;height:3px;
+            border-radius:28px 28px 0 0;
+        }
+        .card.exide-card::before{background:linear-gradient(90deg,#e74c3c,#ff6b6b,#e74c3c)}
+        .card.amaron-card::before{background:linear-gradient(90deg,#2ecc71,#55efc4,#2ecc71)}
+
+        .card:hover{
+            transform:translateY(-8px);
+            border-color:rgba(255,255,255,.15);
+            box-shadow:0 20px 60px rgba(0,0,0,.3);
+        }
+
+        /* Card shimmer effect */
+        .card::after{
+            content:'';position:absolute;top:-50%;left:-50%;
+            width:200%;height:200%;
+            background:linear-gradient(
+                to bottom right,
+                rgba(255,255,255,0) 0%,
+                rgba(255,255,255,.02) 40%,
+                rgba(255,255,255,.05) 50%,
+                rgba(255,255,255,.02) 60%,
+                rgba(255,255,255,0) 100%
+            );
+            transform:rotate(30deg);
+            pointer-events:none;
+        }
+
+        .card-top{display:flex;align-items:center;gap:16px;margin-bottom:25px}
+
+        .brand-icon{
+            width:56px;height:56px;border-radius:16px;
+            display:flex;align-items:center;justify-content:center;
+            font-weight:800;font-size:1em;letter-spacing:-.5px;
+            box-shadow:0 8px 25px rgba(0,0,0,.3);
+            flex-shrink:0;
+        }
+        .exide-icon{background:linear-gradient(135deg,#e74c3c,#c0392b)}
+        .amaron-icon{background:linear-gradient(135deg,#27ae60,#2ecc71)}
+
+        .card-top-text h2{font-size:1.15em;font-weight:700;line-height:1.3}
+        .card-top-text p{font-size:.78em;color:rgba(255,255,255,.45);font-weight:400}
+
+        .input-label{
+            font-size:.88em;color:rgba(255,255,255,.6);
+            margin-bottom:10px;display:block;font-weight:400;
+        }
+
+        .input-field{
+            width:100%;padding:16px 22px;
+            border:2px solid rgba(255,255,255,.1);
+            border-radius:16px;
+            background:rgba(255,255,255,.05);
+            color:#fff;
+            font-size:1.15em;
+            font-family:'Poppins',sans-serif;
+            font-weight:600;
+            letter-spacing:4px;
+            text-transform:uppercase;
+            outline:none;
+            transition:all .3s;
+            margin-bottom:16px;
+        }
+        .input-field::placeholder{
+            color:rgba(255,255,255,.2);
+            letter-spacing:4px;
+            font-weight:400;
+        }
+        .input-field:focus{
+            border-color:rgba(255,255,255,.3);
+            background:rgba(255,255,255,.08);
+            box-shadow:0 0 0 4px rgba(255,255,255,.05);
+        }
+
+        .check-btn{
+            width:100%;padding:16px;
+            border:none;border-radius:16px;
+            font-size:1.05em;font-weight:700;
+            cursor:pointer;
+            font-family:'Poppins',sans-serif;
+            letter-spacing:1px;
+            display:flex;align-items:center;justify-content:center;gap:10px;
+            transition:all .3s;
+            position:relative;
+            overflow:hidden;
+        }
+        .check-btn::before{
+            content:'';position:absolute;top:0;left:-100%;
+            width:100%;height:100%;
+            background:linear-gradient(90deg,transparent,rgba(255,255,255,.2),transparent);
+            transition:left .5s;
+        }
+        .check-btn:hover::before{left:100%}
+
+        .exide-btn{
+            background:linear-gradient(135deg,#e74c3c,#c0392b);
+            color:#fff;
+            box-shadow:0 4px 20px rgba(231,76,60,.3);
+        }
+        .exide-btn:hover{
+            transform:translateY(-3px);
+            box-shadow:0 8px 30px rgba(231,76,60,.5);
+        }
+        .amaron-btn{
+            background:linear-gradient(135deg,#27ae60,#2ecc71);
+            color:#fff;
+            box-shadow:0 4px 20px rgba(46,204,113,.3);
+        }
+        .amaron-btn:hover{
+            transform:translateY(-3px);
+            box-shadow:0 8px 30px rgba(46,204,113,.5);
+        }
+        .check-btn:active{transform:translateY(0) scale(.98)}
+
+        .btn-icon{font-size:1.2em}
+
+        /* Result Area */
+        .result-area{margin-top:20px}
+
+        .result-card{
+            background:rgba(255,255,255,.05);
+            border:1px solid rgba(255,255,255,.1);
+            border-radius:20px;
+            padding:25px;
+            animation:resultIn .6s cubic-bezier(.175,.885,.32,1.275);
+        }
+        @keyframes resultIn{
+            0%{opacity:0;transform:translateY(30px) scale(.95)}
+            100%{opacity:1;transform:translateY(0) scale(1)}
+        }
+
+        /* Battery Visual */
+        .battery-visual{
+            display:flex;align-items:center;justify-content:center;
+            margin-bottom:22px;gap:4px;
+        }
+        .batt-body{
+            width:140px;height:52px;
+            border:3px solid rgba(255,255,255,.6);
+            border-radius:10px;
+            padding:5px;
+            position:relative;
+        }
+        .batt-fill{
+            height:100%;
+            border-radius:6px;
+            width:0%;
+            transition:width 1.8s cubic-bezier(.25,.46,.45,.94);
+            position:relative;
+        }
+        .batt-fill.animate{width:var(--target-width)}
+
+        .batt-percent{
+            position:absolute;top:50%;left:50%;
+            transform:translate(-50%,-50%);
+            font-size:.75em;font-weight:700;
+            color:#fff;
+            text-shadow:0 1px 3px rgba(0,0,0,.5);
+            z-index:2;
+            width:140px;
+            text-align:center;
+            left:0;
+            transform:translateY(-50%);
+        }
+        .batt-cap{
+            width:8px;height:22px;
+            background:rgba(255,255,255,.6);
+            border-radius:0 5px 5px 0;
+        }
+
+        /* Charge label */
+        .charge-label{
+            text-align:center;
+            font-size:.75em;
+            color:rgba(255,255,255,.4);
+            margin-bottom:18px;
+            font-weight:300;
+        }
+
+        .result-info{display:flex;flex-direction:column;gap:2px}
+
+        .result-row{
+            display:flex;align-items:center;gap:14px;
+            padding:12px 15px;
+            border-radius:12px;
+            transition:background .3s;
+        }
+        .result-row:hover{background:rgba(255,255,255,.05)}
+
+        .r-icon{
+            width:42px;height:42px;
+            border-radius:12px;
+            display:flex;align-items:center;justify-content:center;
+            font-size:1.15em;
+            background:rgba(255,255,255,.06);
+            flex-shrink:0;
+        }
+        .r-text{display:flex;flex-direction:column}
+        .r-label{font-size:.75em;color:rgba(255,255,255,.4);font-weight:400}
+        .r-value{font-size:1.02em;font-weight:600;margin-top:1px}
+
+        .status-fresh{color:#2ecc71}
+        .status-good{color:#f1c40f}
+        .status-fair{color:#f39c12}
+        .status-aging{color:#e67e22}
+        .status-old{color:#e74c3c}
+
+        .status-pill{
+            display:inline-flex;align-items:center;gap:6px;
+            padding:4px 14px;border-radius:20px;font-size:.85em;font-weight:600;
+        }
+        .pill-fresh{background:rgba(46,204,113,.12);color:#2ecc71}
+        .pill-good{background:rgba(241,196,15,.12);color:#f1c40f}
+        .pill-fair{background:rgba(243,156,18,.12);color:#f39c12}
+        .pill-aging{background:rgba(230,126,34,.12);color:#e67e22}
+        .pill-old{background:rgba(231,76,60,.12);color:#e74c3c}
+
+        /* Dot pulse */
+        .pulse-dot{
+            width:8px;height:8px;border-radius:50%;
+            display:inline-block;
+            animation:pulseDot 1.5s ease-in-out infinite;
+        }
+        @keyframes pulseDot{
+            0%,100%{opacity:1;transform:scale(1)}
+            50%{opacity:.4;transform:scale(.7)}
+        }
+
+        /* Error */
+        .error-msg{
+            background:rgba(231,76,60,.1);
+            border:1px solid rgba(231,76,60,.2);
+            border-radius:14px;
+            padding:16px 20px;
+            color:#ff6b6b;
+            font-size:.9em;
+            display:flex;align-items:center;gap:10px;
+            animation:shakeIn .5s;
+        }
+        @keyframes shakeIn{
+            0%{transform:translateX(0);opacity:0}
+            20%{transform:translateX(-8px)}
+            40%{transform:translateX(8px)}
+            60%{transform:translateX(-4px)}
+            80%{transform:translateX(4px);opacity:1}
+            100%{transform:translateX(0)}
+        }
+        .error-icon{font-size:1.3em}
+
+        /* Footer */
+        footer{
+            text-align:center;
+            padding:30px 0;
+            border-top:1px solid rgba(255,255,255,.06);
+        }
+        footer p{color:rgba(255,255,255,.25);font-size:.85em;font-weight:300}
+        footer a{color:rgba(255,255,255,.4);text-decoration:none}
+        footer a:hover{color:rgba(255,255,255,.7)}
+
+        /* Responsive */
+        @media(max-width:500px){
+            .cards-container{grid-template-columns:1fr}
+            header h1{font-size:1.9em}
+            .card{padding:28px 22px;border-radius:22px}
+            .wrapper{padding:25px 14px}
+            .input-field{font-size:1em;letter-spacing:3px;padding:14px 18px}
+            .batt-body{width:110px;height:44px}
+            .brand-icon{width:46px;height:46px;font-size:.85em}
+            .card-top-text h2{font-size:1em}
+        }
+
+        /* Tooltip-style code hint */
+        .code-hint{
+            font-size:.78em;
+            color:rgba(255,255,255,.3);
+            margin-top:4px;
+            margin-bottom:14px;
+            font-style:italic;
+        }
+        .code-hint code{
+            background:rgba(255,255,255,.08);
+            padding:2px 8px;
+            border-radius:6px;
+            font-family:'Poppins',monospace;
+            color:rgba(255,255,255,.5);
+            font-style:normal;
+        }
+    </style>
+</head>
+<body>
+
+<!-- Floating Particles -->
+<div class="particles" id="particles"></div>
+
+<!-- Glowing Orbs -->
+<div class="orb orb-1"></div>
+<div class="orb orb-2"></div>
+<div class="orb orb-3"></div>
+
+<div class="wrapper">
+
+    <!-- Header -->
+    <header>
+        <div class="header-battery">
+            <div class="h-batt-body">
+                <div class="h-batt-fill"></div>
+                <span class="h-batt-bolt">⚡</span>
+            </div>
+            <div class="h-batt-cap"></div>
+        </div>
+        <h1>Battery <span>Checker</span></h1>
+        <h3>© Created by SSE/M/E/KKSO </h3>
+        <p>Decode your battery's manufacturing date instantly</p>
+    </header>
+
+    <!-- Cards -->
+    <div class="cards-container">
+
+        <!-- EXIDE CARD -->
+        <div class="card exide-card">
+            <div class="card-top">
+                <div class="brand-icon exide-icon">EX</div>
+                <div class="card-top-text">
+                    <h2>Exide Battery Checker</h2>
+                    <p>Decode Exide batch codes</p>
+                </div>
+            </div>
+
+            <label class="input-label">Enter Batch Code</label>
+            <input type="text" id="exideInput" class="input-field" placeholder="4NM" maxlength="10">
+            <div class="code-hint">Format: <code>Digit + Month Code + Year Code</code></div>
+
+            <button class="check-btn exide-btn" onclick="checkExide()">
+                <span class="btn-icon">⚡</span> Check Battery
+            </button>
+
+            <div class="result-area" id="exideResult"></div>
+            <div class="result-area" id="exideError"></div>
+        </div>
+
+        <!-- AMARON CARD -->
+        <div class="card amaron-card">
+            <div class="card-top">
+                <div class="brand-icon amaron-icon">AM</div>
+                <div class="card-top-text">
+                    <h2>Amaron Quanta Checker</h2>
+                    <p>Decode Amaron Quanta batch codes</p>
+                </div>
+            </div>
+
+            <label class="input-label">Enter Batch Code</label>
+            <input type="text" id="amaronInput" class="input-field" placeholder="MOQ04207W" maxlength="15">
+            <div class="code-hint">Format: <code>Prefix + Week + Digits + Year Code</code></div>
+
+            <button class="check-btn amaron-btn" onclick="checkAmaron()">
+                <span class="btn-icon">⚡</span> Check Battery
+            </button>
+
+            <div class="result-area" id="amaronResult"></div>
+            <div class="result-area" id="amaronError"></div>
+        </div>
+
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <p>🔋 Battery Manufacturing Date Checker Tool</p>
+    </footer>
+</div>
+
+<script>
+// =================== DATA MAPS ===================
+
+const exideMonths = {
+    N:'January', O:'February', P:'March', Q:'April',
+    R:'May', S:'June', T:'July', U:'August',
+    V:'September', W:'October', X:'November', Y:'December'
+};
+const exideMonthNums = {
+    N:0, O:1, P:2, Q:3, R:4, S:5,
+    T:6, U:7, V:8, W:9, X:10, Y:11
+};
+const exideYears = {
+    A:2009, B:2010, C:2011, D:2012, E:2013, F:2014,
+    G:2015, H:2016, I:2017, J:2018, K:2019, L:2020,
+    M:2021, N:2022, O:2023, P:2024, Q:2025, R:2026
+};
+const amaronYears = {
+    K:2010, L:2011, M:2012, N:2013, O:2014, P:2015,
+    Q:2016, R:2017, S:2018, T:2019, U:2020, V:2021,
+    W:2022, X:2023, Y:2024, Z:2025, '1':2026, '2':2027
+};
+
+// =================== HELPERS ===================
+
+function getOrdinal(n){
+    if(n>3&&n<21) return n+'th';
+    switch(n%10){
+        case 1:return n+'st';
+        case 2:return n+'nd';
+        case 3:return n+'rd';
+        default:return n+'th';
+    }
+}
+
+function getAge(mfgDate){
+    const now=new Date();
+    let y=now.getFullYear()-mfgDate.getFullYear();
+    let m=now.getMonth()-mfgDate.getMonth();
+    let d=now.getDate()-mfgDate.getDate();
+    if(d<0){m--;} 
+    if(m<0){y--;m+=12;}
+    return{years:Math.max(0,y),months:Math.max(0,m)};
+}
+
+function ageString(a){
+    let p=[];
+    if(a.years>0) p.push(a.years+(a.years===1?' Year':' Years'));
+    if(a.months>0) p.push(a.months+(a.months===1?' Month':' Months'));
+    return p.length?p.join(', '):'Less than a month';
+}
+
+function getStatus(totalM){
+    if(totalM<=6)  return{text:'Brand New',cls:'fresh',charge:98,emoji:'✅'};
+    if(totalM<=12) return{text:'Fresh',cls:'fresh',charge:85,emoji:'✅'};
+    if(totalM<=24) return{text:'Good',cls:'good',charge:70,emoji:'👍'};
+    if(totalM<=36) return{text:'Fair',cls:'fair',charge:50,emoji:'👌'};
+    if(totalM<=60) return{text:'Aging',cls:'aging',charge:30,emoji:'⚠️'};
+    return{text:'Old',cls:'old',charge:12,emoji:'🔴'};
+}
+
+function fillColor(cls){
+    const m={fresh:'#2ecc71',good:'#f1c40f',fair:'#f39c12',aging:'#e67e22',old:'#e74c3c'};
+    return m[cls]||'#2ecc71';
+}
+
+// =================== RENDER RESULT ===================
+
+function showResult(elId,dateStr,mfgDate){
+    const age=getAge(mfgDate);
+    const totalM=age.years*12+age.months;
+    const st=getStatus(totalM);
+    const col=fillColor(st.cls);
+
+    document.getElementById(elId).innerHTML=`
+        <div class="result-card">
+            <div class="battery-visual">
+                <div class="batt-body">
+                    <div class="batt-fill" id="${elId}Fill" style="background:linear-gradient(90deg,${col},${col}bb);width:0%"></div>
+                    <span class="batt-percent">${st.charge}%</span>
+                </div>
+                <div class="batt-cap"></div>
+            </div>
+            <div class="charge-label">Estimated Battery Health</div>
+
+            <div class="result-info">
+                <div class="result-row">
+                    <div class="r-icon">📅</div>
+                    <div class="r-text">
+                        <span class="r-label">Manufacturing Date</span>
+                        <span class="r-value">${dateStr}</span>
+                    </div>
+                </div>
+                <div class="result-row">
+                    <div class="r-icon">⏱️</div>
+                    <div class="r-text">
+                        <span class="r-label">Battery Age</span>
+                        <span class="r-value">${ageString(age)}</span>
+                    </div>
+                </div>
+                <div class="result-row">
+                    <div class="r-icon">${st.emoji}</div>
+                    <div class="r-text">
+                        <span class="r-label">Status</span>
+                        <span class="r-value">
+                            <span class="status-pill pill-${st.cls}">
+                                <span class="pulse-dot" style="background:${col}"></span>
+                                ${st.text}
+                            </span>
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+
+    // Animate fill
+    requestAnimationFrame(()=>{
+        requestAnimationFrame(()=>{
+            const f=document.getElementById(elId+'Fill');
+            if(f) f.style.width=st.charge+'%';
+        });
+    });
+}
+
+function showError(resId,errId,msg){
+    document.getElementById(resId).innerHTML='';
+    document.getElementById(errId).innerHTML=`
+        <div class="error-msg">
+            <span class="error-icon">⚠️</span>
+            <span>${msg}</span>
+        </div>
+    `;
+}
+function clearError(errId){document.getElementById(errId).innerHTML='';}
+
+// =================== CHECKERS ===================
+
+function checkExide(){
+    const code=document.getElementById('exideInput').value.trim().toUpperCase();
+    clearError('exideError');
+    document.getElementById('exideResult').innerHTML='';
+
+    if(code.length<2){
+        showError('exideResult','exideError','Please enter at least 2 characters (e.g., <b>4NM</b>).');
+        return;
+    }
+
+    const mCode=code[code.length-2];
+    const yCode=code[code.length-1];
+
+    const month=exideMonths[mCode];
+    const year=exideYears[yCode];
+
+    if(!month){
+        showError('exideResult','exideError',`Invalid month code "<b>${mCode}</b>". Valid: N–Y (January–December).`);
+        return;
+    }
+    if(year===undefined){
+        showError('exideResult','exideError',`Invalid year code "<b>${yCode}</b>". Valid: A–R (2009–2026).`);
+        return;
+    }
+
+    const mfg=new Date(year,exideMonthNums[mCode],1);
+    showResult('exideResult',month+' '+year,mfg);
+}
+
+function checkAmaron(){
+    const code=document.getElementById('amaronInput').value.trim().toUpperCase();
+    clearError('amaronError');
+    document.getElementById('amaronResult').innerHTML='';
+
+    if(code.length<6){
+        showError('amaronResult','amaronError','Please enter a valid batch code (e.g., <b>MOQ04207W</b>).');
+        return;
+    }
+
+    const yCode=code[code.length-1];
+    const weekStr=code.substring(3,5);
+    const weekNum=parseInt(weekStr,10);
+
+    const year=amaronYears[yCode];
+
+    if(year===undefined){
+        showError('amaronResult','amaronError',`Invalid year code "<b>${yCode}</b>". Valid: K–Z (2010–2025), 1 (2026), 2 (2027).`);
+        return;
+    }
+    if(isNaN(weekNum)||weekNum<1||weekNum>52){
+        showError('amaronResult','amaronError',`Invalid week number "<b>${weekStr}</b>". Must be 01–52.`);
+        return;
+    }
+
+    const jan1=new Date(year,0,1);
+    const mfg=new Date(jan1.getTime()+(weekNum-1)*7*86400000);
+    const dateStr=getOrdinal(weekNum)+' Week of '+year;
+    showResult('amaronResult',dateStr,mfg);
+}
+
+// =================== ENTER KEY ===================
+document.getElementById('exideInput').addEventListener('keydown',function(e){
+    if(e.key==='Enter') checkExide();
+});
+document.getElementById('amaronInput').addEventListener('keydown',function(e){
+    if(e.key==='Enter') checkAmaron();
+});
+
+// =================== PARTICLES ===================
+(function createParticles(){
+    const container=document.getElementById('particles');
+    const colors=['rgba(231,76,60,.4)','rgba(46,204,113,.4)','rgba(52,152,219,.4)','rgba(241,196,15,.4)','rgba(255,255,255,.3)'];
+    for(let i=0;i<25;i++){
+        const p=document.createElement('div');
+        p.className='particle';
+        const size=Math.random()*5+2;
+        p.style.cssText=`
+            width:${size}px;height:${size}px;
+            left:${Math.random()*100}%;
+            background:${colors[Math.floor(Math.random()*colors.length)]};
+            animation-duration:${Math.random()*15+10}s;
+            animation-delay:${Math.random()*10}s;
+        `;
+        container.appendChild(p);
+    }
+})();
+</script>
+</body>
+</html>
