@@ -594,7 +594,7 @@ function showApp(){
   const levelNames={admin:'Admin',supervisor:'Supervisor',staff:'Staff'};
   document.getElementById('userLevel').textContent=(levelIcons[currentLevel]||'')+' '+(levelNames[currentLevel]||currentLevel);
   document.getElementById('titleLevel').textContent='A Cloud Based Data System For '+(levelNames[currentLevel]||'Staff')+' Level';
-  document.getElementById('versionText').textContent='© Created by Ravi Malhotra | v'+APP_VERSION;
+  document.getElementById('versionText').textContent='© Created by SSE/M/KKSO | v'+APP_VERSION;
   document.body.className='theme-'+(currentLevel||'staff');
   if(!appInitialized)initApp();
   startCredentialCheck();
