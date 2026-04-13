@@ -1,0 +1,809 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>KKSO-KBGA Fire Pump Analysis</title>
+
+<style>
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    min-height: 100vh;
+    padding: 10px;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    background: white;
+    padding: 0px;
+    border-radius: 20px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+}
+
+h1 {
+    font-size: 18px;
+    text-align: center;
+    color: #1e3c72;
+    margin-bottom: 20px;
+    padding-bottom: 12px;
+    border-bottom: 3px solid #667eea;
+    font-weight: 700;
+    letter-spacing: 0.3px;
+    line-height: 1.4;
+}
+
+select, input[type="date"] {
+    padding: 10px 12px;
+    margin: 6px 0;
+    width: 100%;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    font-size: 14px;
+    transition: all 0.3s ease;
+    background: white;
+    color: #333;
+}
+
+select:focus, input[type="date"]:focus {
+    outline: none;
+    border-color: #667eea;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+select:hover, input[type="date"]:hover {
+    border-color: #667eea;
+}
+
+button {
+    padding: 12px 18px;
+    margin: 10px 0;
+    border: none;
+    border-radius: 8px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    width: 100%;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+}
+
+button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+}
+
+button:active {
+    transform: translateY(0);
+}
+
+.section {
+    margin-top: 15px;
+    padding: 15px;
+    background: linear-gradient(145deg, #f8f9fa 0%, #e9ecef 100%);
+    border-radius: 12px;
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.05);
+    border: 1px solid #dee2e6;
+}
+
+.section h3 {
+    margin: 0 0 12px 0;
+    font-size: 15px;
+    color: #2c3e50;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.date-group {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 12px;
+}
+
+.table-wrapper {
+    overflow-x: auto;
+    margin-top: 15px;
+    border-radius: 10px;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 11px;
+    background: white;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 3px 12px rgba(0, 0, 0, 0.1);
+}
+
+th, td {
+    border: 1px solid #e0e0e0;
+    padding: 4px 3px;
+    text-align: center;
+}
+
+th {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 10px;
+    letter-spacing: 0.3px;
+}
+
+tbody tr {
+    transition: all 0.2s ease;
+}
+
+tbody tr:nth-child(even) {
+    background: #f8f9fa;
+}
+
+tbody tr:hover {
+    background: #e7f3ff;
+}
+
+tbody td:first-child {
+    font-weight: 600;
+    color: #2c3e50;
+    text-align: center;
+    padding: 8px 6px;
+    font-size: 11px;
+}
+
+.no {
+    color: #dc3545;
+    font-weight: 700;
+    padding: 20px;
+    text-align: center;
+    font-size: 14px;
+    background: #f8d7da;
+    border-radius: 8px;
+    border: 2px dashed #dc3545;
+    margin-top: 15px;
+}
+
+.green {
+    color: #28a745;
+    font-weight: 700;
+}
+
+.black {
+    color: #000;
+    font-weight: 600;
+}
+
+.loading {
+    text-align: center;
+    padding: 25px;
+    color: #6c757d;
+    font-size: 14px;
+}
+
+.station-title {
+    font-weight: 700;
+    font-size: 15px;
+    color: #1e3c72;
+    margin-bottom: 0;
+    padding: 12px 15px;
+    background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+    border-radius: 8px;
+    border-left: 4px solid #667eea;
+    text-align: center;
+}
+
+label {
+    font-weight: 600;
+    font-size: 13px;
+    color: #495057;
+    display: block;
+    margin: 10px 0 5px 0;
+}
+
+.info {
+    background: linear-gradient(135deg, #d1ecf1 0%, #bee5eb 100%);
+    color: #0c5460;
+    padding: 12px;
+    border-radius: 8px;
+    margin: 12px 0;
+    font-size: 13px;
+    font-weight: 500;
+    border-left: 4px solid #17a2b8;
+    box-shadow: 0 2px 6px rgba(23, 162, 184, 0.2);
+}
+
+.day-count {
+    background: linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%);
+    color: #856404;
+    padding: 12px;
+    border-radius: 8px;
+    margin: 12px 0;
+    font-size: 14px;
+    font-weight: 700;
+    text-align: center;
+    border-left: 4px solid #ffc107;
+    box-shadow: 0 2px 6px rgba(255, 193, 7, 0.3);
+}
+
+/* Desktop/Tablet Styles */
+@media(min-width: 768px) {
+    body {
+        padding: 15px;
+    }
+
+    .container {
+        padding: 30px;
+    }
+
+    h1 {
+        font-size: 26px;
+        margin-bottom: 25px;
+        padding-bottom: 15px;
+    }
+    
+    .date-group {
+        grid-template-columns: 1fr 1fr;
+        gap: 15px;
+    }
+    
+    table {
+        font-size: 14px;
+    }
+
+    th {
+        font-size: 11px;
+        padding: 12px 8px;
+    }
+
+    td {
+        padding: 12px 8px;
+    }
+
+    tbody td:first-child {
+        font-size: 13px;
+        padding: 12px 8px;
+    }
+
+    .section {
+        padding: 20px;
+    }
+
+    .section h3 {
+        font-size: 17px;
+        margin-bottom: 15px;
+    }
+
+    .station-title {
+        font-size: 17px;
+        padding: 12px 15px;
+    }
+
+    button {
+        font-size: 15px;
+        padding: 14px 20px;
+    }
+
+    .table-wrapper {
+        margin-top: 20px;
+    }
+}
+
+/* Extra small phones */
+@media(max-width: 360px) {
+    h1 {
+        font-size: 15px;
+    }
+
+    table {
+        font-size: 10px;
+    }
+
+    th {
+        font-size: 9px;
+        padding: 6px 4px;
+    }
+
+    td {
+        padding: 6px 4px;
+    }
+
+    tbody td:first-child {
+        padding: 6px 4px;
+    }
+
+    .station-title {
+        font-size: 13px;
+        padding: 8px 10px;
+    }
+}
+
+::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+
+::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.section {
+    animation: fadeIn 0.5s ease-in-out;
+}
+
+td:nth-child(4) {
+    font-weight: 700;
+}
+
+td:nth-child(5) {
+    background: #f0f4ff;
+    font-weight: 600;
+    color: #5568d3;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.loading::before {
+    content: "⏳";
+    display: inline-block;
+    animation: spin 2s linear infinite;
+    margin-right: 10px;
+    font-size: 18px;
+}
+
+@media print {
+    body {
+        background: white;
+    }
+    
+    .container {
+        box-shadow: none;
+    }
+    
+    button, .info, .day-count {
+        display: none;
+    }
+}
+</style>
+</head>
+
+<body>
+<div class="container">
+
+<h1>KKSO-KBGA FIRE PUMP RUNNING DATA ANALYSIS</h1>
+
+<div id="msg" class="loading">Loading data...</div>
+
+<div id="main" style="display:none">
+
+<div class="section">
+    <h3>Select Station</h3>
+    <select id="station" onchange="loadDates()">
+        <option value="">All Stations</option>
+    </select>
+</div>
+
+<div class="section">
+    <h3>Select Date Range</h3>
+    
+    <div class="date-group">
+        <div>
+            <label>From Date:</label>
+            <select id="fromDropdown" onchange="handleFromChange()">
+                <option value="">Select from dropdown</option>
+            </select>
+            <input type="date" id="fromCalendar" onchange="handleFromCalendarChange()" style="display:none">
+            <div id="fromMoreBtn" style="display:none">
+                <button onclick="showFromCalendar()" style="background:#6c757d;font-size:13px;padding:10px;">Select Older Date</button>
+            </div>
+        </div>
+
+        <div>
+            <label>To Date:</label>
+            <select id="toDropdown" onchange="handleToChange()">
+                <option value="">Select from dropdown</option>
+            </select>
+            <input type="date" id="toCalendar" onchange="handleToCalendarChange()" style="display:none">
+            <div id="toMoreBtn" style="display:none">
+                <button onclick="showToCalendar()" style="background:#6c757d;font-size:13px;padding:10px;">Select Older Date</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="dateInfo" class="info" style="display:none"></div>
+    <div id="dayCount" class="day-count" style="display:none"></div>
+
+    <button onclick="calculate()">Calculate Difference</button>
+</div>
+
+<div id="result"></div>
+
+</div>
+</div>
+
+<script>
+
+const SHEET_ID="1qSP6WkmhrrWXVGZspl6ttfxK7QTY-4qdFSKvv5nM9tk";
+const API_KEY="AIzaSyAjBceUqA-G1ueMCsqevOiPEhb2Nk-pOhI";
+const SHEET="DATA";
+
+let data=[];
+let allDates=[];
+let selectedFromDate="";
+let selectedToDate="";
+
+window.onload=function(){
+    loadData();
+}
+
+async function loadData(){
+    document.getElementById("msg").innerHTML='<div class="loading">Loading data...</div>';
+
+    try{
+        let url=`https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/${SHEET}?key=${API_KEY}`;
+        let res=await fetch(url);
+        let json=await res.json();
+
+        if(!json.values){
+            document.getElementById("msg").innerHTML='<div class="no">Error loading data</div>';
+            return;
+        }
+
+        let rows=json.values;
+        data=[];
+
+        for(let i=1;i<rows.length;i++){
+            let r=rows[i];
+            if(!r[0]||!r[14])continue;
+
+            let date=r[14].split(",")[0].trim();
+
+            data.push({
+                station:r[0],
+                j1:time(r[1]),
+                j2:time(r[2]),
+                mh:time(r[3]),
+                dp:time(r[4]),
+                js1:time(r[5]),
+                js2:time(r[6]),
+                ms:time(r[7]),
+                date:date
+            });
+        }
+
+        document.getElementById("msg").innerHTML='<div class="info">Loaded '+data.length+' records successfully</div>';
+        
+        setTimeout(()=>{
+            document.getElementById("msg").style.display="none";
+        },2000);
+
+        document.getElementById("main").style.display="block";
+        loadStations();
+        loadDates();
+
+    }catch(e){
+        document.getElementById("msg").innerHTML='<div class="no">Error: '+e.message+'</div>';
+    }
+}
+
+function time(t){
+    if(!t)return 0;
+    let p=String(t).trim().split(":");
+    return (parseInt(p[0])||0)*60+(parseInt(p[1])||0);
+}
+
+function format(m){
+    if(m==null)return "No Data";
+    if(m<0)return "0:00";
+    let h=Math.floor(m/60);
+    let mi=m%60;
+    return h+":"+mi.toString().padStart(2,"0");
+}
+
+function loadStations(){
+    let s=[...new Set(data.map(d=>d.station))].sort();
+    let sel=document.getElementById("station");
+    sel.innerHTML='<option value="">All Stations</option>';
+    s.forEach(x=>sel.innerHTML+=`<option>${x}</option>`);
+}
+
+function loadDates(){
+    let st=document.getElementById("station").value;
+    let filtered=st?data.filter(d=>d.station==st):data;
+
+    allDates=[...new Set(filtered.map(d=>d.date))];
+
+    allDates.sort((a,b)=>{
+        let [d1,m1,y1]=a.split("/");
+        let [d2,m2,y2]=b.split("/");
+        return new Date(y1,m1-1,d1)-new Date(y2,m2-1,d2);
+    });
+
+    let last7=allDates.slice(-7);
+
+    let fromDrop=document.getElementById("fromDropdown");
+    fromDrop.innerHTML='<option value="">Select date</option>';
+    last7.forEach(d=>{
+        fromDrop.innerHTML+=`<option value="${d}">${d}</option>`;
+    });
+
+    if(allDates.length>7){
+        document.getElementById("fromMoreBtn").style.display="block";
+        document.getElementById("toMoreBtn").style.display="block";
+    }else{
+        document.getElementById("fromMoreBtn").style.display="none";
+        document.getElementById("toMoreBtn").style.display="none";
+    }
+
+    let toDrop=document.getElementById("toDropdown");
+    toDrop.innerHTML='<option value="">Select date</option>';
+    last7.forEach(d=>{
+        toDrop.innerHTML+=`<option value="${d}">${d}</option>`;
+    });
+
+    if(last7.length>0){
+        selectedFromDate=last7[0];
+        fromDrop.value=selectedFromDate;
+        
+        selectedToDate=last7[last7.length-1];
+        toDrop.value=selectedToDate;
+        
+        updateDateInfo();
+    }
+}
+
+function handleFromChange(){
+    let val=document.getElementById("fromDropdown").value;
+    if(val){
+        selectedFromDate=val;
+        document.getElementById("fromCalendar").style.display="none";
+        document.getElementById("fromDropdown").style.display="block";
+        updateDateInfo();
+    }
+}
+
+function handleToChange(){
+    let val=document.getElementById("toDropdown").value;
+    if(val){
+        selectedToDate=val;
+        document.getElementById("toCalendar").style.display="none";
+        document.getElementById("toDropdown").style.display="block";
+        updateDateInfo();
+    }
+}
+
+function showFromCalendar(){
+    document.getElementById("fromDropdown").style.display="none";
+    document.getElementById("fromCalendar").style.display="block";
+    
+    if(allDates.length>0){
+        let oldest=allDates[0];
+        let newest=allDates[allDates.length-1];
+        document.getElementById("fromCalendar").min=convertToDateInput(oldest);
+        document.getElementById("fromCalendar").max=convertToDateInput(newest);
+    }
+}
+
+function showToCalendar(){
+    document.getElementById("toDropdown").style.display="none";
+    document.getElementById("toCalendar").style.display="block";
+    
+    if(allDates.length>0){
+        let oldest=allDates[0];
+        let newest=allDates[allDates.length-1];
+        document.getElementById("toCalendar").min=convertToDateInput(oldest);
+        document.getElementById("toCalendar").max=convertToDateInput(newest);
+    }
+}
+
+function handleFromCalendarChange(){
+    let val=document.getElementById("fromCalendar").value;
+    if(val){
+        selectedFromDate=convertFromDateInput(val);
+        updateDateInfo();
+    }
+}
+
+function handleToCalendarChange(){
+    let val=document.getElementById("toCalendar").value;
+    if(val){
+        selectedToDate=convertFromDateInput(val);
+        updateDateInfo();
+    }
+}
+
+function convertToDateInput(ddmmyyyy){
+    let [d,m,y]=ddmmyyyy.split("/");
+    return y+"-"+m.padStart(2,"0")+"-"+d.padStart(2,"0");
+}
+
+function convertFromDateInput(yyyymmdd){
+    let [y,m,d]=yyyymmdd.split("-");
+    return d+"/"+m+"/"+y;
+}
+
+function calculateDaysBetween(fromDate, toDate){
+    let [d1,m1,y1]=fromDate.split("/");
+    let [d2,m2,y2]=toDate.split("/");
+    let date1=new Date(y1,m1-1,d1);
+    let date2=new Date(y2,m2-1,d2);
+    let diffTime=Math.abs(date2-date1);
+    let diffDays=Math.ceil(diffTime/(1000*60*60*24));
+    return diffDays;
+}
+
+function updateDateInfo(){
+    if(selectedFromDate && selectedToDate){
+        let info=document.getElementById("dateInfo");
+        info.innerHTML=`Analyzing: <strong>${selectedFromDate}</strong> to <strong>${selectedToDate}</strong>`;
+        info.style.display="block";
+
+        let days=calculateDaysBetween(selectedFromDate, selectedToDate);
+        let dayInfo=document.getElementById("dayCount");
+        dayInfo.innerHTML=`Duration: <strong>${days} day${days>1?'s':''}</strong>`;
+        dayInfo.style.display="block";
+    }
+}
+
+function calculate(){
+    if(!selectedFromDate||!selectedToDate){
+        alert("Please select both dates");
+        return;
+    }
+
+    let st=document.getElementById("station").value;
+
+    if(st){
+        showStation(st,selectedFromDate,selectedToDate);
+    }else{
+        showAll(selectedFromDate,selectedToDate);
+    }
+}
+
+function sum(records){
+    if(records.length==0)return null;
+    let s={j1:0,j2:0,mh:0,dp:0,js1:0,js2:0,ms:0};
+    records.forEach(r=>{
+        s.j1+=r.j1;
+        s.j2+=r.j2;
+        s.mh+=r.mh;
+        s.dp+=r.dp;
+        s.js1+=r.js1;
+        s.js2+=r.js2;
+        s.ms+=r.ms;
+    });
+    return s;
+}
+
+function showStation(st,f,t){
+    let from=sum(data.filter(d=>d.station==st&&d.date==f));
+    let to=sum(data.filter(d=>d.station==st&&d.date==t));
+
+    document.getElementById("result").innerHTML=makeTable(st,from,to,f,t);
+}
+
+function showAll(f,t){
+    let stations=[...new Set(data.map(d=>d.station))].sort();
+    let html="";
+    stations.forEach(st=>{
+        let from=sum(data.filter(d=>d.station==st&&d.date==f));
+        let to=sum(data.filter(d=>d.station==st&&d.date==t));
+        html+=makeTable(st,from,to,f,t);
+    });
+    document.getElementById("result").innerHTML=html;
+}
+
+function makeTable(st,from,to,f,t){
+    if(!from||!to){
+        return `<div class="section"><div class="station-title">${st}</div><div class="no">No Data Available</div></div>`;
+    }
+
+    let [d1,m1,y1]=f.split("/");
+    let [d2,m2,y2]=t.split("/");
+    let date1=new Date(y1,m1-1,d1);
+    let date2=new Date(y2,m2-1,d2);
+    
+    let laterData, earlierData;
+    
+    if(date2>date1){
+        laterData=to;
+        earlierData=from;
+    }else{
+        laterData=from;
+        earlierData=to;
+    }
+
+    let days=calculateDaysBetween(f,t);
+    if(days==0)days=1;
+
+    let pumps=[
+        ["Jockey-1","j1"],
+        ["Jockey-2","j2"],
+        ["Main Hydrant","mh"],
+        ["Diesel Pump","dp"],
+        ["J-Sprinkler-1","js1"],
+        ["J-Sprinkler-2","js2"],
+        ["Main Sprinkler","ms"]
+    ];
+
+    let rows="";
+    pumps.forEach(p=>{
+        let diff=laterData[p[1]]-earlierData[p[1]];
+        
+        if(diff<0)diff=0;
+        
+        let avg=Math.round(diff/days);
+        
+        let diffClass=diff>0?"green":"black";
+        
+        rows+=`
+        <tr>
+            <td><strong>${p[0]}</strong></td>
+            <td>${format(from[p[1]])}</td>
+            <td>${format(to[p[1]])}</td>
+            <td class="${diffClass}">${format(diff)}</td>
+            <td>${format(avg)}</td>
+        </tr>`;
+    });
+
+    return `
+    <div class="section">
+        <div class="station-title">${st}</div>
+        <div class="table-wrapper">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Pump Type</th>
+                        <th>From (${f})</th>
+                        <th>To (${t})</th>
+                        <th>Difference</th>
+                        <th>Avg/Day</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    ${rows}
+                </tbody>
+            </table>
+        </div>
+    </div>`;
+}
+
+</script>
+</body>
+</html>
