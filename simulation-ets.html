@@ -528,24 +528,24 @@ function applyTripN1(triggeredId, etsNum) {
 
   if (isDown) {
     // Down line: trip DB03@N + DB01@N-1
-    record(idx,     ['DB03'], 'N (Down feeder)');
-    record(idx - 1, ['DB01'], 'N−1');
+    record(idx,     ['DB03','DB05','BCP01'], 'N (Down feeder)');
+    record(idx - 1, ['DB01','DB05','BCP01'], 'N−1');
     lastOpLog = {
       scheme: 'N±1 Protection Scheme',
       ets:    `ETS-${etsNum}`,
       stn:    STATION_DEFS.find(s => s.id === triggeredId).label,
-      dir:    'Down Line → Trips DB03 @ N  +  DB01 @ N−1',
+      dir:    'Down Line → Trips DB03, DB05, BCP01 IF CLOSED @ N  +  DB01, DB05, BCP01 IF CLOSED. @ N−1',
       rows:   logRows
     };
   } else {
     // Up line: trip DB02@N + DB04@N+1
-    record(idx,     ['DB02'], 'N (Up feeder)');
-    record(idx + 1, ['DB04'], 'N+1');
+    record(idx,     ['DB02','DB05','BCP02'], 'N (Up feeder)');
+    record(idx + 1, ['DB04','DB05','BCP02'], 'N+1');
     lastOpLog = {
       scheme: 'N±1 Protection Scheme',
       ets:    `ETS-${etsNum}`,
       stn:    STATION_DEFS.find(s => s.id === triggeredId).label,
-      dir:    'Up Line → Trips DB02 @ N  +  DB04 @ N+1',
+      dir:    'Up Line → Trips DB02, DB05 & BCP02 IF CLOSED @ N  +  DB04 DB05 BCP02 IF CLOSED @ N+1',
       rows:   logRows
     };
   }
