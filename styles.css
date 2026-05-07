@@ -65,7 +65,7 @@ body{font-family:'Inter',system-ui,sans-serif;color:var(--text);min-height:100vh
 .form-group{margin-bottom:8px}
 .form-group label{display:block;margin-bottom:4px;font-weight:700;color:var(--muted);font-size:13px;text-transform:uppercase;letter-spacing:0.5px}
 .select-wrapper{position:relative}
-.select-wrapper::after{content:"â–¾";position:absolute;right:12px;top:50%;transform:translateY(-50%);color:#334155;pointer-events:none;font-size:12px}
+.select-wrapper::after{content:"▼";position:absolute;right:12px;top:50%;transform:translateY(-50%);color:#334155;pointer-events:none;font-size:12px}
 select{width:100%;padding:12px 36px 12px 14px;border-radius:10px;border:1.5px solid rgba(0,0,0,0.08);font-size:15px;color:var(--text);background:#fff;appearance:none;-webkit-appearance:none;outline:none;transition:all 0.2s;box-shadow:0 2px 8px rgba(0,0,0,0.04)}
 select:focus{box-shadow:0 0 0 3px var(--ring)}
 select:hover{box-shadow:0 4px 12px rgba(0,0,0,0.08)}
