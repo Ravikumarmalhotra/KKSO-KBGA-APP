@@ -88,7 +88,7 @@ input[type="text"]:focus{box-shadow:0 0 0 3px var(--ring)}
 .output-grid img{border-radius:8px;max-width:80px;max-height:65px;object-fit:contain;cursor:zoom-in;transition:transform 0.2s}
 .output-grid img:hover{transform:scale(1.05)}
 .output-grid a.file-link{display:inline-flex;align-items:center;gap:6px;padding:6px 14px;background:linear-gradient(135deg,#4285f4 0%,#0d47a1 50%,#4285f4 100%);background-size:200% 200%;animation:driveGradient 3s ease infinite;color:white;border-radius:20px;font-weight:700;font-size:11px;text-decoration:none;text-transform:uppercase;letter-spacing:0.5px;border:2px solid rgba(255,255,255,0.3);box-shadow:0 3px 10px rgba(66,133,244,0.4);transition:all 0.3s}
-.output-grid a.file-link::before{content:"PDF";font-size:14px}
+.output-grid a.file-link::before{content:"PDF /";font-size:14px}
 .output-grid a.file-link:hover{transform:translateY(-2px) scale(1.05);box-shadow:0 6px 20px rgba(66,133,244,0.5)}
 
 /* ===== MY DATA ===== */
