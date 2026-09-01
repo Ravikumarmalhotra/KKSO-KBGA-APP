@@ -225,9 +225,16 @@ async function handleSubmit(e) {
 
   const now = new Date();
   const timeStamp = formatDateDMY(now) + ', ' + pad(now.getHours()) + ':' + pad(now.getMinutes());
-  const dateFormatted = formatDateDMY(new Date(fldDate.value));
-  const targetMonth = (typeof getCurrentTAMonth === 'function') ? getCurrentTAMonth() : '';
+  // --- TIMEZONE-SAFE DATE PARSING ---
+const [yearStr, monthStr, dayStr] = fldDate.value.split('-');
+const selectedDateObj = new Date(Number(yearStr), Number(monthStr) - 1, Number(dayStr));
 
+const dateFormatted = formatDateDMY(selectedDateObj);
+
+const monthNames = ["January", "February", "March", "April", "May", "June", 
+                    "July", "August", "September", "October", "November", "December"];
+const targetMonth = monthNames[selectedDateObj.getMonth()] + '-' + selectedDateObj.getFullYear();
+// ----------------------------------
   const payload = {
     //action: isEditing ? 'update' : 'submit', // Worker ko action pata chalega agar same date and same person ko dubara entry chahiye to cooment ko hata do dono jagah worker me bhi.
     target: targetMonth,
