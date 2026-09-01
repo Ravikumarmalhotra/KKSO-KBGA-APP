@@ -112,10 +112,8 @@ function initEntryForm() {
   const today = new Date();
 
   const minD = new Date(today);
-  // Only subtract 1 day if today is NOT the 1st day of the month
-  //if (today.getDate() > 1) {
-    minD.setDate(today.getDate() - 1);
-  //}
+  minD.setDate(today.getDate() - 1);
+
   const maxD = new Date(today); maxD.setDate(today.getDate() + 0);
   fldDate.min = formatDateYMD(minD);
   fldDate.max = formatDateYMD(maxD);
@@ -226,13 +224,16 @@ async function handleSubmit(e) {
   const now = new Date();
   const timeStamp = formatDateDMY(now) + ', ' + pad(now.getHours()) + ':' + pad(now.getMinutes());
 
-  // Derive dateFormatted and targetMonth based on selected form date (fldDate.value)
-  const selectedDateObj = new Date(fldDate.value);
+  // --- TIMEZONE-SAFE DATE PARSING ---
+  const [yearStr, monthStr, dayStr] = fldDate.value.split('-');
+  const selectedDateObj = new Date(Number(yearStr), Number(monthStr) - 1, Number(dayStr));
+
   const dateFormatted = formatDateDMY(selectedDateObj);
 
   const monthNames = ["January", "February", "March", "April", "May", "June", 
                       "July", "August", "September", "October", "November", "December"];
   const targetMonth = monthNames[selectedDateObj.getMonth()] + '-' + selectedDateObj.getFullYear();
+  // ----------------------------------
 
   const payload = {
     target: targetMonth,
@@ -266,7 +267,7 @@ async function handleSubmit(e) {
       exitEditMode();
       setTimeout(() => {
         const viewBtn = document.getElementById('btnView');
-        if (viewBtn) viewBtn.click(); // returns to View tab and auto-refreshes
+        if (viewBtn) viewBtn.click();
       }, 1000);
     } else {
       showSubmitMessage('✅ TA submitted successfully!', 'success');
@@ -301,18 +302,15 @@ function editRow(index) {
 
   editingSerialNo = row.SerialNo;
 
-  // Switch to Entry tab
   document.getElementById('btnEntry').click();
 
   fldName.value = displayName;
   fldDesignation.value = employeeData.Designation || row.Designation || '';
 
-  // Lock the Date field (cannot be changed while editing)
   const parsedDate = (typeof taParseDMY === 'function') ? taParseDMY(row.Date) : null;
   if (parsedDate) fldDate.value = formatDateYMD(parsedDate);
   fldDate.disabled = true;
 
-  // Editable fields
   fldObject.value = row.ObjectOfJourney || '';
   fldLeft.value = row.LeftTime || '';
   fldArrived.value = row.ArrivedTime || '';
@@ -478,7 +476,7 @@ function renderSummary(data) {
 }
 
 function generatePDF() {
-  downloadTAPdfDirect(); // defined in taPdf.js
+  downloadTAPdfDirect();
 }
 
 function initView() {
