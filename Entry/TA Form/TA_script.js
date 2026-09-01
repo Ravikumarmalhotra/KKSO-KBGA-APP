@@ -114,7 +114,7 @@ function initEntryForm() {
 const minD = new Date(today);
 // Only subtract 1 day if today is NOT the 1st day of the month
 //if (today.getDate() > 1) {
-  minD.setDate(today.getDate() - 2);//-1 i change to -2 because got issue to fill previous month last date in new month
+  minD.setDate(today.getDate() - 1);
 //}
   const maxD = new Date(today); maxD.setDate(today.getDate() + 0);
   fldDate.min = formatDateYMD(minD);
