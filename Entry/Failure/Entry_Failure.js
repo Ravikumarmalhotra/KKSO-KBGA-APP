@@ -791,8 +791,8 @@ const dataFields = {
   actionTaken: actionInput.value.trim(),
   attendedByStaff: attendedBy.join(', '),
   rectificationDate: currentMode === 'edit' ? toDDMMYY(rectificationDate.value) : '',
-  entryDetails: currentMode === 'entry' ? '[ '+ currentMode + ' ] ' + loggedInUser + '; ' + loggedInLevel + '; ' + timeStamp : '',
-  editDetails: currentMode === 'edit' ? '[ '+ currentMode + ' ] ' + loggedInUser + '; ' + loggedInLevel + '; ' + timeStamp : ''
+  entryDetails: currentMode === 'entry' ? '[ submit ] ' + loggedInUser + '; ' + loggedInLevel + '; ' + timeStamp : '',
+  editDetails: currentMode === 'edit' ? '[ update ] ' + loggedInUser + '; ' + loggedInLevel + '; ' + timeStamp : ''
 };
 //--------------------------------------------------------------------------------------------------------------------------------------- 
  if (currentMode === 'edit' && editSelectedRow) {
