@@ -1071,7 +1071,7 @@ const timeStamp = getCurrentstamp();
         target: "Maintenance_Log",
         data: {
         assetIdNo: currentAssetId,
-        dateOfMaint: dateInput.value,
+        dateOfMaint: toDDMMYY(dateInput.value),
         typeOfMaint: typeSelect.value,
         attendedByStaff : attendedBy.join(', '),
         cheksheet:'',
