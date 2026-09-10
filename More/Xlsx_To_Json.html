@@ -1,0 +1,357 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Excel to JSON Converter</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<style>
+  body { font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
+  ::-webkit-scrollbar { width: 8px; height: 8px; }
+  ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 8px; }
+</style>
+</head>
+<body class="min-h-screen bg-gradient-to-br from-slate-50 via-white to-zinc-100 px-4 py-10 sm:px-8">
+
+  <div class="mx-auto max-w-5xl space-y-8">
+
+    <!-- Header -->
+    <div class="flex flex-col items-center space-y-3 text-center">
+      <div class="inline-flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-emerald-500 to-teal-600 shadow-lg shadow-emerald-200">
+        <svg class="h-8 w-8 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8Z" />
+          <path d="M14 2v6h6" />
+          <path d="M8 13h8" />
+          <path d="M8 17h8" />
+          <path d="M8 9h1" />
+        </svg>
+      </div>
+      <h1 class="text-3xl font-semibold tracking-tight text-slate-900">Excel to JSON Converter</h1>
+      <p class="max-w-xl text-slate-500">
+        Upload an .xlsx file, pick the sheets you need, and export each one as a
+        2D-array JSON file named after its sheet. Works fully offline, right in your browser.
+      </p>
+    </div>
+
+    <!-- Upload area -->
+    <div id="dropZone"
+      class="cursor-pointer rounded-2xl border-2 border-dashed border-slate-300 bg-white p-8 text-center transition-colors hover:border-emerald-400 hover:bg-emerald-50/40">
+      <input id="fileInput" type="file" accept=".xlsx,.xls,.xlsm" class="hidden" />
+      <div class="flex flex-col items-center gap-2">
+        <svg class="h-10 w-10 text-emerald-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+          <path d="M17 8l-5-5-5 5" />
+          <path d="M12 3v12" />
+        </svg>
+        <p id="fileLabel" class="font-medium text-slate-700">Click or drag & drop your .xlsx file here</p>
+        <p class="text-sm text-slate-400">Supports .xlsx, .xls, .xlsm</p>
+      </div>
+    </div>
+
+    <!-- Error -->
+    <div id="errorBox" class="hidden rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-600"></div>
+
+    <!-- Sheet selection -->
+    <div id="sheetSection" class="hidden rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+      <div class="mb-4 flex items-center justify-between">
+        <h2 class="text-lg font-semibold text-slate-800">Sheets found (<span id="sheetCount">0</span>)</h2>
+        <label class="flex cursor-pointer items-center gap-2 text-sm text-slate-500">
+          <input id="selectAll" type="checkbox" class="h-4 w-4 rounded border-slate-300 text-emerald-600 focus:ring-emerald-500" />
+          Select all
+        </label>
+      </div>
+
+      <div id="sheetGrid" class="grid grid-cols-1 gap-3 sm:grid-cols-2 md:grid-cols-3"></div>
+
+      <div class="mt-6 flex flex-wrap items-center gap-3">
+        <button id="convertBtn"
+          class="inline-flex items-center gap-2 rounded-xl bg-emerald-600 px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-emerald-700 disabled:cursor-not-allowed disabled:bg-slate-300">
+          Convert to JSON
+        </button>
+        <button id="downloadAllBtn"
+          class="hidden inline-flex items-center gap-2 rounded-xl border border-emerald-600 px-5 py-2.5 text-sm font-semibold text-emerald-700 transition-colors hover:bg-emerald-50">
+          Download all
+        </button>
+      </div>
+    </div>
+
+    <!-- Converted results -->
+    <div id="resultSection" class="hidden rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+      <h2 class="mb-4 text-lg font-semibold text-slate-800">Converted sheets</h2>
+      <div id="tabBar" class="mb-4 flex flex-wrap gap-2"></div>
+
+      <div id="previewWrap" class="space-y-3">
+        <div class="flex items-center justify-between">
+          <p id="previewMeta" class="text-sm text-slate-500"></p>
+          <button id="downloadOneBtn"
+            class="inline-flex items-center gap-1.5 rounded-lg bg-slate-800 px-3 py-1.5 text-xs font-semibold text-white hover:bg-slate-900">
+            Download JSON
+          </button>
+        </div>
+        <pre id="previewPre" class="max-h-96 overflow-auto rounded-xl bg-slate-900 p-4 text-xs leading-relaxed text-emerald-300"></pre>
+      </div>
+    </div>
+
+  </div>
+
+<script>
+(function () {
+  "use strict";
+
+  let workbook = null;
+  let sheetNames = [];
+  let selected = {};
+  let converted = []; // { name, rows }
+  let previewSheet = "";
+
+  const dropZone = document.getElementById("dropZone");
+  const fileInput = document.getElementById("fileInput");
+  const fileLabel = document.getElementById("fileLabel");
+  const errorBox = document.getElementById("errorBox");
+  const sheetSection = document.getElementById("sheetSection");
+  const sheetCount = document.getElementById("sheetCount");
+  const sheetGrid = document.getElementById("sheetGrid");
+  const selectAll = document.getElementById("selectAll");
+  const convertBtn = document.getElementById("convertBtn");
+  const downloadAllBtn = document.getElementById("downloadAllBtn");
+  const resultSection = document.getElementById("resultSection");
+  const tabBar = document.getElementById("tabBar");
+  const previewMeta = document.getElementById("previewMeta");
+  const previewPre = document.getElementById("previewPre");
+  const downloadOneBtn = document.getElementById("downloadOneBtn");
+
+  function showError(msg) {
+    errorBox.textContent = msg;
+    errorBox.classList.remove("hidden");
+  }
+  function clearError() {
+    errorBox.textContent = "";
+    errorBox.classList.add("hidden");
+  }
+
+  function resetState() {
+    sheetNames = [];
+    selected = {};
+    converted = [];
+    previewSheet = "";
+    workbook = null;
+    sheetSection.classList.add("hidden");
+    resultSection.classList.add("hidden");
+    downloadAllBtn.classList.add("hidden");
+    sheetGrid.innerHTML = "";
+    tabBar.innerHTML = "";
+    previewPre.textContent = "";
+  }
+
+  function sanitizeFileName(name) {
+    return name.replace(/[\\/:*?"<>|]/g, "_");
+  }
+
+  function replaceNullish(value) {
+    return value === null || value === undefined ? "" : value;
+  }
+
+  function downloadBlob(blob, filename) {
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = filename;
+    link.rel = "noopener";
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
+  }
+
+  function handleFile(file) {
+    clearError();
+    resetState();
+
+    const ext = (file.name.split(".").pop() || "").toLowerCase();
+    if (!["xlsx", "xls", "xlsm"].includes(ext)) {
+      showError("Please upload a valid .xlsx (or .xls) file.");
+      return;
+    }
+
+    fileLabel.innerHTML = 'Loaded: <span class="text-emerald-600">' + file.name + "</span>";
+
+    const reader = new FileReader();
+    reader.onload = function (e) {
+      try {
+        const data = new Uint8Array(e.target.result);
+        workbook = XLSX.read(data, { type: "array" });
+        sheetNames = workbook.SheetNames.slice();
+        sheetNames.forEach((n) => (selected[n] = true));
+        renderSheetGrid();
+        sheetSection.classList.remove("hidden");
+      } catch (err) {
+        console.error(err);
+        showError("Failed to parse the Excel file. Please check the file and try again.");
+      }
+    };
+    reader.onerror = function () {
+      showError("Failed to read the file.");
+    };
+    reader.readAsArrayBuffer(file);
+  }
+
+  function renderSheetGrid() {
+    sheetCount.textContent = sheetNames.length;
+    sheetGrid.innerHTML = "";
+    sheetNames.forEach((name) => {
+      const label = document.createElement("label");
+      label.className =
+        "flex cursor-pointer items-center gap-3 rounded-xl border px-4 py-3 transition-colors " +
+        (selected[name]
+          ? "border-emerald-400 bg-emerald-50"
+          : "border-slate-200 bg-slate-50 hover:bg-slate-100");
+
+      const checkbox = document.createElement("input");
+      checkbox.type = "checkbox";
+      checkbox.checked = !!selected[name];
+      checkbox.className =
+        "h-4 w-4 rounded border-slate-300 text-emerald-600 focus:ring-emerald-500";
+      checkbox.addEventListener("change", () => {
+        selected[name] = checkbox.checked;
+        renderSheetGrid();
+        syncSelectAll();
+      });
+
+      const span = document.createElement("span");
+      span.className = "truncate text-sm font-medium text-slate-700";
+      span.textContent = name;
+
+      label.appendChild(checkbox);
+      label.appendChild(span);
+      sheetGrid.appendChild(label);
+    });
+    syncSelectAll();
+  }
+
+  function syncSelectAll() {
+    const count = sheetNames.filter((n) => selected[n]).length;
+    selectAll.checked = sheetNames.length > 0 && count === sheetNames.length;
+    convertBtn.disabled = count === 0;
+    convertBtn.textContent =
+      "Convert " + (count > 0 ? "(" + count + ") " : "") + "to JSON";
+  }
+
+  selectAll.addEventListener("change", () => {
+    sheetNames.forEach((n) => (selected[n] = selectAll.checked));
+    renderSheetGrid();
+  });
+
+  convertBtn.addEventListener("click", () => {
+    clearError();
+    if (!workbook) {
+      showError("Upload a file first.");
+      return;
+    }
+    const chosen = sheetNames.filter((n) => selected[n]);
+    if (chosen.length === 0) {
+      showError("Select at least one sheet to convert.");
+      return;
+    }
+
+    converted = chosen.map((name) => {
+      const ws = workbook.Sheets[name];
+      const rawRows = XLSX.utils.sheet_to_json(ws, {
+        header: 1,
+        raw: true,
+        defval: "",
+      });
+      const rows = rawRows.map((row) => row.map(replaceNullish));
+      return { name, rows };
+    });
+
+    previewSheet = converted[0] ? converted[0].name : "";
+    renderResults();
+  });
+
+  function renderResults() {
+    if (converted.length === 0) {
+      resultSection.classList.add("hidden");
+      downloadAllBtn.classList.add("hidden");
+      return;
+    }
+    resultSection.classList.remove("hidden");
+    downloadAllBtn.classList.remove("hidden");
+    downloadAllBtn.textContent =
+      "Download " + (converted.length > 1 ? "all as .zip" : "JSON");
+
+    tabBar.innerHTML = "";
+    converted.forEach((s) => {
+      const btn = document.createElement("button");
+      btn.className =
+        "rounded-lg px-3 py-1.5 text-sm font-medium transition-colors " +
+        (previewSheet === s.name
+          ? "bg-emerald-600 text-white"
+          : "bg-slate-100 text-slate-600 hover:bg-slate-200");
+      btn.textContent = s.name + ".json";
+      btn.addEventListener("click", () => {
+        previewSheet = s.name;
+        renderResults();
+      });
+      tabBar.appendChild(btn);
+    });
+
+    const active = converted.find((s) => s.name === previewSheet);
+    if (active) {
+      previewMeta.textContent =
+        active.rows.length + " row(s) \u00b7 " + active.name + ".json";
+      previewPre.textContent = JSON.stringify(active.rows, null, 2);
+    }
+  }
+
+  downloadOneBtn.addEventListener("click", () => {
+    const active = converted.find((s) => s.name === previewSheet);
+    if (!active) return;
+    const blob = new Blob([JSON.stringify(active.rows, null, 2)], {
+      type: "application/json",
+    });
+    downloadBlob(blob, sanitizeFileName(active.name) + ".json");
+  });
+
+  downloadAllBtn.addEventListener("click", async () => {
+    if (converted.length === 0) return;
+    if (converted.length === 1) {
+      const s = converted[0];
+      const blob = new Blob([JSON.stringify(s.rows, null, 2)], {
+        type: "application/json",
+      });
+      downloadBlob(blob, sanitizeFileName(s.name) + ".json");
+      return;
+    }
+    const zip = new JSZip();
+    converted.forEach((s) => {
+      zip.file(sanitizeFileName(s.name) + ".json", JSON.stringify(s.rows, null, 2));
+    });
+    const blob = await zip.generateAsync({ type: "blob" });
+    downloadBlob(blob, "converted-sheets.zip");
+  });
+
+  // Upload interactions
+  dropZone.addEventListener("click", () => fileInput.click());
+  fileInput.addEventListener("change", (e) => {
+    const file = e.target.files && e.target.files[0];
+    if (file) handleFile(file);
+  });
+  dropZone.addEventListener("dragover", (e) => {
+    e.preventDefault();
+    dropZone.classList.add("border-emerald-500", "bg-emerald-50");
+  });
+  dropZone.addEventListener("dragleave", () => {
+    dropZone.classList.remove("border-emerald-500", "bg-emerald-50");
+  });
+  dropZone.addEventListener("drop", (e) => {
+    e.preventDefault();
+    dropZone.classList.remove("border-emerald-500", "bg-emerald-50");
+    const file = e.dataTransfer.files && e.dataTransfer.files[0];
+    if (file) handleFile(file);
+  });
+})();
+</script>
+</body>
+</html>
