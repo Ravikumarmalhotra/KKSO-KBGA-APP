@@ -680,7 +680,7 @@ const typeOfMap = {
   ------------------------------------------------------------------------------*/
   "0201": ["YEARLY MAINTENANCE"],
   "0202": [""],
-  "0203": ["YEARLY MAINTENACE", "CLEANING AND TITENESS"],
+  "0203": ["YEARLY MAINTENACE"],
   "0204": ["MONTHLY CLEANING AND READING", "HALF-YEARLY CLEANING"],
   "0205": ["4 MONTHLY CLEANING", "YEARLY OILING & GREASING"],
   "0206": ["YEARLY MAINTENACE", "YEARLY CLEANING"],
@@ -1022,7 +1022,7 @@ const validAssetIdsByGroup = {
     "206020118",
     "207020101",
     "207020104",
-    "207020107",
+    "207020106",
     "207020108",
     "207020110",
     "207020111",
