@@ -64,7 +64,10 @@ function taFormatObjectText(objectText) {
   let text = (objectText || '').toString().trim().toUpperCase();
   const suffix = 'BOOKED BY SSE/M/KKSO';
   const alreadyHasSuffix = text.endsWith(suffix);
-  if (!excluded.includes(lookupKey) && !alreadyHasSuffix) {
+  
+  const key = (typeof lookupKey !== 'undefined') ? lookupKey : '';
+  
+  if (!excluded.includes(key) && !alreadyHasSuffix) {
     text = text + ' ' + suffix;
   }
   return text;
@@ -103,6 +106,7 @@ function taBuildTrip(row, rowIndex) {
       out: { left: row.LeftTime || '', arrived: outArrivedStr, from: fromCode, to: toCode },
       ret: { left: retLeftStr, arrived: retArrivedStr, from: toCode, to: fromCode },
       nextDay, days: row.TA || '',
+      pct: pct, // Percentage track karne ke liye
       object: taFormatObjectText(row.ObjectOfJourney),
       rate, rs, p
     };
@@ -129,11 +133,51 @@ function taPaginateTrips(trips) {
   return pages;
 }
 
+// ---------- Normal Sum (C/F, B/F aur Page-wise calculations ke liye) ----------
 function taSumAmounts(trips) {
   let rs = 0, p = 0;
-  trips.forEach(t => { rs += t.rs; p += t.p; });
-  rs += Math.floor(p / 100); p %= 100;
+  trips.forEach(t => { 
+    rs += t.rs; 
+    p += t.p; 
+  });
+  rs += Math.floor(p / 100); 
+  p %= 100;
   return { rs, p };
+}
+
+// ---------- Final Sum Logic (Computer Tab Entry ke hisab se) ----------
+function taFinalSumAmounts(allTrips) {
+  let count30 = 0;
+  let count70 = 0;
+  let totalRs = 0;
+  let totalP = 0;
+
+  allTrips.forEach(t => {
+    totalRs += t.rs;
+    totalP += t.p;
+
+    // 30% aur 70% ki count check karein
+    if (t.pct === 30) count30++;
+    else if (t.pct === 70) count70++;
+  });
+
+  // Base sum
+  totalRs += Math.floor(totalP / 100);
+  totalP %= 100;
+
+  // Agar 30% odd hai toh system +50 paise karke round off karta hai
+  let addPaise30 = (count30 % 2 !== 0) ? 50 : 0;
+  
+  // Agar 70% odd hai toh system +50 paise karke round off karta hai
+  let addPaise70 = (count70 % 2 !== 0) ? 50 : 0;
+
+  let extraPaise = addPaise30 + addPaise70;
+
+  totalP += extraPaise;
+  totalRs += Math.floor(totalP / 100);
+  totalP %= 100;
+
+  return { rs: totalRs, p: totalP };
 }
 
 function taNumberToWords(num) {
@@ -353,17 +397,25 @@ function taBuildAllPages(trips, header) {
   let cumulative = { rs: 0, p: 0 };
   let pageNum = 0;
 
-  return pages.map(pageObj => {
+  return pages.map((pageObj, index) => {
     pageNum++;
+    const isLastPage = (index === pages.length - 1);
+
     if (pageObj.type === 'first') {
-      cumulative = taSumAmounts(pageObj.trips);
+      cumulative = isLastPage ? taFinalSumAmounts(trips) : taSumAmounts(pageObj.trips);
       pageObj.runningTotal = cumulative;
     } else {
       pageObj.bf = { ...cumulative };
-      const newSum = taSumAmounts(pageObj.trips);
-      let rs = cumulative.rs + newSum.rs, p = cumulative.p + newSum.p;
-      rs += Math.floor(p / 100); p %= 100;
-      cumulative = { rs, p };
+      if (isLastPage) {
+        // Final Page par odd count waha 30%/70% tab logic lagayenge
+        cumulative = taFinalSumAmounts(trips);
+      } else {
+        // Middle pages par normal C/F addition chalega
+        const newSum = taSumAmounts(pageObj.trips);
+        let rs = cumulative.rs + newSum.rs, p = cumulative.p + newSum.p;
+        rs += Math.floor(p / 100); p %= 100;
+        cumulative = { rs, p };
+      }
       pageObj.runningTotal = cumulative;
     }
     return taBuildPageDiv(pageNum, pageObj, header);
@@ -441,9 +493,8 @@ function taGetPdfStyles() {
 }
 
 function taBuildFullDocument(bodyHtml) {
-  // Build a clean filename-friendly title: e.g. "MANISH_KUMAR_June-2026"
-  const safeName = (displayName || 'TA').replace(/\s+/g, '_');
-  const safeMonth = (monthSelect.value || 'TA').replace(/\s+/g, '_');
+  const safeName = (typeof displayName !== 'undefined' ? displayName : 'TA').replace(/\s+/g, '_');
+  const safeMonth = (typeof monthSelect !== 'undefined' && monthSelect.value ? monthSelect.value : 'TA').replace(/\s+/g, '_');
   const pdfTitle = `${safeName}_${safeMonth}`;
 
   return `<!DOCTYPE html>
@@ -474,8 +525,12 @@ ${bodyHtml}
 // ===================== MAIN ENTRY POINT =====================
 function generateAndOpenTAPdf() {
   try {
-    if (!currentFilteredData || currentFilteredData.length === 0) {
-      showAppAlert('No data available. Please load data on the View page first.', 'error');
+    if (typeof currentFilteredData === 'undefined' || !currentFilteredData || currentFilteredData.length === 0) {
+      if (typeof showAppAlert === 'function') {
+        showAppAlert('No data available. Please load data on the View page first.', 'error');
+      } else {
+        alert('No data available. Please load data on the View page first.');
+      }
       return;
     }
 
@@ -489,16 +544,21 @@ function generateAndOpenTAPdf() {
     const trips = sorted.map((row, i) => taBuildTrip(row, i)).filter(t => t !== null);
 
     if (trips.length === 0) {
-      showAppAlert('Could not process any rows. Check Date/Time formats in your sheet.', 'error');
+      if (typeof showAppAlert === 'function') {
+        showAppAlert('Could not process any rows. Check Date/Time formats in your sheet.', 'error');
+      } else {
+        alert('Could not process any rows. Check Date/Time formats in your sheet.');
+      }
       return;
     }
 
+    const emp = typeof employeeData !== 'undefined' ? employeeData : {};
     const header = {
-      pfNo: employeeData.PF_No || '', billUnit: employeeData.Bill_Unit || '',
-      mob: employeeData.Mob_No || '', sri: displayName,
-      allowanceMonth: monthSelect.value, designation: employeeData.Designation || '',
-      pay: employeeData.Basic_Pay || '', scaleOfPay: employeeData.Scale || '',
-      appointmentDate: employeeData.Date_Of_Appointment || ''
+      pfNo: emp.PF_No || '', billUnit: emp.Bill_Unit || '',
+      mob: emp.Mob_No || '', sri: typeof displayName !== 'undefined' ? displayName : '',
+      allowanceMonth: typeof monthSelect !== 'undefined' ? monthSelect.value : '', designation: emp.Designation || '',
+      pay: emp.Basic_Pay || '', scaleOfPay: emp.Scale || '',
+      appointmentDate: emp.Date_Of_Appointment || ''
     };
 
     const bodyHtml = taBuildAllPages(trips, header);
@@ -506,7 +566,11 @@ function generateAndOpenTAPdf() {
 
     const pdfWindow = window.open('', '_blank');
     if (!pdfWindow) {
-      showAppAlert('Popup blocked — please allow popups for this site, then tap the button again.', 'error');
+      if (typeof showAppAlert === 'function') {
+        showAppAlert('Popup blocked — please allow popups for this site, then tap the button again.', 'error');
+      } else {
+        alert('Popup blocked — please allow popups for this site, then tap the button again.');
+      }
       return;
     }
     pdfWindow.document.open();
@@ -515,11 +579,14 @@ function generateAndOpenTAPdf() {
 
   } catch (err) {
     console.error('generateAndOpenTAPdf failed:', err);
-    showAppAlert('PDF generation failed: ' + (err.message || err), 'error');
+    if (typeof showAppAlert === 'function') {
+      showAppAlert('PDF generation failed: ' + (err.message || err), 'error');
+    } else {
+      alert('PDF generation failed: ' + (err.message || err));
+    }
   }
 }
 
-// Kept for backward compatibility with the existing button's onclick reference
 function downloadTAPdfDirect() {
   generateAndOpenTAPdf();
 }
