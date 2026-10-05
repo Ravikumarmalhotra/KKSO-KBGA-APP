@@ -145,7 +145,7 @@ function taSumAmounts(trips) {
   return { rs, p };
 }
 
-// ---------- Final Sum Logic (Computer Tab Entry ke hisab se) ----------
+// ---------- Corrected Final Sum Logic (Computer Tab Entry) ----------
 function taFinalSumAmounts(allTrips) {
   let count30 = 0;
   let count70 = 0;
@@ -156,29 +156,47 @@ function taFinalSumAmounts(allTrips) {
     totalRs += t.rs;
     totalP += t.p;
 
-    // 30% aur 70% ki count check karein
+    // 30% aur 70% ki count track karein
     if (t.pct === 30) count30++;
     else if (t.pct === 70) count70++;
   });
 
-  // Base sum
+  // Base sum: Paise ko Rs me convert karein
   totalRs += Math.floor(totalP / 100);
   totalP %= 100;
 
-  // Agar 30% odd hai toh system +50 paise karke round off karta hai
-  let addPaise30 = (count30 % 2 !== 0) ? 50 : 0;
-  
-  // Agar 70% odd hai toh system +50 paise karke round off karta hai
-  let addPaise70 = (count70 % 2 !== 0) ? 50 : 0;
+  // AGAR PEHLE SE HI ROUND FIGURE HAI (totalP === 0), TOH KUCH NAHI KARNA
+  if (totalP > 0) {
+    let extraPaise = 0;
 
-  let extraPaise = addPaise30 + addPaise70;
+    // 1. Agar total round figure nahi hai aur 30% count odd hai -> +50 paise
+    if (count30 % 2 !== 0) {
+      extraPaise += 50;
+    }
 
-  totalP += extraPaise;
-  totalRs += Math.floor(totalP / 100);
-  totalP %= 100;
+    // 2. Agar total round figure nahi hai aur 70% count odd hai -> +50 paise
+    if (count70 % 2 !== 0) {
+      extraPaise += 50;
+    }
 
-  return { rs: totalRs, p: totalP };
+    totalP += extraPaise;
+    totalRs += Math.floor(totalP / 100);
+    totalP %= 100;
+
+    // HAR HAAL ME FINAL TOTAL ROUND FIGURE CHAHIYE:
+    // Agar add karne ke baad bhi paise bache hain (e.g. 50 paise),
+    // toh use next nearest rupee par round off kar denge.
+    if (totalP > 0) {
+      if (totalP >= 50) {
+        totalRs += 1;
+      }
+      totalP = 0; // Final Paise hamesha 00 ho jayenge
+    }
+  }
+
+  return { rs: totalRs, p: 0 }; // Always 0 paise (Pure Round Figure)
 }
+
 
 function taNumberToWords(num) {
   if (num === 0) return 'Zero';
