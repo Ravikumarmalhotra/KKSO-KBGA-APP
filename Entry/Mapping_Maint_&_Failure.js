@@ -811,22 +811,22 @@ const typeOfMap = {
   /*----------------------------------------------------------------------------
            PUMP (03)
   ------------------------------------------------------------------------------*/
-  "0301": ["WEEKLY CHECKING", "MONTHLY MAINTENANCE"],
-  "0302": ["WEEKLY CHECKING", "MONTHLY MAINTENANCE"],
-  "0303": ["WEEKLY CHECKING", "MONTHLY MAINTENANCE"],
-  "0304": ["WEEKLY CHECKING", "MONTHLY MAINTENANCE"],
+  "0301": ["YEARLY MAINTENACE"],
+  "0302": ["YEARLY MAINTENACE"],
+  "0303": ["YEARLY MAINTENACE"],
+  "0304": ["YEARLY MAINTENACE"],
   /*----------------------------------------------------------------------------
            DG (04)
   ------------------------------------------------------------------------------*/
-  "0401": ["WEEKLY CHECKING & RUNNING", "QUARTERLY MAINTENANCE"],
+  "0401": ["QUARTERLY MAINTENANCE", "YEARLY MAINTENACE"],
   /*----------------------------------------------------------------------------
            Third Rail (05)
   ----------------------------------------------------------------------------*/
-  "0501": ["FORTNIGHTLY FOOT PATROLLING", "MONTHLY FOOT PATROLLING"],
-  "0502": ["YEARLY READING", "HALF-YEARLY READING", "ADUSTMENT"],
-  "0503": ["YEARLY MAINTENANCE", "HALF-YEARLY  MAINTENANCE", "CLEANING"],
-  "0504": ["YEARLY MAINTENANCE", "HALF-YEARLY  MAINTENANCE"],
-  "0505": ["YEARLY MAINTENANCE", "HALF-YEARLY  MAINTENANCE"],
+  "0501": ["MONTHLY FOOT PATROLLING"],
+  "0502": ["YEARLY READING"],
+  "0503": ["YEARLY MAINTENANCE"],
+  "0504": ["YEARLY MAINTENANCE"],
+  "0505": ["YEARLY MAINTENANCE"],
   /*----------------------------------------------------------------------------
            LIFT & ESCALATOR (06)
   ----------------------------------------------------------------------------*/
