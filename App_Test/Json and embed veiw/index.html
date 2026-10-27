@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <!-- ✅ ADD THESE LINES --->
+    <link rel="manifest" href="/KKSO-KBGA-APP/manifest.json">
+    <meta name="theme-color" content="#000000">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="apple-mobile-web-app-title" content="KKSO KBGA">
+    <link rel="apple-touch-icon" href="/KKSO-KBGA-APP/icon-192.png">
+
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', function() {
+                navigator.serviceWorker.register('/KKSO-KBGA-APP/sw.js')
+                .then(function(registration) {
+                    console.log('SW registered successfully');
+                })
+                .catch(function(error) {
+                    console.log('SW registration failed:', error);
+                });
+            });
+        }
+    </script>
+    <!-- ✅ END OF NEW LINES -->
+<!-- css link here -->
+<link rel="stylesheet" href="style.css">
+
+    <!-- YOUR EXISTING CODE BELOW -->
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<!-- Ravi you can change the browser tab title here -->
+<title>KKSO-KBGA DATA</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+</head>
+<body>
+<!-- ===== LOGIN PAGE ===== -->
+<div class="login-page" id="loginPage">
+<div class="login-card">
+<h1>🔐 KKSO-KBGA</h1>
+<h3>Enter your credentials to continue</h3>
+<input type="text" class="login-input" id="loginUser" placeholder="👤 User ID" autocomplete="off">
+<input type="password" class="login-input" id="loginPass" placeholder="🔑 Password">
+<button class="login-btn" onclick="handleLogin()">LOGIN</button>
+<div class="login-error" id="loginError"></div>
+</div>
+</div>
+
+<!-- ===== MAIN APP ===== -->
+<div class="page" id="appPage">
+<div class="header-strip">
+<div class="h11"></div>
+<div class="h12"></div>
+<div class="h13"></div>
+</div>
+
+<div class="user-bar" id="userBar">
+<div class="clock-widget"><span class="dot"></span><span class="day">-</span><span class="date">-</span><span class="time">-</span></div>
+<div class="user-info">
+<div class="user-avatar" id="userAvatar">?</div>
+<div class="user-details"><span class="user-name" id="userName">-</span><span class="user-level" id="userLevel">-</span></div>
+<button class="pwd-btn" onclick="openPasswordModal()" title="Change Password">🔑</button>
+<button class="refresh-btn" onclick="location.reload()" title="Refresh">🔄</button>
+<button class="logout-btn" onclick="handleLogout()">LOGOUT</button>
+</div>
+</div>
+
+<div class="title-card">
+<h1>KKSO-KBGA DATA</h1>
+<h2 id="titleLevel">A Cloud Based Data System</h2>
+<h3 id="versionText">© Created by SSE/M/KKSO </h3>
+</div>
+<!-- MODE TOGGLE — 4 tabs now including More -->
+<div class="mode-toggle">
+<button class="mode-btn active" onclick="switchMode('view')" id="viewBtn">📋 View Data</button>
+<button class="mode-btn" onclick="switchMode('entry')" id="entryBtn">✏️ Entry Data</button>
+<button class="mode-btn" onclick="switchMode('mydata')" id="mydataBtn">👤 My Data</button>
+<button class="mode-btn" onclick="switchMode('more')" id="moreBtn">📦 More</button>
+</div>
+
+<!-- VIEW MODE -->
+<div id="viewSection">
+<div class="panel">
+<div class="panel-title">📋 Data Viewer</div>
+<div class="form-group"><label>SUBJECT</label><div class="select-wrapper"><select id="viewSubject" class="colorful-select g1"><option value="">-- Select Subject --</option></select></div></div>
+<div id="viewSubSubjectGroup" class="form-group" style="display:none"><label>SUB-SUBJECT</label><div class="select-wrapper"><select id="viewSubSubject" class="colorful-select g2"><option value="">-- Select Sub-Subject --</option></select></div></div>
+<div id="viewDropdowns"></div>
+</div>
+<div id="viewOutput"></div>
+</div>
+
+<!-- ENTRY MODE -->
+<div id="entrySection" style="display:none">
+<div class="panel">
+<div class="panel-title">✏️ Data Entry Form</div>
+<div class="form-group"><label>SUBJECT</label><div class="select-wrapper"><select id="entrySubject" class="colorful-select g1"><option value="">-- Select Subject --</option></select></div></div>
+<div id="entrySubSubjectGroup" class="form-group" style="display:none"><label>SUB-SUBJECT</label><div class="select-wrapper"><select id="entrySubSubject" class="colorful-select g2"><option value="">-- Select Sub-Subject --</option></select></div></div>
+
+<!-- ✅ NEW: HTML Embed container for Entry Data -->
+<div id="entryHtmlEmbedSection" class="entry-embed-wrapper">
+  <div class="entry-embed-topbar">
+    <button class="entry-embed-back" onclick="closeEntryHtmlEmbed()">← Back</button>
+    <div class="entry-embed-title" id="entryEmbedTitle">Loading…</div>
+    <div style="width:60px;flex-shrink:0"></div>
+  </div>
+  <div class="entry-embed-body">
+    <div class="entry-embed-loading" id="entryEmbedLoading">
+      <div class="entry-embed-spinner"></div>
+      <span>Loading form…</span>
+    </div>
+    <iframe class="entry-embed-iframe" id="entryHtmlIframe" src="" allowfullscreen
+      sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-modals"
+      onload="onEntryIframeLoad()"></iframe>
+  </div>
+</div>
+
+<div id="entryDropdowns"></div>
+<div class="btn-group" id="entryBtnGroup" style="display:none">
+<button class="submit-btn" onclick="handleEntrySubmit()">📤 Submit Entry</button>
+<button class="clear-btn" onclick="handleEntryClear()">🗑️ Clear</button>
+</div>
+<div id="entryStatus"></div>
+</div>
+</div>
+
+<!-- MY DATA MODE -->
+<div id="mydataSection" style="display:none">
+<div class="mydata-toggle">
+<button class="mydata-btn active" onclick="switchMyData('entries')" id="myEntriesBtn">📝 My Entry Data</button>
+<button class="mydata-btn" onclick="switchMyData('inbox')" id="myInboxBtn">📥 My Inbox <span class="unread-badge" id="unreadBadge" style="display:none">0</span></button>
+</div>
+
+<!-- MY ENTRIES - NO personal info here -->
+<div id="myEntriesSection">
+<div class="panel">
+<div class="stats-row" id="statsRow">
+<!--<div class="stat-card"><div class="stat-icon">📊</div><div class="stat-num" id="statTotal">0</div><div class="stat-label">Total</div></div>
+<div class="stat-card"><div class="stat-icon">📅</div><div class="stat-num" id="statToday">0</div><div class="stat-label">Today</div></div>
+<div class="stat-card"><div class="stat-icon">📆</div><div class="stat-num" id="statWeek">0</div><div class="stat-label">This Week</div></div>
+<div class="stat-card"><div class="stat-icon">🗓️</div><div class="stat-num" id="statMonth">0</div><div class="stat-label">This Month</div></div>-->
+</div>
+<div class="form-group"><label>Filter by Subject</label><div class="select-wrapper"><select id="mySubjectFilter" class="colorful-select g3"><option value="">-- All Entries --</option></select></div></div>
+<button class="submit-btn" onclick="loadMyData()" style="margin-bottom:10px;width:100%">🔄 Refresh Data</button>
+<button class="clear-btn" onclick="exportPDF()" style="margin-bottom:10px;width:100%;background:linear-gradient(135deg,#f59e0b,#d97706)">📄 Export PDF</button>
+<div id="myEntriesTable"></div>
+</div>
+</div>
+
+<!-- MY INBOX - WITH personal info -->
+<div id="myInboxSection" style="display:none">
+<div class="panel">
+<div id="inboxPersonalInfo"></div>
+<div class="inbox-stats" id="inboxStats"></div>
+<div class="inbox-filters" id="inboxFilters"></div>
+<div id="inboxCards"></div>
+</div>
+</div>
+</div>
+
+<!-- MORE MODE (Folder-based app hub) -->
+<div id="moreSection" style="display:none">
+<div class="more-section">
+<div class="more-header">
+<h2>📦 More Apps & Tools</h2>
+<p id="moreHeaderDesc">Select a category below to explore</p>
+</div>
+<div id="moreBreadcrumb"></div>
+<div id="moreAppsContainer">
+<div class="more-loading">⏳ Loading apps...</div>
+</div>
+</div>
+</div>
+
+</div><!-- end appPage -->
+
+<!-- PASSWORD MODAL -->
+<div class="modal-overlay" id="pwdModal">
+<div class="modal-card" style="position:relative">
+<button class="modal-close" onclick="closePasswordModal()">✕</button>
+<h2>🔑 Change Password</h2>
+<input type="password" class="login-input" id="pwdCurrent" placeholder="Current Password">
+<input type="password" class="login-input" id="pwdNew" placeholder="New Password (min 4 chars)">
+<input type="password" class="login-input" id="pwdConfirm" placeholder="Confirm New Password">
+<button class="login-btn" onclick="handlePasswordChange()">Change Password</button>
+<div id="pwdMessage" style="text-align:center;margin-top:10px;font-size:13px"></div>
+</div>
+</div>
+
+<!-- APP EMBED FULLSCREEN WRAPPER -->
+<div class="app-embed-wrapper" id="appEmbedWrapper">
+<div class="app-embed-topbar">
+<button class="app-embed-back" onclick="closeEmbeddedApp()">← Back</button>
+<div class="app-embed-title" id="appEmbedTitle">Loading…</div>
+<div style="width:60px;flex-shrink:0"></div><!-- spacer to balance back btn -->
+</div>
+<div class="app-embed-loading" id="appEmbedLoading">
+<div class="app-embed-spinner"></div>
+<span>Loading app…</span>
+</div>
+<iframe class="app-embed-iframe" id="appEmbedIframe" src="" allowfullscreen
+  sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-modals"
+  onload="onIframeLoad()"></iframe>
+</div>
+  <!-- JS link here -->
+<script src="script6.js"></script>
+</body>
+</html>
+  
