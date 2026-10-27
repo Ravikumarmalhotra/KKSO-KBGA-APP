@@ -204,8 +204,22 @@
   sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-modals"
   onload="onIframeLoad()"></iframe>
 </div>
+<!-- ✅ VIEW MODE HTML EMBED WRAPPER (same style as App Embed, new IDs) -->
+<div class="app-embed-wrapper" id="viewHtmlEmbedSection">
+<div class="app-embed-topbar">
+<button class="app-embed-back" onclick="closeViewHtmlEmbed(false)">← Back</button>
+<div class="app-embed-title" id="viewEmbedTitle">Loading…</div>
+<div style="width:60px;flex-shrink:0"></div>
+</div>
+<div class="app-embed-loading" id="viewEmbedLoading">
+<div class="app-embed-spinner"></div>
+<span>Loading…</span>
+</div>
+<iframe class="app-embed-iframe" id="viewHtmlIframe" src="" allowfullscreen
+  sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-modals"
+  onload="onViewIframeLoad()"></iframe>
+</div>
   <!-- JS link here -->
-<script src="script6.js"></script>
+<script src="script.js"></script>
 </body>
 </html>
-  
