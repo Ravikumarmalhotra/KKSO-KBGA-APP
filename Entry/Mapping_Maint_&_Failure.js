@@ -805,7 +805,7 @@ const typeOfMap = {
   "0203": ["YEARLY MAINTENACE"],
   "0204": ["MONTHLY CLEANING AND READING", "HALF-YEARLY CLEANING"],
   "0205": ["QUARTERLY CLEANING", "YEARLY OILING & GREASING"],
-  "0206": ["YEARLY MAINTENACE", "YEARLY CLEANING"],
+  "0206": ["YEARLY CLEANING & MAINTENACE"],
   "0207": ["QUARTERLY CLEANING", "REPLACEMENT"],
   "0208": [""],
   /*----------------------------------------------------------------------------
