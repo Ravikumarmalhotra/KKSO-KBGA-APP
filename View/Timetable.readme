@@ -1,0 +1,22 @@
+## Aapke 7 points ka status
+
+1. **Header:** Poora hata diya (clock bhi).
+2. **Red marks:** Sab text hata ya badal diye. Ab labels hain "Select", "Beleghata towards", "Kavi Subhash towards", "Proposed", "Dotted ring = selected station" aur "Now Running: N". Map par proposed stations ke neeche sirf "Proposed" likha hai. Data source line, N/A wali explanation, location line aur JSON Data section hata diye.
+3. **Font aur color:**
+   - Train time ab bada hai (46px) aur countdown chhota (22px).
+   - Countdown ka color Time2 − Time1 ke gap par chalta hai. Yeh gap (jaise 25 min) 100% maana gaya hai, jo green hai, aur time kam hone par color dark red ki taraf jata hai.
+   - Agar Time2 nahi hai to default 25 min (`defaultHeadwaySec`) use hota hai.
+4. **Card:** Ab dono cards (UP aur DN) vertical do hisson me bante hain. Left me Time1, countdown aur progress bar hai. Right me sirf Time2 hai, upar ki taraf, bina countdown aur bar ke.
+5. **Timetable:**
+   - **Departure time:** PDF me har time **departure** ka hai. Isliye arrival = departure − dwell (default 30 sec) hai. KKSO 07:40 → KSJR 07:44:10 pahunchta hai (run 4:10, ek hi 100% me), phir 07:44:40 par chhutta hai. Barunsen Gupta par dwell 20 sec rakha hai, kyunki aapne 08:03:50 → 08:04:10 likha tha.
+   - **Pehli train:** Jo train 07:40 par chali, wahi Beleghata 08:08 par pahunchti hai aur 08:10 par DN me khulti hai.
+   - **KKSO standing:** KKSO par 08:10 wali train 08:08 se arrow ke saath khadi dikhti hai.
+   - **Extra columns:** PDF ke end ke extra columns **7:55 aur 8:20** (UP) maine hata diye, kyunki aapne bataya ki 08:20 par KKSO se train nahi hai. UP ki ab 29 trips hain aur DN ki 30. Agar kabhi chahiye to JSON me wapas daal sakte ho.
+6. **Terminal:** KBGA par UP aur KKSO par DN me N/A aata hai. Last station ka arrival time khud calculate hota hai (next direction ki departure − holdSec).
+7. **Holding time:** Ab JSON me `holdSec: 120` hai, KKSO, KBGA aur future KITC ke liye. Jab KITC active hoga, to last station ka hold usi se aayega. Station ke saath `dwellSec` bhi alag-alag set kar sakte ho.
+
+## JSON edit
+
+- `settings` wali values `timetable.json` ke `meta` me hain: `minTerminalLegSec`, `maxLastLegSec`, `defaultLastLegSec`, `defaultHeadwaySec`.
+- HTML ke andar wale dono `<script type="application/json">` blocks ko copy karke `stations.json` aur `timetable.json` naam se same folder me rakhoge, to page unhe automatically load karega. Yeh web server ya GitHub Pages par hi chalega.
+- Test ke liye URL ke end me `?time=08:05:00` lagao. Page us time se chalna shuru hoga, aur koi button ya UI nahi dikhega.
