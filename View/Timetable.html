@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Orange Line Time Table</title>
+<style>
+:root{
+  --up:#1565c0; --up-bg:#e3f0fd;
+  --dn:#8e24aa; --dn-bg:#f6e8fb;
+  --ink:#1d2433; --muted:#6b7385; --bg:#f2f4f9;
+}
+*{box-sizing:border-box}
+body{margin:0;font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;background:var(--bg);color:var(--ink)}
+.wrap{max-width:1250px;margin:auto;padding:14px}
+.controls{background:#fff;border-radius:14px;padding:14px;display:flex;flex-wrap:wrap;gap:12px;align-items:center;box-shadow:0 2px 8px rgba(0,0,0,.07)}
+.controls label{font-weight:700;font-size:20px}
+select{font:inherit;padding:10px 12px;border-radius:9px;border:1px solid #c5cbd8;background:#fff;min-width:270px;font-weight:600;flex:1}
+.grid{display:grid;grid-template-columns:minmax(320px,440px) 1fr;gap:14px;margin-top:14px}
+@media(max-width:900px){.grid{grid-template-columns:1fr}}
+.card{background:#fff;border-radius:14px;box-shadow:0 2px 8px rgba(0,0,0,.08);overflow:hidden;margin-bottom:14px}
+.dirUP{--c:var(--up);--c2:var(--up-bg)}
+.dirDN{--c:var(--dn);--c2:var(--dn-bg)}
+.hd{background:var(--c);color:#fff;padding:10px 14px;display:flex;gap:12px;align-items:center}
+.hd .big{font-size:30px;line-height:1}
+.hd b{font-size:17px;letter-spacing:.5px}
+.hd small{display:block;opacity:.9;font-size:13px}
+
+/* card split in 2 vertical parts */
+.split{display:grid;grid-template-columns:1.3fr 1fr}
+.p1{padding:12px 14px;min-width:0}
+.p2{padding:12px;background:var(--c2);border-left:3px solid var(--c);display:flex;align-items:flex start;min-width:0}
+.t1{font-size:clamp(32px,10vw,46px);font-weight:800;font-variant-numeric:tabular-nums;line-height:1.1}
+.cd{font-size:22px;font-weight:800;font-variant-numeric:tabular-nums;margin:4px 0 8px;transition:color .5s}
+.t2{font-size:clamp(20px,6vw,26px);font-weight:700;font-variant-numeric:tabular-nums;color:var(--c);line-height:1.2}
+.bar{height:10px;background:#e6e9f0;border-radius:6px;overflow:hidden}
+.bar i{display:block;height:100%;border-radius:6px}
+.tag{display:inline-block;font-size:10px;background:#ffe0b2;color:#8a4b00;padding:2px 6px;border-radius:8px;margin-left:4px;vertical-align:middle;font-weight:600}
+.na{padding:22px 16px;text-align:center;font-size:54px;font-weight:800;color:#9aa1b2}
+
+/* map */
+.mapcard{padding:10px}
+.mapcard h3{margin:4px 6px 0}
+#map{width:100%;max-height:86vh;display:block}
+.trk{fill:none;stroke-width:3;stroke-linecap:round}
+.tUP{stroke:var(--up)} .tDN{stroke:var(--dn)}
+.aUP{fill:var(--up)} .aDN{fill:var(--dn)}
+.rUP{stroke:var(--up)} .rDN{stroke:var(--dn)}
+.lUP{fill:var(--up)} .lDN{fill:var(--dn)}
+.stn{cursor:pointer}
+.stn.off{cursor:not-allowed}
+.sn{font-size:13px;font-weight:700;fill:#222}
+.sc{font-size:10.5px;font-weight:500;fill:#777}
+.si{font-size:10.5px;fill:#a35a00;font-weight:600}
+.stn.off text{fill:#aaa}
+.stn.sel .sn{fill:#d35400;font-size:14px}
+.pulse{display:none;fill:none;stroke:#ff7f00;stroke-width:3;transform-box:fill-box;transform-origin:center}
+.stn.sel .pulse{display:block;animation:pl 1.3s infinite}
+@keyframes pl{0%{transform:scale(1);opacity:1}100%{transform:scale(1.9);opacity:0}}
+.ring{fill:none;stroke-width:2.5;stroke-dasharray:4 3}
+.legend{display:flex;flex-wrap:wrap;gap:14px;font-size:13px;padding:6px;color:#333}
+.legend span{display:flex;align-items:center;gap:6px}
+.sw{width:14px;height:14px;border-radius:50%;display:inline-block}
+.running{padding:6px 10px 10px}
+.running h4{margin:6px 0}
+.running ul{padding:0;margin:0}
+.running li{font-size:13px;margin:3px 0;list-style:none;padding:5px 8px;border-radius:6px}
+.running li.UP{background:var(--up-bg);border-left:4px solid var(--up)}
+.running li.DN{background:var(--dn-bg);border-left:4px solid var(--dn)}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <div class="controls">
+    <label for="stationSel">Select Station</label>
+    <select id="stationSel"></select>
+  </div>
+
+  <div class="grid">
+    <section>
+      <div class="card dirUP" id="cardUP"></div>
+      <div class="card dirDN" id="cardDN"></div>
+    </section>
+
+    <section>
+      <div class="card mapcard">
+        <h3>Orange Line Route Map</h3>
+        <svg id="map" viewBox="0 0 480 760"></svg>
+        <div class="legend">
+          <span><svg width="22" height="22" viewBox="-12 -13 24 26"><polygon points="0,-12 9,9 0,4 -9,9" fill="#1565c0" stroke="#fff" stroke-width="1.5"/></svg> UP train ( Towards <span id="lgUP">Beleghata</span>)</span>
+          <span><svg width="22" height="22" viewBox="-12 -13 24 26"><polygon points="0,12 9,-9 0,-4 -9,-9" fill="#8e24aa" stroke="#fff" stroke-width="1.5"/></svg> DN train ( Towards <span id="lgDN">Kavi Subhash</span>)</span>
+          <span><i class="sw" style="background:#ffe500;border:2px solid #000"></i> Interchange</span>
+          <span><i class="sw" style="background:#fff;border:2px dashed #aaa"></i> Proposed</span>
+          <span>⭕ Dotted ring = selected station</span>
+        </div>
+        <div class="running" id="runList"></div>
+      </div>
+    </section>
+  </div>
+</div>
+
+<!-- ======================= STATIONS JSON ======================= -->
+<script type="application/json" id="stationsJson">
+{
+  "line": "Orange Line",
+  "defaultDwellSec": 30,
+  "defaultHoldSec": 120,
+  "stations": [
+    { "code": "KKSO", "name": "Kavi Subhash",      "status": "active",   "interchange": "Blue Line (KKVS)",      "holdSec": 120, "x": 120, "y": 710 },
+    { "code": "KSJR", "name": "Satyajit Ray",      "status": "active",   "interchange": "",                      "x": 120, "y": 650 },
+    { "code": "KJNN", "name": "Joytrindra Nandi",  "status": "active",   "interchange": "",                      "x": 155, "y": 592 },
+    { "code": "KKSK", "name": "Kavi Sukanta",      "status": "active",   "interchange": "",                      "x": 190, "y": 534 },
+    { "code": "KHMD", "name": "Hemanta Mukherjee", "status": "active",   "interchange": "",                      "x": 215, "y": 474 },
+    { "code": "KVIB", "name": "VIP Bazar",         "status": "active",   "interchange": "",                      "x": 215, "y": 414 },
+    { "code": "KRWT", "name": "Ritwik Ghatak",     "status": "active",   "interchange": "",                      "x": 215, "y": 354 },
+    { "code": "KBST", "name": "Barunsen Gupta",    "status": "active",   "interchange": "",                      "dwellSec": 20, "x": 215, "y": 294 },
+    { "code": "KBGA", "name": "Beleghata",         "status": "active",   "interchange": "",                      "holdSec": 120, "x": 215, "y": 234 },
+    { "code": "KGKG", "name": "Gour Kishor Ghosh", "status": "proposed", "interchange": "",                      "x": 215, "y": 174 },
+    { "code": "KNLN", "name": "Nalban",            "status": "proposed", "interchange": "",                      "x": 215, "y": 114 },
+    { "code": "KITC", "name": "IT Centre",         "status": "proposed", "interchange": "Green Line (Sector V)", "holdSec": 120, "x": 215, "y": 54 }
+  ]
+}
+</script>
+
+<!-- ======================= TIMETABLE JSON ======================= -->
+<script type="application/json" id="timetableJson">
+{
+  "meta": {
+    "defaultHeadwaySec": 1500,
+    "minTerminalLegSec": 150,
+    "maxLastLegSec": 300,
+    "defaultLastLegSec": 240,
+    "note": "Har time = us station se DEPARTURE (khulne) ka time. Arrival = departure - dwellSec. Last station par arrival = next direction ki departure - holdSec."
+  },
+  "UP": {
+    "KKSO": ["7:40:00","8:10:00","8:40:00","9:05:00","9:30:00","9:55:00","10:20:00","10:45:00","11:10:00","11:35:00","12:00:00","12:25:00","12:50:00","13:15:00","13:40:00","14:05:00","14:30:00","14:55:00","15:20:00","15:45:00","16:10:00","16:35:00","17:00:00","17:25:00","17:50:00","18:15:00","18:40:00","19:05:00","19:30:00"],
+    "KSJR": ["7:44:40","8:13:20","8:43:20","9:08:20","9:33:20","9:58:20","10:23:20","10:48:20","11:13:20","11:38:20","12:03:20","12:28:20","12:53:20","13:18:20","13:43:20","14:08:20","14:33:20","14:58:20","15:23:20","15:48:20","16:13:20","16:38:20","17:03:20","17:28:20","17:53:20","18:18:20","18:43:20","19:08:20","19:33:20"],
+    "KJNN": ["7:47:40","8:16:10","8:46:10","9:11:10","9:36:10","10:01:10","10:26:10","10:51:10","11:16:10","11:41:10","12:06:10","12:31:10","12:56:10","13:21:10","13:46:10","14:11:10","14:36:10","15:01:10","15:26:10","15:51:10","16:16:10","16:41:10","17:06:10","17:31:10","17:56:10","18:21:10","18:46:10","19:11:10","19:36:10"],
+    "KKSK": ["7:50:40","8:18:30","8:48:30","9:13:30","9:38:30","10:03:30","10:28:30","10:53:30","11:18:30","11:43:30","12:08:30","12:33:30","12:58:30","13:23:30","13:48:30","14:13:30","14:38:30","15:03:30","15:28:30","15:53:30","16:18:30","16:43:30","17:08:30","17:33:30","17:58:30","18:23:30","18:48:30","19:13:30","19:38:30"],
+    "KHMD": ["7:54:00","8:21:00","8:51:00","9:16:00","9:41:00","10:06:00","10:31:00","10:56:00","11:21:00","11:46:00","12:11:00","12:36:00","13:01:00","13:26:00","13:51:00","14:16:00","14:41:00","15:06:00","15:31:00","15:56:00","16:21:00","16:46:00","17:11:00","17:36:00","18:01:00","18:26:00","18:51:00","19:16:00","19:41:00"],
+    "KVIB": ["7:57:10","8:23:40","8:53:40","9:18:40","9:43:40","10:08:40","10:33:40","10:58:40","11:23:40","11:48:40","12:13:40","12:38:40","13:03:40","13:28:40","13:53:40","14:18:40","14:43:40","15:08:40","15:33:40","15:58:40","16:23:40","16:48:40","17:13:40","17:38:40","18:03:40","18:28:40","18:53:40","19:18:40","19:43:40"],
+    "KRWT": ["8:00:20","8:26:00","8:56:00","9:21:00","9:46:00","10:11:00","10:36:00","11:01:00","11:26:00","11:51:00","12:16:00","12:41:00","13:06:00","13:31:00","13:56:00","14:21:00","14:46:00","15:11:00","15:36:00","16:01:00","16:26:00","16:51:00","17:16:00","17:41:00","18:06:00","18:31:00","18:56:00","19:21:00","19:46:00"],
+    "KBST": ["8:04:10","8:28:50","8:58:50","9:23:50","9:48:50","10:13:50","10:38:50","11:03:50","11:28:50","11:53:50","12:18:50","12:43:50","13:08:50","13:33:50","13:58:50","14:23:50","14:48:50","15:13:50","15:38:50","16:03:50","16:28:50","16:53:50","17:18:50","17:43:50","18:08:50","18:33:50","18:58:50","19:23:50","19:48:50"]
+  },
+  "DN": {
+    "KBGA": ["8:10:00","8:40:00","9:05:00","9:30:00","9:55:00","10:20:00","10:45:00","11:10:00","11:35:00","12:00:00","12:25:00","12:50:00","13:15:00","13:40:00","14:05:00","14:30:00","14:55:00","15:20:00","15:45:00","16:10:00","16:35:00","17:00:00","17:25:00","17:50:00","18:15:00","18:40:00","19:05:00","19:30:00","19:55:00","20:20:00"],
+    "KBST": ["8:13:30","8:42:40","9:07:40","9:32:40","9:57:40","10:22:40","10:47:40","11:12:40","11:37:40","12:02:40","12:27:40","12:52:40","13:17:40","13:42:40","14:07:40","14:32:40","14:57:40","15:22:40","15:47:40","16:12:40","16:37:40","17:02:40","17:27:40","17:52:40","18:17:40","18:42:40","19:07:40","19:32:40","19:57:40","20:22:40"],
+    "KRWT": ["8:17:20","8:45:30","9:10:30","9:35:30","10:00:30","10:25:30","10:50:30","11:15:30","11:40:30","12:05:30","12:30:30","12:55:30","13:20:30","13:45:30","14:10:30","14:35:30","15:00:30","15:25:30","15:50:30","16:15:30","16:40:30","17:05:30","17:30:30","17:55:30","18:20:30","18:45:30","19:10:30","19:35:30","20:00:30","20:25:30"],
+    "KVIB": ["8:20:30","8:47:50","9:12:50","9:37:50","10:02:50","10:27:50","10:52:50","11:17:50","11:42:50","12:07:50","12:32:50","12:57:50","13:22:50","13:47:50","14:12:50","14:37:50","15:02:50","15:27:50","15:52:50","16:17:50","16:42:50","17:07:50","17:32:50","17:57:50","18:22:50","18:47:50","19:12:50","19:37:50","20:02:50","20:27:50"],
+    "KHMD": ["8:23:40","8:50:30","9:15:30","9:40:30","10:05:30","10:30:30","10:55:30","11:20:30","11:45:30","12:10:30","12:35:30","13:00:30","13:25:30","13:50:30","14:15:30","14:40:30","15:05:30","15:30:30","15:55:30","16:20:30","16:45:30","17:10:30","17:35:30","18:00:30","18:25:30","18:50:30","19:15:30","19:40:30","20:05:30","20:30:30"],
+    "KKSK": ["8:27:00","8:53:00","9:18:00","9:43:00","10:08:00","10:33:00","10:58:00","11:23:00","11:48:00","12:13:00","12:38:00","13:03:00","13:28:00","13:53:00","14:18:00","14:43:00","15:08:00","15:33:00","15:58:00","16:23:00","16:48:00","17:13:00","17:38:00","18:03:00","18:28:00","18:53:00","19:18:00","19:43:00","20:08:00","20:33:00"],
+    "KJNN": ["8:30:00","8:55:20","9:20:20","9:45:20","10:10:20","10:35:20","11:00:20","11:25:20","11:50:20","12:15:20","12:40:20","13:05:20","13:30:20","13:55:20","14:20:20","14:45:20","15:10:20","15:35:20","16:00:20","16:25:20","16:50:20","17:15:20","17:40:20","18:05:20","18:30:20","18:55:20","19:20:20","19:45:20","20:10:20","20:35:20"],
+    "KSJR": ["8:33:00","8:58:10","9:23:10","9:48:10","10:13:10","10:38:10","11:03:10","11:28:10","11:53:10","12:18:10","12:43:10","13:08:10","13:33:10","13:58:10","14:23:10","14:48:10","15:13:10","15:38:10","16:03:10","16:28:10","16:53:10","17:18:10","17:43:10","18:08:10","18:33:10","18:58:10","19:23:10","19:48:10","20:13:10","20:38:10"]
+  }
+}
+</script>
+
+<script>
+/* ================= helpers ================= */
+const $ = id => document.getElementById(id);
+const dirs = ['UP','DN'];
+const OFF = 9;                      // UP/DN track gap on map (px)
+let ST, TT, M, offsetSec = 0;
+let selected = localStorage.getItem('kmOrangeStation') || 'KKSO';
+
+const istFmt = new Intl.DateTimeFormat('en-GB',{timeZone:'Asia/Kolkata',hour:'numeric',minute:'numeric',second:'numeric',hourCycle:'h23'});
+function istSec(){
+  const p = istFmt.formatToParts(new Date());
+  const g = t => +p.find(x => x.type === t).value;
+  return g('hour')*3600 + g('minute')*60 + g('second');
+}
+const nowSec = () => (((istSec() + offsetSec) % 86400) + 86400) % 86400;
+
+function toSec(s){
+  if(typeof s !== 'string') return null;
+  const p = s.trim().split(':').map(Number);
+  if(!p.length || p.some(isNaN)) return null;
+  return p[0]*3600 + (p[1]||0)*60 + (p[2]||0);
+}
+const pad = n => String(n).padStart(2,'0');
+function fmt(sec){ sec=((Math.round(sec)%86400)+86400)%86400; return pad(Math.floor(sec/3600))+':'+pad(Math.floor(sec%3600/60))+':'+pad(sec%60); }
+function fmtCd(sec){
+  sec = Math.max(0, Math.round(sec));
+  const h=Math.floor(sec/3600), m=Math.floor(sec%3600/60), s=sec%60;
+  return h ? `${h}:${pad(m)}:${pad(s)}` : `${pad(m)}:${pad(s)}`;
+}
+/* r = 1 (100%, full gap) -> green ... r = 0 -> dark red */
+function cdColor(r){ return `hsl(${Math.round(120*r)},80%,${Math.round(27+20*r)}%)`; }
+
+/* test: page_url?time=08:05:00 */
+(function(){
+  const q = new URLSearchParams(location.search).get('time');
+  if(q){ const t = toSec(q); if(t != null) offsetSec = t - istSec(); }
+})();
+
+/* ================= data prepare ================= */
+function prepare(){
+  const list = ST.stations;
+  M = {list, by:{}, times:{UP:{},DN:{}}, seq:{}, trips:{UP:[],DN:[]}};
+  list.forEach((s,i)=>{ s.idx=i; M.by[s.code]=s; });
+  const act = list.filter(s => s.status === 'active');
+  M.first = act[0]; M.last = act[act.length-1];
+  M.cfg = Object.assign({defaultHeadwaySec:1500, minTerminalLegSec:150, maxLastLegSec:300, defaultLastLegSec:240}, TT.meta || {});
+  M.dwellDef = (typeof ST.defaultDwellSec === 'number') ? ST.defaultDwellSec : 30;
+  M.holdDef  = (typeof ST.defaultHoldSec  === 'number') ? ST.defaultHoldSec  : 120;
+
+  dirs.forEach(d=>{
+    const tbl = TT[d] || {};
+    list.forEach(s => { M.times[d][s.code] = (tbl[s.code] || []).map(toSec); });
+  });
+  /* UP: first -> (last-1) departures, DN: last -> (first+1) departures. Last station ka arrival calculate hota hai */
+  M.seq.UP = act.slice(0,-1);
+  M.seq.DN = act.slice(1).reverse();
+  buildTrips();
+
+  /* map geometry: UP track (right) & DN track (left) */
+  const P = list, n = P.length, N = [];
+  for(let i=0;i<n-1;i++){
+    const dx=P[i+1].x-P[i].x, dy=P[i+1].y-P[i].y, l=Math.hypot(dx,dy)||1;
+    N.push({x:-dy/l, y:dx/l});
+  }
+  const miter = i => {
+    if(i===0) return {x:N[0].x,y:N[0].y,k:1};
+    if(i===n-1) return {x:N[n-2].x,y:N[n-2].y,k:1};
+    let mx=N[i-1].x+N[i].x, my=N[i-1].y+N[i].y; const l=Math.hypot(mx,my)||1; mx/=l; my/=l;
+    const dd = mx*N[i].x+my*N[i].y;
+    return {x:mx,y:my,k:Math.min(1/(dd||1),2)};
+  };
+  M.track = {UP:[],DN:[]};
+  for(let i=0;i<n;i++){
+    const m = miter(i);
+    M.track.UP.push({x:P[i].x+OFF*m.k*m.x, y:P[i].y+OFF*m.k*m.y});
+    M.track.DN.push({x:P[i].x-OFF*m.k*m.x, y:P[i].y-OFF*m.k*m.y});
+  }
+  M.cum = {};
+  dirs.forEach(d=>{
+    const c=[0];
+    for(let i=1;i<n;i++) c.push(c[i-1]+Math.hypot(M.track[d][i].x-M.track[d][i-1].x, M.track[d][i].y-M.track[d][i-1].y));
+    M.cum[d]=c;
+  });
+}
+
+/* Har trip: stops = [{s, arr, dep}] */
+function buildTrips(){
+  const dw = s => (typeof s.dwellSec === 'number') ? s.dwellSec : M.dwellDef;
+  const hd = s => (typeof s.holdSec  === 'number') ? s.holdSec  : M.holdDef;
+  const C = M.cfg;
+
+  dirs.forEach(d=>{
+    const seq = M.seq[d];
+    const n = Math.max(0, ...seq.map(s => M.times[d][s.code].length));
+    for(let i=0;i<n;i++){
+      const stops = [];
+      seq.forEach(s=>{
+        const t = M.times[d][s.code][i];
+        if(t == null) return;
+        let arr;
+        if(!stops.length) arr = (s === seq[0]) ? t - hd(s) : t - dw(s);     // origin: holding time
+        else arr = Math.min(t, Math.max(t - dw(s), stops[stops.length-1].dep + 5)); // arrival = departure - dwell
+        stops.push({s, arr, dep:t});
+      });
+      M.trips[d].push({d, no:i+1, stops});
+    }
+  });
+
+  /* last station arrival + next direction pairing (UP train -> DN train, DN train -> UP train) */
+  dirs.forEach(d=>{
+    const o = d==='UP' ? 'DN' : 'UP';
+    const T = d==='UP' ? M.last : M.first;          // terminal jahan ye direction khatam hoti hai
+    const opp = M.trips[o], used = new Set();
+    const lastDep = tr => tr.stops[tr.stops.length-1].dep;
+    const order = M.trips[d].filter(t => t.stops.length).sort((a,b)=>lastDep(a)-lastDep(b));
+    order.forEach(tr=>{
+      const ld = lastDep(tr);
+      let D = null, jb = -1;
+      opp.forEach((ot,j)=>{
+        if(used.has(j) || !ot.stops.length || ot.stops[0].s !== T) return;
+        const dep = ot.stops[0].dep;
+        if(dep - hd(T) >= ld + C.minTerminalLegSec && (D === null || dep < D)){ D = dep; jb = j; }
+      });
+      let arrival;
+      if(jb >= 0){
+        used.add(jb);
+        arrival = Math.min(D - hd(T), ld + C.maxLastLegSec);
+        opp[jb].stops[0].arr = arrival;                // next train yahin se stand karti hai
+      } else arrival = ld + C.defaultLastLegSec;
+      tr.stops.push({s:T, arr:arrival, dep:arrival, final:true});
+    });
+  });
+}
+
+/* ================= train state ================= */
+function tripState(tr, now){
+  const S = tr.stops;
+  if(S.length < 2) return null;
+  if(now < S[0].arr || now >= S[S.length-1].arr) return null;
+  if(now < S[0].dep) return {st:'stand', k:0, left:S[0].dep-now};
+  for(let k=0;k<S.length-1;k++){
+    const A=S[k], B=S[k+1];
+    if(k>0 && now>=A.arr && now<A.dep) return {st:'dwell', k, left:A.dep-now};
+    if(now>=A.dep && now<B.arr) return {st:'run', k, f:(now-A.dep)/(B.arr-A.dep), eta:B.arr-now};
+  }
+  return null;
+}
+
+/* position on the map between station indexes a -> b */
+function posAt(d,a,b,f){
+  const T=M.track[d], c=M.cum[d];
+  const dist = c[a] + (c[b]-c[a])*f;
+  const lo=Math.min(a,b), hi=Math.max(a,b);
+  let j=lo; while(j<hi-1 && c[j+1] < dist) j++;
+  const len = (c[j+1]-c[j]) || 1, t = (dist-c[j])/len;
+  const x = T[j].x + (T[j+1].x-T[j].x)*t, y = T[j].y + (T[j+1].y-T[j].y)*t;
+  let dx = T[j+1].x-T[j].x, dy = T[j+1].y-T[j].y;
+  if(b < a){ dx=-dx; dy=-dy; }
+  return {x, y, ang: Math.atan2(dx,-dy)*180/Math.PI};
+}
+
+/* ================= cards ================= */
+function nextTwo(d,code,now){
+  const s = M.by[code];
+  if((d==='UP' && s===M.last) || (d==='DN' && s===M.first)) return null;   // terminal: is direction me train nahi
+  const e = [];
+  (M.times[d][code] || []).forEach((t,i)=>{ if(t != null) e.push({sec:t, trip:i}); });
+  if(!e.length) return null;
+  e.sort((a,b)=>a.sec-b.sec);
+  const all = e.concat(e.map(x=>({sec:x.sec+86400, trip:x.trip, tom:true})));
+  const i = all.findIndex(x => x.sec >= now);
+  return [all[i], all[i+1] || null];
+}
+
+function renderCard(d, now){
+  const box = $('card'+d);
+  const from = d==='UP' ? M.first : M.last, to = d==='UP' ? M.last : M.first;
+  const head = `<div class="hd"><span class="big">${d==='UP'?'▲':'▼'}</span><div><b>${d} LINE</b><small>${from.name} → ${to.name}</small></div></div>`;
+  const nt = nextTwo(d, selected, now);
+  if(!nt){ box.innerHTML = head + `<div class="na">N/A</div>`; return null; }
+  const [a,b] = nt;
+  const ca = a.sec - now;
+  const full = b ? (b.sec - a.sec) : M.cfg.defaultHeadwaySec;      // Time2 - Time1 = 100%
+  const r = Math.max(0, Math.min(1, ca/full)), col = cdColor(r);
+  const tom = x => x && x.tom ? '<span class="tag">Tomorrow</span>' : '';
+  box.innerHTML = head + `
+    <div class="split">
+      <div class="p1">
+        <div class="t1">${fmt(a.sec)}</div>
+        <div class="cd" style="color:${col}">${fmtCd(ca)}${tom(a)}</div>
+        <div class="bar"><i style="width:${(r*100).toFixed(1)}%;background:${col}"></i></div>
+      </div>
+      <div class="p2"><div class="t2">${b ? fmt(b.sec) : '—'}${tom(b)}</div></div>
+    </div>`;
+  return a.tom ? null : d+':'+a.trip;
+}
+
+/* ================= map ================= */
+function buildMap(){
+  const L = M.list;
+  let h = '<defs><filter id="sh" x="-60%" y="-60%" width="220%" height="220%"><feDropShadow dx="0" dy="1" stdDeviation="1.6" flood-opacity=".45"/></filter></defs>';
+  for(let i=0;i<L.length-1;i++){
+    const a=L[i], b=L[i+1], act=a.status==='active'&&b.status==='active';
+    h += `<line x1="${a.x}" y1="${a.y}" x2="${b.x}" y2="${b.y}" stroke="${act?'#ff7f00':'#bbb'}" stroke-opacity="${act?.2:.35}" stroke-width="28" stroke-linecap="round"/>`;
+    h += `<line x1="${a.x}" y1="${a.y}" x2="${b.x}" y2="${b.y}" stroke="${act?'#ff7f00':'#b8b8b8'}" stroke-width="${act?4:3}" ${act?'':'stroke-dasharray="7 6"'}/>`;
+    if(act) dirs.forEach(d=>{
+      const p=M.track[d][i], q=M.track[d][i+1];
+      h += `<line class="trk t${d}" x1="${p.x}" y1="${p.y}" x2="${q.x}" y2="${q.y}"/>`;
+    });
+  }
+  L.forEach(s=>{
+    const off = s.status!=='active', ic = !!s.interchange;
+    const sub = (ic ? '⇄ '+s.interchange : '') + (ic && off ? ' · ' : '') + (off ? 'Proposed' : '');
+    h += `<g class="stn ${off?'off':''}" data-code="${s.code}" ${off?'opacity=".5"':''}>
+      <circle class="pulse" cx="${s.x}" cy="${s.y}" r="13"/>
+      <circle cx="${s.x}" cy="${s.y}" r="12" fill="${ic?'#ffe500':'#fff'}" stroke="${ic?'#000':'#ff7f00'}" stroke-width="${ic?3.5:4}" ${off?'stroke-dasharray="4 3"':''}/>
+      <text class="sn" x="${s.x+40}" y="${s.y-1}">${s.name} <tspan class="sc">${s.code}</tspan></text>
+      ${sub ? `<text class="si" x="${s.x+40}" y="${s.y+13}">${sub}</text>` : ''}
+      <rect x="${s.x-14}" y="${s.y-14}" width="300" height="28" fill="transparent"/>
+    </g>`;
+  });
+  h += '<g id="trains"></g>';
+  $('map').innerHTML = h;
+  $('map').querySelectorAll('.stn').forEach(g=>{
+    g.addEventListener('click',()=>{
+      const s=M.by[g.dataset.code];
+      if(s.status==='active'){ selected=s.code; $('stationSel').value=s.code; localStorage.setItem('kmOrangeStation',s.code); tick(); }
+    });
+  });
+  $('lgUP').textContent = M.last.name;
+  $('lgDN').textContent = M.first.name;
+}
+
+function drawTrains(now, tracked){
+  let h='', running=[];
+  dirs.forEach(d=>{
+    M.trips[d].forEach((tr,i)=>{
+      const st = tripState(tr, now);
+      if(!st) return;
+      const S = tr.stops;
+      const f = st.st==='run' ? st.f : 0;
+      const p = posAt(d, S[st.k].s.idx, S[st.k+1].s.idx, f);
+      const op = st.st==='stand' ? .6 : 1;
+      const trk = tracked.has(d+':'+i);
+      h += `<g opacity="${op}"><g transform="translate(${p.x.toFixed(1)},${p.y.toFixed(1)}) rotate(${p.ang.toFixed(1)})" filter="url(#sh)">
+              ${trk?`<circle class="ring r${d}" r="17"/>`:''}
+              <polygon class="a${d}" points="0,-12 9,9 0,4 -9,9" stroke="#fff" stroke-width="1.6" stroke-linejoin="round"/>
+            </g>
+            <text class="l${d}" x="${(p.x+(d==='UP'?15:-15)).toFixed(1)}" y="${(p.y+4).toFixed(1)}" text-anchor="${d==='UP'?'start':'end'}" font-size="11" font-weight="800">${d[0]}${tr.no}</text></g>`;
+      if(st.st !== 'stand') running.push({d, tr, st});
+    });
+  });
+  $('trains').innerHTML = h;
+  let lh = `<h4>🚆 Now Running: ${running.length}</h4><ul>`;
+  running.sort((a,b)=>(a.d===b.d ? 0 : a.d==='UP' ? -1 : 1) || a.tr.no-b.tr.no).forEach(r=>{
+    const S = r.tr.stops, k = r.st.k;
+    const txt = r.st.st==='run'
+      ? `${S[k].s.name} → ${S[k+1].s.name} · <b>${fmtCd(r.st.eta)}</b>`
+      : `At ${S[k].s.name} · <b>${fmtCd(r.st.left)}</b>`;
+    lh += `<li class="${r.d}">${r.d==='UP'?'▲':'▼'} <b>${r.d[0]}${r.tr.no}</b> · ${txt}</li>`;
+  });
+  $('runList').innerHTML = lh + '</ul>';
+}
+
+/* ================= main loop ================= */
+function tick(){
+  if(!M) return;
+  const now = nowSec();
+  const tracked = new Set();
+  dirs.forEach(d=>{ const k = renderCard(d, now); if(k) tracked.add(k); });
+  drawTrains(now, tracked);
+  document.querySelectorAll('.stn').forEach(g=>g.classList.toggle('sel', g.dataset.code===selected));
+}
+
+function fillSelect(){
+  const sel = $('stationSel'); sel.innerHTML='';
+  M.list.forEach(s=>{
+    const o=document.createElement('option');
+    o.value=s.code;
+    o.textContent = `${s.name} (${s.code})${s.interchange?' ⇄':''}${s.status!=='active'?' — Proposed':''}`;
+    if(s.status!=='active') o.disabled=true;
+    sel.appendChild(o);
+  });
+  if(!M.by[selected] || M.by[selected].status!=='active') selected = M.first.code;
+  sel.value = selected;
+}
+$('stationSel').addEventListener('change',e=>{ selected=e.target.value; localStorage.setItem('kmOrangeStation',selected); tick(); });
+
+async function init(){
+  let st=null, tt=null;
+  try{   /* same folder me stations.json + timetable.json ho to wahi use hoga, warna HTML ke andar wala JSON */
+    const [a,b] = await Promise.all([fetch('stations.json',{cache:'no-store'}), fetch('timetable.json',{cache:'no-store'})]);
+    if(a.ok && b.ok){ st = await a.json(); tt = await b.json(); }
+  }catch(e){ st=null; tt=null; }
+  if(!st || !tt || !Array.isArray(st.stations) || !tt.UP || !tt.DN){
+    st = JSON.parse($('stationsJson').textContent);
+    tt = JSON.parse($('timetableJson').textContent);
+  }
+  ST=st; TT=tt;
+  prepare(); fillSelect(); buildMap(); tick();
+  setInterval(tick,1000);
+}
+init();
+</script>
+</body>
+</html>
