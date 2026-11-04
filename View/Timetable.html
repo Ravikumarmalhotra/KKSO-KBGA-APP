@@ -3,77 +3,222 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Orange Line Time Table</title>
+<title>Kolkata Metro – Orange Line</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;800&family=Rajdhani:wght@500;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
 <style>
 :root{
-  --up:#1565c0; --up-bg:#e3f0fd;
-  --dn:#8e24aa; --dn-bg:#f6e8fb;
-  --ink:#1d2433; --muted:#6b7385; --bg:#f2f4f9;
+  --up:#2bb8ff;  --up-rgb:43,184,255;
+  --dn:#c653ff;  --dn-rgb:198,83,255;
+  --orange:#ff8a1f;
+  --ink:#e6eeff; --muted:#7f8fb3; --bg:#050914;
+  --glass:rgba(13,21,44,.72);
+  --digit:'Orbitron','Rajdhani',ui-monospace,monospace;      /* headings / labels */
+  --num:'Share Tech Mono','Orbitron',ui-monospace,monospace;  /* card digits (P1 & P2) */
 }
 *{box-sizing:border-box}
-body{margin:0;font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;background:var(--bg);color:var(--ink)}
-.wrap{max-width:1250px;margin:auto;padding:14px}
-.controls{background:#fff;border-radius:14px;padding:14px;display:flex;flex-wrap:wrap;gap:12px;align-items:center;box-shadow:0 2px 8px rgba(0,0,0,.07)}
-.controls label{font-weight:700;font-size:20px}
-select{font:inherit;padding:10px 12px;border-radius:9px;border:1px solid #c5cbd8;background:#fff;min-width:270px;font-weight:600;flex:1}
+html{background:var(--bg)}
+body{
+  margin:0;min-height:100vh;display:flex;flex-direction:column;
+  font-family:'Rajdhani','Segoe UI',system-ui,-apple-system,sans-serif;font-weight:600;
+  color:var(--ink);
+  background:
+    radial-gradient(900px 520px at 8% -10%,rgba(43,184,255,.18),transparent 60%),
+    radial-gradient(800px 520px at 100% 0%,rgba(198,83,255,.16),transparent 60%),
+    radial-gradient(900px 600px at 50% 120%,rgba(255,138,31,.13),transparent 60%),
+    var(--bg);
+  background-attachment:fixed;
+}
+/* tech grid overlay */
+body::before{
+  content:"";position:fixed;inset:0;pointer-events:none;z-index:0;
+  background-image:
+    linear-gradient(rgba(120,160,255,.05) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(120,160,255,.05) 1px,transparent 1px);
+  background-size:42px 42px;
+  -webkit-mask-image:radial-gradient(ellipse at center,#000 35%,transparent 85%);
+          mask-image:radial-gradient(ellipse at center,#000 35%,transparent 85%);
+}
+.wrap{position:relative;z-index:1;width:100%;max-width:1250px;margin:auto;padding:14px;flex:1}
+
+/* ---------- glass panels ---------- */
+.glass,.card{
+  position:relative;
+  background:var(--glass);
+  -webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);
+  border-radius:16px;overflow:hidden;
+}
+.controls{
+  display:flex;flex-wrap:wrap;gap:12px;align-items:center;padding:14px 16px;
+  border:1px solid rgba(255,138,31,.45);
+  box-shadow:0 0 0 1px rgba(255,255,255,.03) inset,0 10px 28px rgba(0,0,0,.45),0 0 26px rgba(255,138,31,.15);
+}
+.controls label{
+  font-family:var(--digit);font-weight:700;font-size:15px;letter-spacing:2.5px;text-transform:uppercase;
+  color:var(--orange);text-shadow:0 0 12px rgba(255,138,31,.7);
+}
+select{
+  -webkit-appearance:none;appearance:none;
+  flex:1;min-width:250px;padding:12px 44px 12px 14px;
+  font:inherit;font-weight:700;font-size:18px;letter-spacing:.4px;color:var(--ink);
+  background:#0a1228 url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='16' height='10' viewBox='0 0 16 10'><path d='M1 1l7 7 7-7' fill='none' stroke='%23ff8a1f' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'/></svg>") no-repeat right 16px center;
+  border:1px solid rgba(255,138,31,.55);border-radius:12px;outline:none;
+  box-shadow:0 0 14px rgba(255,138,31,.18) inset;
+  transition:box-shadow .25s,border-color .25s;
+}
+select:focus{border-color:var(--orange);box-shadow:0 0 0 3px rgba(255,138,31,.25),0 0 18px rgba(255,138,31,.3) inset}
+select option{background:#0a1228;color:var(--ink)}
+select option:disabled{color:#5d6b8c}
+
 .grid{display:grid;grid-template-columns:minmax(320px,440px) 1fr;gap:14px;margin-top:14px}
 @media(max-width:900px){.grid{grid-template-columns:1fr}}
-.card{background:#fff;border-radius:14px;box-shadow:0 2px 8px rgba(0,0,0,.08);overflow:hidden;margin-bottom:14px}
-.dirUP{--c:var(--up);--c2:var(--up-bg)}
-.dirDN{--c:var(--dn);--c2:var(--dn-bg)}
-.hd{background:var(--c);color:#fff;padding:10px 14px;display:flex;gap:12px;align-items:center}
-.hd .big{font-size:30px;line-height:1}
-.hd b{font-size:17px;letter-spacing:.5px}
-.hd small{display:block;opacity:.9;font-size:13px}
 
-/* card split in 2 vertical parts */
-.split{display:grid;grid-template-columns:1.3fr 1fr}
-.p1{padding:12px 14px;min-width:0}
-.p2{padding:12px;background:var(--c2);border-left:3px solid var(--c);display:flex;align-items:flex start;min-width:0}
-.t1{font-size:clamp(32px,10vw,46px);font-weight:800;font-variant-numeric:tabular-nums;line-height:1.1}
-.cd{font-size:22px;font-weight:800;font-variant-numeric:tabular-nums;margin:4px 0 8px;transition:color .5s}
-.t2{font-size:clamp(20px,6vw,26px);font-weight:700;font-variant-numeric:tabular-nums;color:var(--c);line-height:1.2}
-.bar{height:10px;background:#e6e9f0;border-radius:6px;overflow:hidden}
-.bar i{display:block;height:100%;border-radius:6px}
-.tag{display:inline-block;font-size:10px;background:#ffe0b2;color:#8a4b00;padding:2px 6px;border-radius:8px;margin-left:4px;vertical-align:middle;font-weight:600}
-.na{padding:22px 16px;text-align:center;font-size:54px;font-weight:800;color:#9aa1b2}
+/* ---------- UP / DN cards ---------- */
+.card{
+  margin-bottom:14px;
+  border:1px solid rgba(var(--c-rgb),.40);
+  box-shadow:0 0 0 1px rgba(255,255,255,.03) inset,0 12px 30px rgba(0,0,0,.5),0 0 28px rgba(var(--c-rgb),.16);
+}
+.dirUP{--c:var(--up);--c-rgb:var(--up-rgb)}
+.dirDN{--c:var(--dn);--c-rgb:var(--dn-rgb)}
+/* moving light on top edge */
+.card::before{
+  content:"";position:absolute;top:0;left:-40%;width:40%;height:2px;z-index:2;
+  background:linear-gradient(90deg,transparent,var(--c),transparent);
+  box-shadow:0 0 12px var(--c);
+  animation:sweep 3.6s linear infinite;
+}
+@keyframes sweep{to{left:100%}}
 
-/* map */
-.mapcard{padding:10px}
-.mapcard h3{margin:4px 6px 0}
+.hd{
+  display:flex;gap:14px;align-items:center;padding:12px 16px;
+  background:linear-gradient(90deg,rgba(var(--c-rgb),.34),rgba(var(--c-rgb),.04) 85%);
+  border-bottom:1px solid rgba(var(--c-rgb),.38);
+}
+.hd .big{
+  width:38px;height:38px;border-radius:50%;display:grid;place-items:center;flex:none;
+  font-size:15px;color:var(--c);background:rgba(var(--c-rgb),.12);
+  border:1px solid var(--c);box-shadow:0 0 14px rgba(var(--c-rgb),.65),0 0 8px rgba(var(--c-rgb),.4) inset;
+  text-shadow:0 0 8px var(--c);
+}
+.hd b{font-family:var(--digit);font-size:16px;letter-spacing:3px;color:#fff;text-shadow:0 0 12px rgba(var(--c-rgb),.9)}
+.hd small{display:block;margin-top:2px;font-size:15px;font-weight:600;letter-spacing:.6px;color:#b9c7ea}
+
+/* card split: left Time1 + countdown + bar | right Time2 */
+.split{display:grid;grid-template-columns:1.5fr 1fr}
+.p1{padding:14px 16px 16px;min-width:0}
+.p2{
+  padding:14px 12px;min-width:0;
+  background:linear-gradient(180deg,rgba(var(--c-rgb),.14),rgba(var(--c-rgb),.04));
+  border-left:1px dashed rgba(var(--c-rgb),.6);
+  display:flex;align-items:flex-start;
+}
+/* ---- digits of P1 & P2 use --num font ---- */
+.t1{
+  font-family:var(--num);font-weight:400;font-variant-numeric:tabular-nums;white-space:nowrap;
+  font-size:clamp(28px,8vw,42px);line-height:1.15;color:#fff;letter-spacing:1px;
+  text-shadow:0 0 16px rgba(var(--c-rgb),.85),0 0 2px rgba(255,255,255,.6);
+}
+.cd{
+  font-family:var(--num);font-weight:400;font-variant-numeric:tabular-nums;white-space:nowrap;
+  font-size:24px;margin:8px 0 12px;letter-spacing:2px;
+  text-shadow:0 0 14px currentColor;transition:color .5s;
+}
+.t2{
+  font-family:var(--num);font-weight:400;font-variant-numeric:tabular-nums;white-space:nowrap;
+  font-size:clamp(15px,5vw,22px);line-height:1.3;color:var(--c);letter-spacing:1px;
+  text-shadow:0 0 12px rgba(var(--c-rgb),.8);
+}
+.bar{
+  height:9px;border-radius:6px;overflow:hidden;
+  background:rgba(255,255,255,.07);
+  box-shadow:0 0 0 1px rgba(255,255,255,.06) inset;
+}
+.bar i{display:block;height:100%;border-radius:6px;box-shadow:0 0 12px 1px currentColor}
+.tag{
+  display:inline-block;margin-left:6px;padding:1px 7px;border-radius:8px;vertical-align:middle;
+  font-family:'Rajdhani',sans-serif;font-size:11px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;
+  color:#ffb366;background:rgba(255,138,31,.14);border:1px solid rgba(255,138,31,.5);text-shadow:none;
+}
+.na{
+  padding:26px 16px;text-align:center;
+  font-family:var(--digit);font-size:46px;font-weight:800;letter-spacing:6px;
+  color:#3b4868;text-shadow:0 0 18px rgba(127,143,179,.25);
+}
+
+/* ---------- map ---------- */
+.mapcard{
+  padding:12px;
+  border:1px solid rgba(255,138,31,.38);
+  box-shadow:0 0 0 1px rgba(255,255,255,.03) inset,0 12px 30px rgba(0,0,0,.5),0 0 28px rgba(255,138,31,.12);
+}
+.mapcard h3{
+  margin:4px 6px 2px;display:flex;align-items:center;gap:10px;
+  font-family:var(--digit);font-size:14px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--orange);
+  text-shadow:0 0 12px rgba(255,138,31,.7);
+}
+.live{
+  width:9px;height:9px;border-radius:50%;background:#2dff7a;box-shadow:0 0 10px #2dff7a;
+  animation:lv 1.4s infinite;
+}
+@keyframes lv{50%{opacity:.25;box-shadow:0 0 2px #2dff7a}}
 #map{width:100%;max-height:86vh;display:block}
+
 .trk{fill:none;stroke-width:3;stroke-linecap:round}
 .tUP{stroke:var(--up)} .tDN{stroke:var(--dn)}
 .aUP{fill:var(--up)} .aDN{fill:var(--dn)}
 .rUP{stroke:var(--up)} .rDN{stroke:var(--dn)}
 .lUP{fill:var(--up)} .lDN{fill:var(--dn)}
+.lUP,.lDN{stroke:#050914;stroke-width:3.2px;paint-order:stroke;stroke-linejoin:round}
 .stn{cursor:pointer}
 .stn.off{cursor:not-allowed}
-.sn{font-size:13px;font-weight:700;fill:#222}
-.sc{font-size:10.5px;font-weight:500;fill:#777}
-.si{font-size:10.5px;fill:#a35a00;font-weight:600}
-.stn.off text{fill:#aaa}
-.stn.sel .sn{fill:#d35400;font-size:14px}
-.pulse{display:none;fill:none;stroke:#ff7f00;stroke-width:3;transform-box:fill-box;transform-origin:center}
+.sn{font-family:'Rajdhani',sans-serif;font-size:14px;font-weight:700;fill:#e6eeff;letter-spacing:.3px}
+.sc{font-size:10.5px;font-weight:600;fill:#7f8fb3;letter-spacing:1px}
+.si{font-size:11.5px;fill:#ffb366;font-weight:700}
+.stn.off text{fill:#566385}
+.stn.sel .sn{fill:#ffa84d;font-size:15px}
+.pulse{display:none;fill:none;stroke:#ff8a1f;stroke-width:3;transform-box:fill-box;transform-origin:center}
 .stn.sel .pulse{display:block;animation:pl 1.3s infinite}
 @keyframes pl{0%{transform:scale(1);opacity:1}100%{transform:scale(1.9);opacity:0}}
 .ring{fill:none;stroke-width:2.5;stroke-dasharray:4 3}
-.legend{display:flex;flex-wrap:wrap;gap:14px;font-size:13px;padding:6px;color:#333}
+
+.legend{display:flex;flex-wrap:wrap;gap:10px 16px;font-size:14px;padding:8px 6px;color:#aab8d8}
 .legend span{display:flex;align-items:center;gap:6px}
 .sw{width:14px;height:14px;border-radius:50%;display:inline-block}
-.running{padding:6px 10px 10px}
-.running h4{margin:6px 0}
+
+.running{padding:6px 6px 8px}
+.running h4{
+  margin:8px 0;font-family:var(--digit);font-size:12.5px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:#b9c7ea;
+}
 .running ul{padding:0;margin:0}
-.running li{font-size:13px;margin:3px 0;list-style:none;padding:5px 8px;border-radius:6px}
-.running li.UP{background:var(--up-bg);border-left:4px solid var(--up)}
-.running li.DN{background:var(--dn-bg);border-left:4px solid var(--dn)}
+.running li{
+  list-style:none;margin:6px 0;padding:7px 10px;border-radius:10px;font-size:15px;color:var(--ink);
+  background:rgba(var(--c-rgb),.10);border:1px solid rgba(var(--c-rgb),.28);border-left:4px solid var(--c);
+  box-shadow:0 0 14px rgba(var(--c-rgb),.10);
+}
+.running li b{color:#fff}
+.running li.UP{--c:var(--up);--c-rgb:var(--up-rgb)}
+.running li.DN{--c:var(--dn);--c-rgb:var(--dn-rgb)}
+
+/* ---------- footer ---------- */
+footer{
+  position:relative;z-index:1;text-align:center;padding:18px 12px 22px;margin-top:6px;
+  font-family:var(--digit);font-size:12px;font-weight:500;letter-spacing:2.5px;color:var(--muted);
+}
+footer::before{
+  content:"";display:block;height:1px;max-width:620px;margin:0 auto 16px;
+  background:linear-gradient(90deg,transparent,var(--up),var(--orange),var(--dn),transparent);
+  box-shadow:0 0 12px rgba(255,138,31,.55);
+}
+footer span{color:var(--orange);font-weight:700;text-shadow:0 0 12px rgba(255,138,31,.75)}
 </style>
 </head>
 <body>
 
 <div class="wrap">
-  <div class="controls">
-    <label for="stationSel">Select Station</label>
+  <div class="glass controls">
+    <label for="stationSel">📍 Select</label>
     <select id="stationSel"></select>
   </div>
 
@@ -85,13 +230,13 @@ select{font:inherit;padding:10px 12px;border-radius:9px;border:1px solid #c5cbd8
 
     <section>
       <div class="card mapcard">
-        <h3>Orange Line Route Map</h3>
+        <h3><i class="live"></i>Orange Line Map · Live</h3>
         <svg id="map" viewBox="0 0 480 760"></svg>
         <div class="legend">
-          <span><svg width="22" height="22" viewBox="-12 -13 24 26"><polygon points="0,-12 9,9 0,4 -9,9" fill="#1565c0" stroke="#fff" stroke-width="1.5"/></svg> UP train ( Towards <span id="lgUP">Beleghata</span>)</span>
-          <span><svg width="22" height="22" viewBox="-12 -13 24 26"><polygon points="0,12 9,-9 0,-4 -9,-9" fill="#8e24aa" stroke="#fff" stroke-width="1.5"/></svg> DN train ( Towards <span id="lgDN">Kavi Subhash</span>)</span>
-          <span><i class="sw" style="background:#ffe500;border:2px solid #000"></i> Interchange</span>
-          <span><i class="sw" style="background:#fff;border:2px dashed #aaa"></i> Proposed</span>
+          <span><svg width="22" height="22" viewBox="-12 -13 24 26"><polygon points="0,-12 9,9 0,4 -9,9" fill="#2bb8ff" stroke="#fff" stroke-width="1.5"/></svg> UP train (↑ <span id="lgUP">Beleghata</span> towards)</span>
+          <span><svg width="22" height="22" viewBox="-12 -13 24 26"><polygon points="0,12 9,-9 0,-4 -9,-9" fill="#c653ff" stroke="#fff" stroke-width="1.5"/></svg> DN train (↓ <span id="lgDN">Kavi Subhash</span> towards)</span>
+          <span><i class="sw" style="background:#ffe500;border:2px solid #fff"></i> Interchange</span>
+          <span><i class="sw" style="background:transparent;border:2px dashed #7f8fb3"></i> Proposed</span>
           <span>⭕ Dotted ring = selected station</span>
         </div>
         <div class="running" id="runList"></div>
@@ -100,14 +245,17 @@ select{font:inherit;padding:10px 12px;border-radius:9px;border:1px solid #c5cbd8
   </div>
 </div>
 
+<footer>© Created by <span>SSE/M/KKSO</span></footer>
+
 <!-- ======================= STATIONS JSON ======================= -->
 <script type="application/json" id="stationsJson">
 {
   "line": "Orange Line",
+  "defaultStation": "KKSO",
   "defaultDwellSec": 30,
   "defaultHoldSec": 120,
   "stations": [
-    { "code": "KKSO", "name": "Kavi Subhash",      "status": "active",   "interchange": "Blue Line (KKVS)",      "holdSec": 120, "x": 120, "y": 710 },
+    { "code": "KKSO", "name": "Kavi Subhash",      "status": "active",   "interchange": "Blue Line (KKVS)",      "interchangeColor": "#4d8dff", "holdSec": 120, "x": 120, "y": 710 },
     { "code": "KSJR", "name": "Satyajit Ray",      "status": "active",   "interchange": "",                      "x": 120, "y": 650 },
     { "code": "KJNN", "name": "Joytrindra Nandi",  "status": "active",   "interchange": "",                      "x": 155, "y": 592 },
     { "code": "KKSK", "name": "Kavi Sukanta",      "status": "active",   "interchange": "",                      "x": 190, "y": 534 },
@@ -118,7 +266,7 @@ select{font:inherit;padding:10px 12px;border-radius:9px;border:1px solid #c5cbd8
     { "code": "KBGA", "name": "Beleghata",         "status": "active",   "interchange": "",                      "holdSec": 120, "x": 215, "y": 234 },
     { "code": "KGKG", "name": "Gour Kishor Ghosh", "status": "proposed", "interchange": "",                      "x": 215, "y": 174 },
     { "code": "KNLN", "name": "Nalban",            "status": "proposed", "interchange": "",                      "x": 215, "y": 114 },
-    { "code": "KITC", "name": "IT Centre",         "status": "proposed", "interchange": "Green Line (Sector V)", "holdSec": 120, "x": 215, "y": 54 }
+    { "code": "KITC", "name": "IT Centre",         "status": "proposed", "interchange": "Green Line (Sector V)", "interchangeColor": "#2ee66b", "holdSec": 120, "x": 215, "y": 54 }
   ]
 }
 </script>
@@ -162,7 +310,7 @@ const $ = id => document.getElementById(id);
 const dirs = ['UP','DN'];
 const OFF = 9;                      // UP/DN track gap on map (px)
 let ST, TT, M, offsetSec = 0;
-let selected = localStorage.getItem('kmOrangeStation') || 'KKSO';
+let selected = null;                // default station JSON ("defaultStation") se aata hai = KKSO
 
 const istFmt = new Intl.DateTimeFormat('en-GB',{timeZone:'Asia/Kolkata',hour:'numeric',minute:'numeric',second:'numeric',hourCycle:'h23'});
 function istSec(){
@@ -186,7 +334,7 @@ function fmtCd(sec){
   return h ? `${h}:${pad(m)}:${pad(s)}` : `${pad(m)}:${pad(s)}`;
 }
 /* r = 1 (100%, full gap) -> green ... r = 0 -> dark red */
-function cdColor(r){ return `hsl(${Math.round(120*r)},80%,${Math.round(27+20*r)}%)`; }
+function cdColor(r){ return `hsl(${Math.round(120*r)},90%,${Math.round(40+16*r)}%)`; }
 
 /* test: page_url?time=08:05:00 */
 (function(){
@@ -346,7 +494,7 @@ function renderCard(d, now){
       <div class="p1">
         <div class="t1">${fmt(a.sec)}</div>
         <div class="cd" style="color:${col}">${fmtCd(ca)}${tom(a)}</div>
-        <div class="bar"><i style="width:${(r*100).toFixed(1)}%;background:${col}"></i></div>
+        <div class="bar"><i style="width:${(r*100).toFixed(1)}%;background:${col};color:${col}"></i></div>
       </div>
       <div class="p2"><div class="t2">${b ? fmt(b.sec) : '—'}${tom(b)}</div></div>
     </div>`;
@@ -356,22 +504,46 @@ function renderCard(d, now){
 /* ================= map ================= */
 function buildMap(){
   const L = M.list;
-  let h = '<defs><filter id="sh" x="-60%" y="-60%" width="220%" height="220%"><feDropShadow dx="0" dy="1" stdDeviation="1.6" flood-opacity=".45"/></filter></defs>';
+  /* NOTE: filters userSpaceOnUse -> vertical (zero-width) lines bhi sahi render hoti hain */
+  let h = `<defs>
+    <filter id="gUP" x="-80%" y="-80%" width="260%" height="260%"><feDropShadow dx="0" dy="0" stdDeviation="3" flood-color="#2bb8ff" flood-opacity=".95"/></filter>
+    <filter id="gDN" x="-80%" y="-80%" width="260%" height="260%"><feDropShadow dx="0" dy="0" stdDeviation="3" flood-color="#c653ff" flood-opacity=".95"/></filter>
+    <filter id="gOR" filterUnits="userSpaceOnUse" x="0" y="0" width="480" height="760"><feDropShadow dx="0" dy="0" stdDeviation="2.5" flood-color="#ff8a1f" flood-opacity=".85"/></filter>
+  </defs>`;
+
+  /* active segments -> ek hi path (continuous orange line), proposed segments -> dashed grey */
+  let dAct = '', dOff = '';
   for(let i=0;i<L.length-1;i++){
-    const a=L[i], b=L[i+1], act=a.status==='active'&&b.status==='active';
-    h += `<line x1="${a.x}" y1="${a.y}" x2="${b.x}" y2="${b.y}" stroke="${act?'#ff7f00':'#bbb'}" stroke-opacity="${act?.2:.35}" stroke-width="28" stroke-linecap="round"/>`;
-    h += `<line x1="${a.x}" y1="${a.y}" x2="${b.x}" y2="${b.y}" stroke="${act?'#ff7f00':'#b8b8b8'}" stroke-width="${act?4:3}" ${act?'':'stroke-dasharray="7 6"'}/>`;
-    if(act) dirs.forEach(d=>{
+    const a=L[i], b=L[i+1];
+    const seg = `M${a.x} ${a.y}L${b.x} ${b.y}`;
+    if(a.status==='active' && b.status==='active') dAct += seg; else dOff += seg;
+  }
+  if(dOff){
+    h += `<path d="${dOff}" fill="none" stroke="#5b6785" stroke-opacity=".18" stroke-width="30" stroke-linecap="round"/>`;
+    h += `<path d="${dOff}" fill="none" stroke="#5b6785" stroke-width="3" stroke-dasharray="7 6" stroke-linecap="round"/>`;
+  }
+  if(dAct){
+    h += `<path d="${dAct}" fill="none" stroke="#ff8a1f" stroke-opacity=".14" stroke-width="30" stroke-linecap="round" stroke-linejoin="round"/>`;
+    h += `<path d="${dAct}" fill="none" stroke="#ff8a1f" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" filter="url(#gOR)"/>`;
+  }
+  /* UP / DN tracks */
+  for(let i=0;i<L.length-1;i++){
+    if(L[i].status==='active' && L[i+1].status==='active') dirs.forEach(d=>{
       const p=M.track[d][i], q=M.track[d][i+1];
       h += `<line class="trk t${d}" x1="${p.x}" y1="${p.y}" x2="${q.x}" y2="${q.y}"/>`;
     });
   }
+  /* stations */
   L.forEach(s=>{
     const off = s.status!=='active', ic = !!s.interchange;
-    const sub = (ic ? '⇄ '+s.interchange : '') + (ic && off ? ' · ' : '') + (off ? 'Proposed' : '');
-    h += `<g class="stn ${off?'off':''}" data-code="${s.code}" ${off?'opacity=".5"':''}>
+    const icCol = s.interchangeColor || '#ffe500';
+    let sub = '';
+    if(ic)  sub += `<tspan style="fill:${icCol}">⇄ ${s.interchange}</tspan>`;
+    if(ic && off) sub += ' · ';
+    if(off) sub += 'Proposed';
+    h += `<g class="stn ${off?'off':''}" data-code="${s.code}" ${off?'opacity=".85"':''}>
       <circle class="pulse" cx="${s.x}" cy="${s.y}" r="13"/>
-      <circle cx="${s.x}" cy="${s.y}" r="12" fill="${ic?'#ffe500':'#fff'}" stroke="${ic?'#000':'#ff7f00'}" stroke-width="${ic?3.5:4}" ${off?'stroke-dasharray="4 3"':''}/>
+      <circle cx="${s.x}" cy="${s.y}" r="12" fill="${ic?'#ffe500':'#0a1228'}" stroke="${ic?'#ffffff':(off?'#8a5a2a':'#ff8a1f')}" stroke-width="${ic?3.5:4}" ${off?'stroke-dasharray="4 3"':''} ${off?'':'filter="url(#gOR)"'}/>
       <text class="sn" x="${s.x+40}" y="${s.y-1}">${s.name} <tspan class="sc">${s.code}</tspan></text>
       ${sub ? `<text class="si" x="${s.x+40}" y="${s.y+13}">${sub}</text>` : ''}
       <rect x="${s.x-14}" y="${s.y-14}" width="300" height="28" fill="transparent"/>
@@ -382,7 +554,7 @@ function buildMap(){
   $('map').querySelectorAll('.stn').forEach(g=>{
     g.addEventListener('click',()=>{
       const s=M.by[g.dataset.code];
-      if(s.status==='active'){ selected=s.code; $('stationSel').value=s.code; localStorage.setItem('kmOrangeStation',s.code); tick(); }
+      if(s.status==='active'){ selected=s.code; $('stationSel').value=s.code; tick(); }
     });
   });
   $('lgUP').textContent = M.last.name;
@@ -400,7 +572,7 @@ function drawTrains(now, tracked){
       const p = posAt(d, S[st.k].s.idx, S[st.k+1].s.idx, f);
       const op = st.st==='stand' ? .6 : 1;
       const trk = tracked.has(d+':'+i);
-      h += `<g opacity="${op}"><g transform="translate(${p.x.toFixed(1)},${p.y.toFixed(1)}) rotate(${p.ang.toFixed(1)})" filter="url(#sh)">
+      h += `<g opacity="${op}"><g transform="translate(${p.x.toFixed(1)},${p.y.toFixed(1)}) rotate(${p.ang.toFixed(1)})" filter="url(#g${d})">
               ${trk?`<circle class="ring r${d}" r="17"/>`:''}
               <polygon class="a${d}" points="0,-12 9,9 0,4 -9,9" stroke="#fff" stroke-width="1.6" stroke-linejoin="round"/>
             </g>
@@ -439,10 +611,12 @@ function fillSelect(){
     if(s.status!=='active') o.disabled=true;
     sel.appendChild(o);
   });
-  if(!M.by[selected] || M.by[selected].status!=='active') selected = M.first.code;
+  /* Default: KAVI SUBHASH (KKSO) – har baar page open/refresh par yahi select hoga */
+  const def = M.by[ST.defaultStation || 'KKSO'];
+  selected = (def && def.status==='active') ? def.code : M.first.code;
   sel.value = selected;
 }
-$('stationSel').addEventListener('change',e=>{ selected=e.target.value; localStorage.setItem('kmOrangeStation',selected); tick(); });
+$('stationSel').addEventListener('change',e=>{ selected=e.target.value; tick(); });
 
 async function init(){
   let st=null, tt=null;
