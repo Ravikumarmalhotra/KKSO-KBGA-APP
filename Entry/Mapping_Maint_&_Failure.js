@@ -1965,7 +1965,7 @@ const validAssetIdsByGroup = {
     "206020714",
     "206020715",
     "206020716",
-    "207020708",
+    "206020708",
     "207020701",
     "207020703",
     "207020709",
@@ -2606,6 +2606,9 @@ const staffList = [
 
   // TRANSFERED STAFF
   , "GULSHAN KUMAR (JE)", "RAHUL KUMAR SINGH (HELPER)", "CHIRAG RAJ (HELPER)", "DIPAK DEY (HELPER)", "SANDIP KAYAL (HELPER)"
+
+   // Firms
+   , "M/S SHINRYO SUVIDHA STAFF", "M/S GLOBAL STAFF", "M/S AIR COLLING STAFF", "M/S JHONSON STAFF", "M/S SCHINDLER STAFF", "M/S SIEMENS STAFF", "M/S SAURABIDYUT STAFF"
 ];
 /* ============================================================
    REPORT PERSON NAME
